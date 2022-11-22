@@ -24,7 +24,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	case "POST":
 		postURLToShort(w, r)
 	case "GET":
-		getShortToUrl(w, r)
+		getShortToURL(w, r)
 	}
 }
 
@@ -34,8 +34,8 @@ func postURLToShort(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	short := shortUrl()
-	for ; urlmap[short] != string(body); short = shortUrl() {
+	short := shortURL()
+	for ; urlmap[short] != string(body); short = shortURL() {
 		urlmap[short] = string(body)
 	}
 	write := []byte("http://localhost:8080/" + short)
@@ -43,7 +43,7 @@ func postURLToShort(w http.ResponseWriter, r *http.Request) {
 	w.Write(write)
 }
 
-func getShortToUrl(w http.ResponseWriter, r *http.Request) {
+func getShortToURL(w http.ResponseWriter, r *http.Request) {
 	short := r.URL.String()
 	short = short[1:]
 	if urlmap[short] == "" {
@@ -57,7 +57,7 @@ func getShortToUrl(w http.ResponseWriter, r *http.Request) {
 
 const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
-func shortUrl() string {
+func shortURL() string {
 	a := make([]byte, 7)
 	for i := range a {
 		a[i] = letters[rand.Intn(len(letters))]
