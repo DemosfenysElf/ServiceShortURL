@@ -1,15 +1,15 @@
 package main
 
 import (
-	"log"
 	"net/http"
 )
 
-func router() {
+func router() error {
 
 	http.HandleFunc("/", handler)
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
-		log.Fatal("ListenAndServe:", err)
+		return err
 	}
+	return nil
 }

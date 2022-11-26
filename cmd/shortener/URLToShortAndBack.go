@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io"
 	"net/http"
 )
@@ -15,7 +14,7 @@ func getShortToURL(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Add("Location", urlmap[short])
 	w.WriteHeader(http.StatusTemporaryRedirect)
-	fmt.Println(w.Header())
+	w.Header()
 }
 
 func postURLToShort(w http.ResponseWriter, r *http.Request) {
@@ -24,10 +23,17 @@ func postURLToShort(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 500)
 		return
 	}
+
 	short := shortURL()
-	for ; urlmap[short] != string(body); short = shortURL() {
-		urlmap[short] = string(body)
+	if urlmap[short] != string(body) {
+		for ; urlmap[short] != string(body); short = shortURL() {
+			if _, ok := urlmap[short]; !ok {
+				urlmap[short] = string(body)
+				break
+			}
+		}
 	}
+
 	write := []byte("http://localhost:8080/" + short)
 	w.WriteHeader(http.StatusCreated)
 	w.Write(write)
