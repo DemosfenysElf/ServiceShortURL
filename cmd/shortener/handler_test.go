@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/labstack/echo"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -42,12 +43,12 @@ func Test_handler(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			w := httptest.NewRecorder()
-			h := http.HandlerFunc(handler)
-
+			e := echo.New()
 			request := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(tt.url))
-			h.ServeHTTP(w, request)
-			res := w.Result()
+			rec := httptest.NewRecorder()
+			c := e.NewContext(request, rec)
+			postURLToShort(c)
+			res := rec.Result()
 
 			defer res.Body.Close()
 			resBody, err := io.ReadAll(res.Body)
@@ -56,15 +57,18 @@ func Test_handler(t *testing.T) {
 			}
 
 			if res.StatusCode != tt.want.codePost {
-				t.Errorf("Expected status code %d, got %d", tt.want.codePost, w.Code)
+				t.Errorf("Expected status code %d, got %d", tt.want.codePost, rec.Code)
 			}
+			//////////////////////////////////////////////////////////////
 
 			resBodyShort := strings.Replace(string(resBody), "http://localhost:8080/", "", -1)
-			//resBodyIoReader := strings.NewReader(resBodyShort)
 			request1 := httptest.NewRequest(http.MethodGet, "/"+resBodyShort, nil)
-			w1 := httptest.NewRecorder()
-			h.ServeHTTP(w1, request1)
-			res = w1.Result()
+
+			rec1 := httptest.NewRecorder()
+			c1 := e.NewContext(request1, rec1)
+
+			getShortToURL(c1)
+			res = rec1.Result()
 
 			defer res.Body.Close()
 			resBody, err = io.ReadAll(res.Body)
@@ -73,11 +77,11 @@ func Test_handler(t *testing.T) {
 			}
 
 			if strings.HasPrefix(string(resBody), "http://localhost:8080/") {
-				t.Errorf("Expected body %s, got %s", tt.want.response, w1.Body.String())
+				t.Errorf("Expected body %s, got %s", tt.want.response, rec1.Body.String())
 			}
 
 			if res.StatusCode != tt.want.codeGet {
-				t.Errorf("Expected status code %d, got %d", tt.want.codeGet, w1.Code)
+				t.Errorf("Expected status code %d, got %d", tt.want.codeGet, rec1.Code)
 			}
 
 			if res.Header.Get("Location") != tt.url {

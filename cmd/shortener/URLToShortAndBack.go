@@ -1,27 +1,31 @@
 package main
 
 import (
+	"fmt"
+	"github.com/labstack/echo"
 	"io"
 	"net/http"
 )
 
-func getShortToURL(w http.ResponseWriter, r *http.Request) {
-	short := r.URL.String()
+func getShortToURL(c echo.Context) error {
+	short := c.Request().URL.String()
 	short = short[1:]
 	if urlmap[short] == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		return
+		c.Response().WriteHeader(http.StatusBadRequest)
+		return fmt.Errorf("shortURL is not exist")
 	}
-	w.Header().Add("Location", urlmap[short])
-	w.WriteHeader(http.StatusTemporaryRedirect)
-	w.Header()
+	c.Response().Header().Add("Location", urlmap[short])
+	c.Response().WriteHeader(http.StatusTemporaryRedirect)
+	c.Response().Header()
+	return nil
 }
 
-func postURLToShort(w http.ResponseWriter, r *http.Request) {
-	body, err := io.ReadAll(r.Body)
+func postURLToShort(c echo.Context) error {
+	defer c.Request().Body.Close()
+	body, err := io.ReadAll(c.Request().Body)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
+		http.Error(c.Response(), err.Error(), http.StatusInternalServerError)
+		return fmt.Errorf("URL is not exist")
 	}
 
 	short := shortURL()
@@ -35,6 +39,7 @@ func postURLToShort(w http.ResponseWriter, r *http.Request) {
 	}
 
 	write := []byte("http://localhost:8080/" + short)
-	w.WriteHeader(http.StatusCreated)
-	w.Write(write)
+	c.Response().WriteHeader(http.StatusCreated)
+	c.Response().Write(write)
+	return nil
 }

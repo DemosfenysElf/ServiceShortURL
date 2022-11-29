@@ -1,13 +1,16 @@
 package main
 
 import (
-	"net/http"
+	"github.com/labstack/echo"
 )
 
 func router() error {
 
-	http.HandleFunc("/", handler)
-	err := http.ListenAndServe(":8080", nil)
+	e := echo.New()
+
+	e.GET("/:id", getShortToURL)
+	e.POST("/", postURLToShort)
+	err := e.Start(":8080")
 	if err != nil {
 		return err
 	}
