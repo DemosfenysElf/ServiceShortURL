@@ -48,6 +48,7 @@ func Test_handler(t *testing.T) {
 			rec := httptest.NewRecorder()
 			c := e.NewContext(request, rec)
 			postURLToShort(c)
+
 			res := rec.Result()
 
 			defer res.Body.Close()

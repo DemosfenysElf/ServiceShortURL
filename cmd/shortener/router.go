@@ -10,6 +10,7 @@ func router() error {
 
 	e.GET("/:id", getShortToURL)
 	e.POST("/", postURLToShort)
+
 	err := e.Start(":8080")
 	if err != nil {
 		return err

@@ -13,4 +13,10 @@ require (
 	golang.org/x/net v0.2.0 // indirect
 	golang.org/x/sys v0.2.0 // indirect
 	golang.org/x/text v0.4.0 // indirect
+
+	shortURLService v1.0.0
+)
+
+replace (
+	shortURLService => ./internal/shortURLService
 )

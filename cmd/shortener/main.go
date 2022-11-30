@@ -1,11 +1,10 @@
 package main
 
-import "log"
-
-var urlmap = make(map[string]string)
+import (
+	"log"
+)
 
 func main() {
-
 	err := router()
 	if err != nil {
 		log.Fatal("Router:", err)
