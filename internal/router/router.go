@@ -1,10 +1,10 @@
-package main
+package router
 
 import (
 	"github.com/labstack/echo"
 )
 
-func router() error {
+func Router() error {
 
 	e := echo.New()
 

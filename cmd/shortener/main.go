@@ -2,10 +2,12 @@ package main
 
 import (
 	"log"
+	"router"
 )
 
 func main() {
-	err := router()
+
+	err := router.Router()
 	if err != nil {
 		log.Fatal("Router:", err)
 	}

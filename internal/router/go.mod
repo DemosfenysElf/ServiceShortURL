@@ -1,9 +1,13 @@
-module github.com/DemosfenysElf/ServiceShortURL
+module router
 
 go 1.19
 
 require (
-	github.com/labstack/echo v3.3.10+incompatible // indirect
+	github.com/labstack/echo v3.3.10+incompatible
+	shortURLService v1.0.0
+)
+
+require (
 	github.com/labstack/gommon v0.4.0 // indirect
 	github.com/mattn/go-colorable v0.1.11 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
@@ -13,10 +17,6 @@ require (
 	golang.org/x/net v0.2.0 // indirect
 	golang.org/x/sys v0.2.0 // indirect
 	golang.org/x/text v0.4.0 // indirect
-
-	shortURLService v1.0.0
 )
 
-replace (
-	shortURLService => ./internal/shortURLService
-)
+replace shortURLService => ../shortURLService
