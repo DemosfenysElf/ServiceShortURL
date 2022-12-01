@@ -19,7 +19,4 @@ require (
 	golang.org/x/text v0.4.0 // indirect
 )
 
-replace (
-shortURLService => ../shortURLService
-)
-
+replace shortURLService => ../shortURLService
