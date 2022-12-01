@@ -8,8 +8,8 @@ func Router() error {
 
 	e := echo.New()
 
-	e.GET("/:id", getShortToURL)
-	e.POST("/", postURLToShort)
+	e.GET("/:id", GetShortToURL)
+	e.POST("/", PostURLToShort)
 
 	err := e.Start(":8080")
 	if err != nil {

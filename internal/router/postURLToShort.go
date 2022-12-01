@@ -8,7 +8,7 @@ import (
 	"shortURLService"
 )
 
-func postURLToShort(c echo.Context) error {
+func PostURLToShort(c echo.Context) error {
 
 	defer c.Request().Body.Close()
 	body, err := io.ReadAll(c.Request().Body)

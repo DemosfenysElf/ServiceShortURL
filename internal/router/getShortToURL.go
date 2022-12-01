@@ -7,7 +7,7 @@ import (
 	"shortURLService"
 )
 
-func getShortToURL(c echo.Context) error {
+func GetShortToURL(c echo.Context) error {
 	short := c.Request().URL.String()
 	short = short[1:]
 

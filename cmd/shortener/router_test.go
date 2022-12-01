@@ -1,15 +1,16 @@
-package router
+package main
 
 import (
 	"github.com/labstack/echo"
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"router"
 	"strings"
 	"testing"
 )
 
-func Test_handler(t *testing.T) {
+func Test_router(t *testing.T) {
 
 	type want struct {
 		codePost    int
@@ -47,7 +48,7 @@ func Test_handler(t *testing.T) {
 			request := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(tt.url))
 			rec := httptest.NewRecorder()
 			c := e.NewContext(request, rec)
-			postURLToShort(c)
+			router.PostURLToShort(c)
 
 			res := rec.Result()
 
@@ -68,7 +69,7 @@ func Test_handler(t *testing.T) {
 			rec1 := httptest.NewRecorder()
 			c1 := e.NewContext(request1, rec1)
 
-			getShortToURL(c1)
+			router.GetShortToURL(c1)
 			res = rec1.Result()
 
 			defer res.Body.Close()
