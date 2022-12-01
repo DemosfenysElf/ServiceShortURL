@@ -1,4 +1,4 @@
-module shortener
+module ServiceShortURL
 
 go 1.19
 
@@ -20,6 +20,6 @@ require (
 )
 
 replace (
-	router => ../../internal/router
-	shortURLService => ../../internal/shortURLService
+	router => ./internal/router
+	shortURLService => ./internal/shortURLService
 )
