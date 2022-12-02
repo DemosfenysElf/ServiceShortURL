@@ -1,11 +1,11 @@
 package main
 
 import (
+	"ServiceShortURL/internal/router"
 	"github.com/labstack/echo"
 	"io"
 	"net/http"
 	"net/http/httptest"
-	"router"
 	"strings"
 	"testing"
 )
