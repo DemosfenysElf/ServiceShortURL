@@ -1,4 +1,4 @@
-package shortURLService
+package shorturlservice
 
 import "math/rand"
 

@@ -1,7 +1,7 @@
 package router
 
 import (
-	"ServiceShortURL/internal/shortURLService"
+	"ServiceShortURL/internal/shorturlservice"
 	"fmt"
 	"github.com/labstack/echo"
 	"net/http"
@@ -11,7 +11,7 @@ func GetShortToURL(c echo.Context) error {
 	short := c.Request().URL.String()
 	short = short[1:]
 
-	url := shortURLService.GetURL(short)
+	url := shorturlservice.GetURL(short)
 
 	if url == "" {
 		c.Response().WriteHeader(http.StatusBadRequest)

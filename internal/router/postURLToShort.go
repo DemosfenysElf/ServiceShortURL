@@ -1,7 +1,7 @@
 package router
 
 import (
-	"ServiceShortURL/internal/shortURLService"
+	"ServiceShortURL/internal/shorturlservice"
 	"fmt"
 	"github.com/labstack/echo"
 	"io"
@@ -17,7 +17,7 @@ func PostURLToShort(c echo.Context) error {
 		return fmt.Errorf("URL is not exist")
 	}
 
-	short := shortURLService.SetURL(string(body))
+	short := shorturlservice.SetURL(string(body))
 
 	write := []byte("http://localhost:8080/" + short)
 	c.Response().WriteHeader(http.StatusCreated)
