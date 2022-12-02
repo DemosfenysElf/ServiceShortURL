@@ -1,11 +1,11 @@
 package router
 
 import (
+	"ServiceShortURL/internal/shortURLService"
 	"fmt"
 	"github.com/labstack/echo"
 	"io"
 	"net/http"
-	"shortURLService"
 )
 
 func PostURLToShort(c echo.Context) error {

@@ -1,12 +1,11 @@
 package main
 
 import (
+	"ServiceShortURL/internal/router"
 	"log"
-	"router"
 )
 
 func main() {
-
 	err := router.Router()
 	if err != nil {
 		log.Fatal("Router:", err)
