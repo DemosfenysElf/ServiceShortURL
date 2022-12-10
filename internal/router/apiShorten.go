@@ -34,7 +34,7 @@ func APIShorten(c echo.Context) error {
 	shortU, err := json.Marshal(shortURL)
 	if err != nil {
 		http.Error(c.Response(), err.Error(), http.StatusInternalServerError)
-		return fmt.Errorf("Marshal error")
+		return fmt.Errorf("marshal error")
 	}
 
 	c.Response().Header().Add("Content-Type", "application/json")
