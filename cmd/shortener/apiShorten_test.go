@@ -24,7 +24,7 @@ func TestApiShorten(t *testing.T) {
 		want    want
 		wantErr bool
 		baseurl string
-		urlJson string
+		urlJSON string
 		urlRes  string
 	}{
 		{
@@ -35,7 +35,7 @@ func TestApiShorten(t *testing.T) {
 				response: `{"status":"ok"}`,
 			},
 			baseurl: "https://www.youtube.com/watch?v=UK7yzgVpnDA",
-			urlJson: `{"url":"https://www.youtube.com/watch?v=UK7yzgVpnDA"}`,
+			urlJSON: `{"url":"https://www.youtube.com/watch?v=UK7yzgVpnDA"}`,
 			urlRes:  `{"result":"https://www.youtube.com/watch?v=UK7yzgVpnDA"}`,
 		},
 	}
@@ -43,10 +43,10 @@ func TestApiShorten(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 
 			e := echo.New()
-			request := httptest.NewRequest(http.MethodPost, "/api/shorten", strings.NewReader(tt.urlJson))
+			request := httptest.NewRequest(http.MethodPost, "/api/shorten", strings.NewReader(tt.urlJSON))
 			rec := httptest.NewRecorder()
 			c := e.NewContext(request, rec)
-			router.ApiShorten(c)
+			router.APIShorten(c)
 
 			res := rec.Result()
 

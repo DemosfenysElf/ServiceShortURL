@@ -9,17 +9,17 @@ import (
 	"net/http"
 )
 
-type urlJson struct {
-	Url string `json:"url"`
+type urlJSON struct {
+	URL string `json:"url"`
 }
 
-type shortUrlJson struct {
-	ShortUrl string `json:"result"`
+type shortURLJSON struct {
+	ShortURL string `json:"result"`
 }
 
-func ApiShorten(c echo.Context) error {
-	urlJ := urlJson{}
-	shortUrl := shortUrlJson{}
+func APIShorten(c echo.Context) error {
+	urlJ := urlJSON{}
+	shortURL := shortURLJSON{}
 	defer c.Request().Body.Close()
 	body, err := io.ReadAll(c.Request().Body)
 	if err != nil {
@@ -28,10 +28,10 @@ func ApiShorten(c echo.Context) error {
 	}
 
 	json.Unmarshal(body, &urlJ)
-	short := shorturlservice.SetURL(urlJ.Url)
-	shortUrl.ShortUrl = "http://localhost:8080/" + short
+	short := shorturlservice.SetURL(urlJ.URL)
+	shortURL.ShortURL = "http://localhost:8080/" + short
 
-	shortU, err := json.Marshal(shortUrl)
+	shortU, err := json.Marshal(shortURL)
 	if err != nil {
 		http.Error(c.Response(), err.Error(), http.StatusInternalServerError)
 		return fmt.Errorf("Marshal error")
