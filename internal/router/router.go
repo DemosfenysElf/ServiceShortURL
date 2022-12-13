@@ -28,7 +28,8 @@ func (s *Server) Router() error {
 	e.POST("/", s.PostURLToShort)
 	e.POST("/api/shorten", s.APIShorten)
 
-	errStart := e.Start(s.Cfg.ServerAddress)
+	//errStart := e.Start(s.Cfg.ServerAddress)
+	errStart := e.Start(":8080")
 	if errStart != nil {
 		return errStart
 	}
