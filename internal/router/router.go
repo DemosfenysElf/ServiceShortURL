@@ -6,12 +6,12 @@ import (
 	"log"
 )
 
-type ConfigUrl struct {
+type ConfigURL struct {
 	ServerAddress string `env:"SERVER_ADDRESS"`
 	BaseURL       string `env:"BASE_URL"`
 }
 type Server struct {
-	Cfg ConfigUrl
+	Cfg ConfigURL
 }
 
 func (s *Server) Router() error {
