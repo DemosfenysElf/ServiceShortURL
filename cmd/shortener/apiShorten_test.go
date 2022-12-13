@@ -2,6 +2,7 @@ package main
 
 import (
 	"ServiceShortURL/internal/router"
+	"github.com/caarlos0/env"
 	"github.com/labstack/echo"
 	"io"
 	"net/http"
@@ -46,7 +47,14 @@ func TestApiShorten(t *testing.T) {
 			request := httptest.NewRequest(http.MethodPost, "/api/shorten", strings.NewReader(tt.urlJSON))
 			rec := httptest.NewRecorder()
 			c := e.NewContext(request, rec)
-			router.APIShorten(c)
+			rout := router.Server{}
+
+			errConfig := env.Parse(&rout.Cfg)
+			if errConfig != nil {
+				t.Fatal(errConfig)
+			}
+
+			rout.APIShorten(c)
 
 			res := rec.Result()
 
@@ -60,8 +68,9 @@ func TestApiShorten(t *testing.T) {
 				t.Errorf("Expected status code %d, got %d", tt.want.codePost, rec.Code)
 			}
 			//////////////////////////////////////////////////////////////
-			s := `{"result":"http://localhost:8080/`
+			s := `{"result":"` + rout.Cfg.BaseURL
 			s2 := `"}`
+
 			resBodyShort := strings.Replace(string(resBody), s, "", -1)
 			resBodyShort = strings.Replace(resBodyShort, s2, "", -1)
 			request1 := httptest.NewRequest(http.MethodGet, "/"+resBodyShort, nil)
@@ -69,7 +78,7 @@ func TestApiShorten(t *testing.T) {
 			rec1 := httptest.NewRecorder()
 			c1 := e.NewContext(request1, rec1)
 
-			router.GetShortToURL(c1)
+			rout.GetShortToURL(c1)
 			res = rec1.Result()
 
 			defer res.Body.Close()
@@ -78,7 +87,7 @@ func TestApiShorten(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if strings.HasPrefix(string(resBody), "http://localhost:8080/") {
+			if strings.HasPrefix(string(resBody), rout.Cfg.BaseURL) {
 				t.Errorf("Expected body %s, got %s", tt.want.response, rec1.Body.String())
 			}
 

@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func PostURLToShort(c echo.Context) error {
+func (s *Server) PostURLToShort(c echo.Context) error {
 
 	defer c.Request().Body.Close()
 	body, err := io.ReadAll(c.Request().Body)
@@ -19,7 +19,7 @@ func PostURLToShort(c echo.Context) error {
 
 	short := shorturlservice.SetURL(string(body))
 
-	write := []byte("http://localhost:8080/" + short)
+	write := []byte(s.Cfg.BaseURL + short)
 	c.Response().WriteHeader(http.StatusCreated)
 	c.Response().Write(write)
 	return nil

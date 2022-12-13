@@ -2,6 +2,7 @@ package main
 
 import (
 	"ServiceShortURL/internal/router"
+	"github.com/caarlos0/env"
 	"github.com/labstack/echo"
 	"io"
 	"net/http"
@@ -48,7 +49,13 @@ func Test_router(t *testing.T) {
 			request := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(tt.url))
 			rec := httptest.NewRecorder()
 			c := e.NewContext(request, rec)
-			router.PostURLToShort(c)
+
+			rout := router.Server{}
+			errConfig := env.Parse(&rout.Cfg)
+			if errConfig != nil {
+				t.Fatal(errConfig)
+			}
+			rout.PostURLToShort(c)
 
 			res := rec.Result()
 
@@ -63,13 +70,13 @@ func Test_router(t *testing.T) {
 			}
 			//////////////////////////////////////////////////////////////
 
-			resBodyShort := strings.Replace(string(resBody), "http://localhost:8080/", "", -1)
+			resBodyShort := strings.Replace(string(resBody), rout.Cfg.BaseURL, "", -1)
 			request1 := httptest.NewRequest(http.MethodGet, "/"+resBodyShort, nil)
 
 			rec1 := httptest.NewRecorder()
 			c1 := e.NewContext(request1, rec1)
 
-			router.GetShortToURL(c1)
+			rout.GetShortToURL(c1)
 			res = rec1.Result()
 
 			defer res.Body.Close()
@@ -78,7 +85,7 @@ func Test_router(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if strings.HasPrefix(string(resBody), "http://localhost:8080/") {
+			if strings.HasPrefix(string(resBody), rout.Cfg.BaseURL) {
 				t.Errorf("Expected body %s, got %s", tt.want.response, rec1.Body.String())
 			}
 

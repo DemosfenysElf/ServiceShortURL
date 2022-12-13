@@ -17,7 +17,7 @@ type shortURLJSON struct {
 	ShortURL string `json:"result"`
 }
 
-func APIShorten(c echo.Context) error {
+func (s *Server) APIShorten(c echo.Context) error {
 	urlJ := urlJSON{}
 	shortURL := shortURLJSON{}
 	defer c.Request().Body.Close()
@@ -29,7 +29,7 @@ func APIShorten(c echo.Context) error {
 
 	json.Unmarshal(body, &urlJ)
 	short := shorturlservice.SetURL(urlJ.URL)
-	shortURL.ShortURL = "http://localhost:8080/" + short
+	shortURL.ShortURL = s.Cfg.BaseURL + short
 
 	shortU, err := json.Marshal(shortURL)
 	if err != nil {
