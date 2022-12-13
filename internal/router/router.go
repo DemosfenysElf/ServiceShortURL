@@ -11,7 +11,8 @@ type ConfigURL struct {
 	BaseURL       string `env:"BASE_URL"`
 }
 type Server struct {
-	Cfg ConfigURL
+	Cfg  ConfigURL
+	Serv *echo.Echo
 }
 
 func (s *Server) Router() error {
