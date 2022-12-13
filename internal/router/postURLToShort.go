@@ -19,8 +19,8 @@ func (s *Server) PostURLToShort(c echo.Context) error {
 
 	short := shorturlservice.SetURL(string(body))
 
-	//write := []byte(s.Cfg.BaseURL + short)
-	write := []byte("http://localhost:8080/" + short)
+	write := []byte(s.Cfg.BaseURL + short)
+
 	c.Response().WriteHeader(http.StatusCreated)
 	c.Response().Write(write)
 	return nil
