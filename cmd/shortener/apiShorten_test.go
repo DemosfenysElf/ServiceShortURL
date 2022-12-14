@@ -68,7 +68,7 @@ func TestApiShorten(t *testing.T) {
 				t.Errorf("Expected status code %d, got %d", tt.want.codePost, rec.Code)
 			}
 			//////////////////////////////////////////////////////////////
-			s := `{"result":"` + rout.Cfg.BaseURL
+			s := `{"result":"` + rout.Cfg.BaseURL + "/"
 			s2 := `"}`
 
 			resBodyShort := strings.Replace(string(resBody), s, "", -1)
@@ -87,7 +87,7 @@ func TestApiShorten(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if strings.HasPrefix(string(resBody), rout.Cfg.BaseURL) {
+			if strings.HasPrefix(string(resBody), rout.Cfg.BaseURL+"/") {
 				t.Errorf("Expected body %s, got %s", tt.want.response, rec1.Body.String())
 			}
 
