@@ -71,7 +71,7 @@ func Test_router(t *testing.T) {
 			}
 			//////////////////////////////////////////////////////////////
 
-			resBodyShort := strings.Replace(string(resBody), rout.Cfg.BaseURL, "", -1)
+			resBodyShort := strings.Replace(string(resBody), rout.Cfg.BaseURL+"/", "", -1)
 			request1 := httptest.NewRequest(http.MethodGet, "/"+resBodyShort, nil)
 
 			rec1 := httptest.NewRecorder()
@@ -86,7 +86,7 @@ func Test_router(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if strings.HasPrefix(string(resBody), rout.Cfg.BaseURL) {
+			if strings.HasPrefix(string(resBody), rout.Cfg.BaseURL+"/") {
 				t.Errorf("Expected body %s, got %s", tt.want.response, rec1.Body.String())
 			}
 

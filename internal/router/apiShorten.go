@@ -29,7 +29,7 @@ func (s *Server) APIShorten(c echo.Context) error {
 
 	json.Unmarshal(body, &urlJ)
 	short := shorturlservice.SetURL(urlJ.URL)
-	shortURL.ShortURL = s.Cfg.BaseURL + short
+	shortURL.ShortURL = s.Cfg.BaseURL + "/" + short
 
 	shortU, err := json.Marshal(shortURL)
 	if err != nil {
