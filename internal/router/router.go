@@ -7,8 +7,8 @@ import (
 )
 
 type ConfigURL struct {
-	ServerAddress string `env:"SERVER_ADDRESS"`
-	BaseURL       string `env:"BASE_URL"`
+	ServerAddress string `env:"SERVER_ADDRESS" envDefault:":8080"`
+	BaseURL       string `env:"BASE_URL" envDefault:"http://localhost:8080/"`
 }
 type Server struct {
 	Cfg  ConfigURL
