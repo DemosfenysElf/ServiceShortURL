@@ -55,7 +55,6 @@ func SetURL(url string) (short string) {
 	}
 	urli := &URLInfo{URL: url, ShortURL: short}
 
-	//defer os.Remove(fileName)
 	prod, err := NewProducer(f.Storage)
 	if err != nil {
 		return
@@ -69,7 +68,6 @@ func SetURL(url string) (short string) {
 }
 
 func shortURL() string {
-
 	a := make([]byte, 7)
 	for i := range a {
 		a[i] = letters[rand.Intn(len(letters))]
