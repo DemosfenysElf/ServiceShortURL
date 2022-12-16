@@ -19,7 +19,6 @@ func GetURL(short string) (url string) {
 	f := FileStorage{}
 	errConfig := env.Parse(&f)
 	if errConfig != nil {
-		log.Fatal(errConfig)
 		return urlmap[short]
 	}
 
