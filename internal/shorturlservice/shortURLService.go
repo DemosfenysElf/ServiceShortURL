@@ -1,18 +1,29 @@
 package shorturlservice
 
 import (
+	"github.com/caarlos0/env"
 	"log"
 	"math/rand"
 )
 
 var urlmap = make(map[string]string)
-var fileName = "shortsURl.log"
+
+type FileStorage struct {
+	Storage string `env:"FILE_STORAGE_PATH"`
+}
 
 const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
 func GetURL(short string) (url string) {
 
-	cons, err := NewConsumer(fileName)
+	f := FileStorage{}
+	errConfig := env.Parse(&f)
+	if errConfig != nil {
+		log.Fatal(errConfig)
+		return urlmap[short]
+	}
+
+	cons, err := NewConsumer(f.Storage)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -38,10 +49,15 @@ func SetURL(url string) (short string) {
 	}
 	urlmap[short] = url
 	////////// дублирование в файл
+	f := FileStorage{}
+	errConfig := env.Parse(&f)
+	if errConfig != nil {
+		log.Fatal(errConfig)
+	}
 	urli := &URLInfo{URL: url, ShortURL: short}
 
 	//defer os.Remove(fileName)
-	prod, err := NewProducer(fileName)
+	prod, err := NewProducer(f.Storage)
 	if err != nil {
 		log.Fatal(err)
 	}
