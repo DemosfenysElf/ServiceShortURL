@@ -1,7 +1,6 @@
 package shorturlservice
 
 import (
-	"fmt"
 	"github.com/caarlos0/env"
 	"log"
 	"math/rand"
@@ -25,7 +24,7 @@ func GetURL(short string) (url string) {
 
 	cons, err := NewConsumer(f.Storage)
 	if err != nil {
-		log.Fatal(err)
+		return urlmap[short]
 	}
 	defer cons.Close()
 
@@ -52,14 +51,14 @@ func SetURL(url string) (short string) {
 	f := FileStorage{}
 	errConfig := env.Parse(&f)
 	if errConfig != nil {
-		fmt.Println(errConfig)
+		log.Fatal(errConfig)
 	}
 	urli := &URLInfo{URL: url, ShortURL: short}
 
 	//defer os.Remove(fileName)
 	prod, err := NewProducer(f.Storage)
 	if err != nil {
-		fmt.Println(errConfig, 123111111)
+		return
 	}
 	defer prod.Close()
 	if err := prod.WriteURL(urli); err != nil {
