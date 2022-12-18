@@ -28,7 +28,7 @@ func (s *Server) APIShorten(c echo.Context) error {
 	}
 
 	json.Unmarshal(body, &urlJ)
-	short := shorturlservice.SetURL(urlJ.URL)
+	short := shorturlservice.SetURL(urlJ.URL, s.Cfg.Storage)
 	shortURL.ShortURL = s.Cfg.BaseURL + "/" + short
 
 	shortU, err := json.Marshal(shortURL)

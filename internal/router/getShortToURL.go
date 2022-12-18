@@ -11,7 +11,7 @@ func (s *Server) GetShortToURL(c echo.Context) error {
 	short := c.Request().URL.String()
 	short = short[1:]
 
-	url := shorturlservice.GetURL(short)
+	url := shorturlservice.GetURL(short, s.Cfg.Storage)
 
 	if url == "" {
 		c.Response().WriteHeader(http.StatusBadRequest)
