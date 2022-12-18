@@ -1,6 +1,7 @@
 package router
 
 import (
+	"flag"
 	"github.com/caarlos0/env"
 	"github.com/labstack/echo"
 	"log"
@@ -10,6 +11,7 @@ type ConfigURL struct {
 	ServerAddress string `env:"SERVER_ADDRESS" envDefault:":8080"`
 	BaseURL       string `env:"BASE_URL" envDefault:"http://localhost:8080"`
 }
+
 type Server struct {
 	Cfg  ConfigURL
 	Serv *echo.Echo
@@ -21,6 +23,14 @@ func (s *Server) Router() error {
 	if errConfig != nil {
 		log.Fatal(errConfig)
 	}
+	if s.Cfg.ServerAddress == "" {
+		flag.StringVar(&s.Cfg.ServerAddress, "a", ":8080", "New SERVER_ADDRESS")
+	}
+	if s.Cfg.BaseURL == "" {
+		flag.StringVar(&s.Cfg.BaseURL, "b", "http://localhost:8080", "New BASE_URL")
+	}
+
+	flag.Parse()
 
 	e := echo.New()
 

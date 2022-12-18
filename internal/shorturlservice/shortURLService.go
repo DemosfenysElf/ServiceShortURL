@@ -1,6 +1,7 @@
 package shorturlservice
 
 import (
+	"flag"
 	"github.com/caarlos0/env"
 	"log"
 	"math/rand"
@@ -21,6 +22,12 @@ func GetURL(short string) (url string) {
 	if errParse != nil {
 		log.Fatal(errParse)
 	}
+
+	if f.Storage == "" {
+		flag.StringVar(&f.Storage, "f", "shortsURl.log", "New FILE_STORAGE_PATH")
+	}
+
+	flag.Parse()
 
 	cons, err := NewConsumer(f.Storage)
 	if err != nil {
