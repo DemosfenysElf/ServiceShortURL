@@ -17,6 +17,7 @@ func (s *Server) GetShortToURL(c echo.Context) error {
 		c.Response().WriteHeader(http.StatusBadRequest)
 		return fmt.Errorf("shortURL is not exist")
 	}
+
 	c.Response().Header().Add("Location", url)
 	c.Response().WriteHeader(http.StatusTemporaryRedirect)
 	c.Response().Header()

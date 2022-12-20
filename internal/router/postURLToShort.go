@@ -6,6 +6,7 @@ import (
 	"github.com/labstack/echo"
 	"io"
 	"net/http"
+	"strings"
 )
 
 func (s *Server) PostURLToShort(c echo.Context) error {
@@ -20,6 +21,14 @@ func (s *Server) PostURLToShort(c echo.Context) error {
 	short := shorturlservice.SetURL(string(body), s.Cfg.Storage)
 
 	write := []byte(s.Cfg.BaseURL + "/" + short)
+
+	if !strings.Contains(c.Request().Header.Get("Accept-Encoding"), "gzip") {
+		write, err = serviceCompress(write)
+		if err != nil {
+			fmt.Println("Compress fail")
+		}
+		c.Response().Header().Set("Content-Encoding", "gzip")
+	}
 
 	c.Response().WriteHeader(http.StatusCreated)
 	c.Response().Write(write)

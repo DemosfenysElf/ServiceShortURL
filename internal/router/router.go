@@ -4,20 +4,20 @@ import (
 	"flag"
 	"github.com/caarlos0/env"
 	"github.com/labstack/echo"
+	"io"
 	"log"
 )
 
 type ConfigURL struct {
 	ServerAddress string `env:"SERVER_ADDRESS"`
-	//envDefault:":8080"`
-	BaseURL string `env:"BASE_URL"`
-	//envDefault:"http://localhost:8080"`
-	Storage string `env:"FILE_STORAGE_PATH"`
+	BaseURL       string `env:"BASE_URL"`
+	Storage       string `env:"FILE_STORAGE_PATH"`
 }
 
 type Server struct {
-	Cfg  ConfigURL
-	Serv *echo.Echo
+	Cfg    ConfigURL
+	Serv   *echo.Echo
+	Writer io.Writer
 }
 
 func (s *Server) Router() error {
@@ -41,6 +41,8 @@ func (s *Server) Router() error {
 
 	e := echo.New()
 
+	e.Use(s.gzipHandle)
+
 	e.GET("/:id", s.GetShortToURL)
 	e.POST("/", s.PostURLToShort)
 	e.POST("/api/shorten", s.APIShorten)
@@ -51,4 +53,5 @@ func (s *Server) Router() error {
 		return errStart
 	}
 	return nil
+
 }
