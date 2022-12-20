@@ -10,8 +10,8 @@ import (
 
 func (s *Server) PostURLToShort(c echo.Context) error {
 	fmt.Println("AAAAAAAAAAAAAAAAAAA")
-	fmt.Println(c.Request().Header.Get("Accept-Encoding"))
-	fmt.Println(c.Request().Header.Get("Content-Encoding"))
+	fmt.Println("Accept: ", c.Request().Header.Get("Accept-Encoding"))
+	fmt.Println("Content: ", c.Request().Header.Get("Content-Encoding"))
 	defer c.Request().Body.Close()
 	body, err := io.ReadAll(c.Request().Body)
 	if err != nil {
