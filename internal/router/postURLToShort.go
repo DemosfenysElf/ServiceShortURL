@@ -20,8 +20,9 @@ func (s *Server) PostURLToShort(c echo.Context) error {
 
 	write := []byte(s.Cfg.BaseURL + "/" + short)
 
-	if c.Request().Header.Get("Accept-Encoding") == "gzip" {
+	if c.Request().Header.Get("Content-Encoding") == "gzip" {
 		write, err = serviceCompress(write)
+
 		fmt.Println(">>>>>>>>>>>>1", string(write))
 		if err != nil {
 			fmt.Println("Compress fail")
