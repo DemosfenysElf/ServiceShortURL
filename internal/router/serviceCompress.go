@@ -2,27 +2,22 @@ package router
 
 import (
 	"bytes"
-	"compress/flate"
-	"fmt"
+	"compress/gzip"
+	"log"
 )
 
-func serviceCompress(data []byte) ([]byte, error) {
-	var b bytes.Buffer
+func serviceCompress(b []byte) ([]byte, error) {
+	var buf bytes.Buffer
+	zw := gzip.NewWriter(&buf)
 
-	w, err := flate.NewWriter(&b, flate.BestCompression)
+	_, err := zw.Write(b)
 	if err != nil {
-		return nil, fmt.Errorf("failed init compress writer: %v", err)
+		log.Fatal(err)
 	}
 
-	_, err = w.Write(data)
-	if err != nil {
-		return nil, fmt.Errorf("failed write data to compress temporary buffer: %v", err)
+	if err := zw.Close(); err != nil {
+		log.Fatal(err)
 	}
 
-	err = w.Close()
-	if err != nil {
-		return nil, fmt.Errorf("failed compress data: %v", err)
-	}
-
-	return b.Bytes(), nil
+	return buf.Bytes(), nil
 }
