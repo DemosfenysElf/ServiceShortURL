@@ -10,7 +10,7 @@ import (
 )
 
 func (s *Server) PostURLToShort(c echo.Context) error {
-
+	fmt.Println(c.Request().Header.Get("Accept-Encoding"))
 	defer c.Request().Body.Close()
 	body, err := io.ReadAll(c.Request().Body)
 	if err != nil {
