@@ -6,12 +6,11 @@ import (
 	"fmt"
 	"github.com/labstack/echo"
 	"io"
-	"strings"
 )
 
 func (s Server) gzipHandle(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		if !strings.Contains(c.Request().Header.Get("Content-Encoding"), "gzip") {
+		if !(c.Request().Header.Get("Content-Encoding") == "gzip") {
 			return next(c)
 		}
 

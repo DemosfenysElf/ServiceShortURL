@@ -7,7 +7,6 @@ import (
 	"github.com/labstack/echo"
 	"io"
 	"net/http"
-	"strings"
 )
 
 type urlJSON struct {
@@ -38,7 +37,7 @@ func (s *Server) APIShorten(c echo.Context) error {
 		return fmt.Errorf("marshal error")
 	}
 
-	if strings.Contains(c.Request().Header.Get("Accept-Encoding"), "gzip") {
+	if c.Request().Header.Get("Accept-Encoding") == "gzip" {
 		shortU, err = serviceCompress(shortU)
 		if err != nil {
 			fmt.Println("Compress fail")
