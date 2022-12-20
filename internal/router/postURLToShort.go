@@ -9,12 +9,11 @@ import (
 )
 
 func (s *Server) PostURLToShort(c echo.Context) error {
-	fmt.Println("AAAAAAAAAAAAAAAAAAA")
-	fmt.Println("Accept: ", c.Request().Header.Get("Accept-Encoding"))
-	fmt.Println("Content: ", c.Request().Header.Get("Content-Encoding"))
 	defer c.Request().Body.Close()
+	fmt.Println(">>>>>>>>>>A_1")
 	body, err := io.ReadAll(c.Request().Body)
 	if err != nil {
+		fmt.Println(">>>>>>>>>>A_2")
 		http.Error(c.Response(), err.Error(), http.StatusInternalServerError)
 		return fmt.Errorf("URL is not exist")
 	}
@@ -24,13 +23,14 @@ func (s *Server) PostURLToShort(c echo.Context) error {
 	write := []byte(s.Cfg.BaseURL + "/" + short)
 
 	if c.Request().Header.Get("Accept-Encoding") == "gzip" {
+		fmt.Println(">>>>>>>>>>A_3")
 		write, err = serviceCompress(write)
 		if err != nil {
 			fmt.Println("Compress fail")
 		}
 		c.Response().Header().Set("Content-Encoding", "gzip")
 	}
-
+	fmt.Println(">>>>>>>>>>A_4")
 	c.Response().WriteHeader(http.StatusCreated)
 	c.Response().Write(write)
 	return nil
