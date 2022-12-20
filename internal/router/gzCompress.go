@@ -26,6 +26,6 @@ func serviceCompress(data []byte) ([]byte, error) {
 		fmt.Println(">>>>>>>>>>A_7")
 		return nil, fmt.Errorf("failed compress data: %v", err)
 	}
-
+	fmt.Println(">>>>>>>>>>A_8")
 	return b.Bytes(), nil
 }
