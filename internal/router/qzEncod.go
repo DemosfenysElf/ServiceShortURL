@@ -10,7 +10,8 @@ import (
 
 func (s Server) gzipHandle(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		if !(c.Request().Header.Get("Content-Encoding") == "gzip") {
+		fmt.Println(">>>> Content: ", c.Request().Header.Get("Content-Encoding"))
+		if c.Request().Header.Get("Content-Encoding") != "gzip" {
 			return next(c)
 		}
 
