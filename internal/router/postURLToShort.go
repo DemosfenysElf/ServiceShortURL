@@ -22,7 +22,7 @@ func (s *Server) PostURLToShort(c echo.Context) error {
 
 	write := []byte(s.Cfg.BaseURL + "/" + short)
 
-	if !strings.Contains(c.Request().Header.Get("Accept-Encoding"), "gzip") {
+	if strings.Contains(c.Request().Header.Get("Accept-Encoding"), "gzip") {
 		write, err = serviceCompress(write)
 		if err != nil {
 			fmt.Println("Compress fail")

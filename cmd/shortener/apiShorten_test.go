@@ -29,7 +29,7 @@ func TestApiShorten(t *testing.T) {
 		urlRes  string
 	}{
 		{
-			name: "test1",
+			name: "TestApiShorten1",
 			want: want{
 				codePost: 201,
 				codeGet:  307,

@@ -26,7 +26,7 @@ func Test_router(t *testing.T) {
 		url  string
 	}{
 		{
-			name: "test_1",
+			name: "Test_router_1",
 			want: want{
 				codePost: 201,
 				codeGet:  307,
@@ -34,7 +34,7 @@ func Test_router(t *testing.T) {
 			},
 			url: ("https://www.youtube.com/watch?v=UK7yzgVpnDA"),
 		}, {
-			name: "test_2",
+			name: "Test_router_2",
 			want: want{
 				codePost: 201,
 				codeGet:  400,
