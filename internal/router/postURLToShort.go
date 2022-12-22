@@ -8,8 +8,7 @@ import (
 	"net/http"
 )
 
-func PostURLToShort(c echo.Context) error {
-
+func (s *Server) PostURLToShort(c echo.Context) error {
 	defer c.Request().Body.Close()
 	body, err := io.ReadAll(c.Request().Body)
 	if err != nil {
@@ -17,9 +16,20 @@ func PostURLToShort(c echo.Context) error {
 		return fmt.Errorf("URL is not exist")
 	}
 
-	short := shorturlservice.SetURL(string(body))
+	short := shorturlservice.SetURL(string(body), s.Cfg.Storage)
 
-	write := []byte("http://localhost:8080/" + short)
+	write := []byte(s.Cfg.BaseURL + "/" + short)
+
+	if c.Request().Header.Get("Accept-Encoding") == "gzip" {
+		write, err = serviceCompress(write)
+
+		if err != nil {
+			fmt.Println("Compress fail")
+		}
+
+		c.Response().Header().Set("Content-Encoding", "gzip")
+	}
+
 	c.Response().WriteHeader(http.StatusCreated)
 	c.Response().Write(write)
 	return nil
