@@ -30,7 +30,7 @@ func (s *Server) APIUserURL(c echo.Context) error {
 			break
 		}
 		if readURL.CookiesAuthentication.ValueUser == userCoockies.ValueUser {
-			element.ShortURL = readURL.ShortURL
+			element.ShortURL = "http://localhost:8080/" + readURL.ShortURL
 			element.OriginalURL = readURL.URL
 			allURL = append(allURL, element)
 		}
@@ -47,7 +47,7 @@ func (s *Server) APIUserURL(c echo.Context) error {
 	}
 
 	c.Response().Header().Add("Content-Type", "application/json")
-	c.Response().WriteHeader(http.StatusCreated)
+	c.Response().WriteHeader(http.StatusOK)
 	c.Response().Write(allURLJSON)
 	return nil
 }
