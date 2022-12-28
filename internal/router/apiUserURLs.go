@@ -30,7 +30,7 @@ func (s *Server) APIUserURL(c echo.Context) error {
 			break
 		}
 		if readURL.CookiesAuthentication.ValueUser == userCoockies.ValueUser {
-			element.ShortURL = s.Cfg.BaseURL + readURL.ShortURL
+			element.ShortURL = s.Cfg.BaseURL + "/" + readURL.ShortURL
 			element.OriginalURL = readURL.URL
 			allURL = append(allURL, element)
 		}
