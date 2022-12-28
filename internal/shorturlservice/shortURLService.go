@@ -1,6 +1,7 @@
 package shorturlservice
 
 import (
+	"fmt"
 	"log"
 	"math/rand"
 )
@@ -10,11 +11,11 @@ var urlInfo = &URLInfo{}
 
 const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
-func GetURL(short string, storage string) (url string) {
+func GetURL(short string, storage string) (url string, err error) {
 
 	consumerURL, err := NewConsumer(storage)
 	if err != nil {
-		return urlmap[short]
+		return urlmap[short], nil
 	}
 	defer consumerURL.Close()
 
@@ -24,14 +25,26 @@ func GetURL(short string, storage string) (url string) {
 			break
 		}
 		if readURL.ShortURL == short {
-			return urlmap[readURL.ShortURL]
+			return urlmap[readURL.ShortURL], nil
 		}
 	}
-	return urlmap[short]
+	if urlmap[short] != "" {
+		return urlmap[short], nil
+	}
+
+	return "", fmt.Errorf("no found url")
 }
 
 func SetURL(url string, storageURL string) (short string) {
 	short = shortURL()
+	for {
+		_, err := GetURL(short, storageURL)
+		if err != nil {
+			break
+		}
+		short = shortURL()
+	}
+
 	for _, ok := urlmap[short]; ok; {
 		short = shortURL()
 	}
