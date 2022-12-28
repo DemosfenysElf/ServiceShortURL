@@ -10,11 +10,11 @@ import (
 )
 
 type massiveURL struct {
-	Short_URL    string `json:"short_url"`
-	Original_URL string `json:"original_url"`
+	ShortURL    string `json:"short_url"`
+	OriginalURL string `json:"original_url"`
 }
 
-func (s *Server) ApiUserURL(c echo.Context) error {
+func (s *Server) APIUserURL(c echo.Context) error {
 	userCoockies := shorturlservice.GetStructCoockies()
 	allURL := make([]massiveURL, 0)
 	element := massiveURL{}
@@ -30,8 +30,8 @@ func (s *Server) ApiUserURL(c echo.Context) error {
 			break
 		}
 		if readURL.CookiesAuthentication.ValueUser == userCoockies.ValueUser {
-			element.Short_URL = readURL.ShortURL
-			element.Original_URL = readURL.URL
+			element.ShortURL = readURL.ShortURL
+			element.OriginalURL = readURL.URL
 			allURL = append(allURL, element)
 		}
 	}
