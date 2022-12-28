@@ -43,6 +43,16 @@ func (s Server) serviceAuthentication(next echo.HandlerFunc) echo.HandlerFunc {
 
 				if string(deHexUser) == string(decryptoCookies) {
 					shorturlservice.SetStructCoockies("Authentication", readUser.ValueUser)
+
+					producerUser, err := shorturlservice.NewProducer(storageUsers)
+					if err != nil {
+						log.Fatal(err)
+					}
+					defer producerUser.Close()
+
+					if err := producerUser.WriteUser(shorturlservice.GetStructCoockies()); err != nil {
+						log.Fatal(err)
+					}
 					return next(c)
 				}
 			}
