@@ -26,10 +26,10 @@ func (s Server) serviceAuthentication(next echo.HandlerFunc) echo.HandlerFunc {
 			}
 
 			consumerUser, err := shorturlservice.NewConsumer(storageUsers)
-			defer consumerUser.Close()
 			if err != nil {
 				log.Fatal(err)
 			}
+			defer consumerUser.Close()
 
 			for {
 				readUser, err := consumerUser.ReadUser()
@@ -48,10 +48,10 @@ func (s Server) serviceAuthentication(next echo.HandlerFunc) echo.HandlerFunc {
 		}
 
 		consumerUser, err := shorturlservice.NewConsumer(storageUsers)
-		defer consumerUser.Close()
 		if err != nil {
 			log.Fatal(err)
 		}
+		defer consumerUser.Close()
 
 		newToken, err := shorturlservice.GenerateToken()
 		if err != nil {
@@ -88,10 +88,10 @@ func (s Server) serviceAuthentication(next echo.HandlerFunc) echo.HandlerFunc {
 		shorturlservice.SetStructCoockies("Authentication", hex.EncodeToString(newToken))
 
 		producerUser, err := shorturlservice.NewProducer(storageUsers)
-		defer producerUser.Close()
 		if err != nil {
 			log.Fatal(err)
 		}
+		defer producerUser.Close()
 
 		if err := producerUser.WriteUser(shorturlservice.GetStructCoockies()); err != nil {
 			log.Fatal(err)
