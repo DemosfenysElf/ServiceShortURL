@@ -14,7 +14,7 @@ type massiveURL struct {
 	Original_URL string `json:"original_url"`
 }
 
-func (s *Server) apiUserURL(c echo.Context) error {
+func (s *Server) ApiUserURL(c echo.Context) error {
 	userCoockies := shorturlservice.GetStructCoockies()
 	allURL := make([]massiveURL, 0)
 	element := massiveURL{}
