@@ -38,8 +38,8 @@ func GetURL(short string, storage string) (url string, err error) {
 func SetURL(url string, storageURL string) (short string) {
 	short = shortURL()
 	for {
-		_, err := GetURL(short, storageURL)
-		if err != nil {
+		ssss, _ := GetURL(short, storageURL)
+		if ssss == "" {
 			break
 		}
 		short = shortURL()
