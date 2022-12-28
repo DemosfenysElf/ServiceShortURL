@@ -20,7 +20,7 @@ func GetURL(short string, storage string) (url string, err error) {
 	defer consumerURL.Close()
 
 	for {
-		readURL, err := consumerURL.ReadURL()
+		readURL, err := consumerURL.ReadURLInfo()
 		if err != nil {
 			break
 		}

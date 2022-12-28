@@ -25,7 +25,7 @@ func (s *Server) APIUserURL(c echo.Context) error {
 	defer consumerURL.Close()
 
 	for {
-		readURL, err := consumerURL.ReadURL()
+		readURL, err := consumerURL.ReadURLInfo()
 		if err != nil {
 			break
 		}
@@ -34,6 +34,9 @@ func (s *Server) APIUserURL(c echo.Context) error {
 			element.OriginalURL = readURL.URL
 			allURL = append(allURL, element)
 		}
+		fmt.Println("<==============>")
+		fmt.Println(readURL.CookiesAuthentication.ValueUser)
+		fmt.Println(userCoockies.ValueUser)
 	}
 	if len(allURL) == 0 {
 		c.Response().WriteHeader(http.StatusNoContent)

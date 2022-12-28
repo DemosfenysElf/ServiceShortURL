@@ -62,7 +62,7 @@ func NewConsumer(filename string) (*consumer, error) {
 		decoder: json.NewDecoder(file),
 	}, nil
 }
-func (c *consumer) ReadURL() (*URLInfo, error) {
+func (c *consumer) ReadURLInfo() (*URLInfo, error) {
 	urli := &URLInfo{}
 	if err := c.decoder.Decode(&urli); err != nil {
 		return nil, err
