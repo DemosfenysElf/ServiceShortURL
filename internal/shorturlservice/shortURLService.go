@@ -6,19 +6,20 @@ import (
 )
 
 var urlmap = make(map[string]string)
+var urlInfo = &URLInfo{}
 
 const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
 func GetURL(short string, storage string) (url string) {
 
-	cons, err := NewConsumer(storage)
+	consumerURL, err := NewConsumer(storage)
 	if err != nil {
 		return urlmap[short]
 	}
-	defer cons.Close()
+	defer consumerURL.Close()
 
 	for {
-		readURL, err := cons.ReadURL()
+		readURL, err := consumerURL.ReadURL()
 		if err != nil {
 			break
 		}
@@ -26,11 +27,10 @@ func GetURL(short string, storage string) (url string) {
 			return urlmap[readURL.ShortURL]
 		}
 	}
-
 	return urlmap[short]
 }
 
-func SetURL(url string, storage string) (short string) {
+func SetURL(url string, storageURL string) (short string) {
 	short = shortURL()
 	for _, ok := urlmap[short]; ok; {
 		short = shortURL()
@@ -38,14 +38,14 @@ func SetURL(url string, storage string) (short string) {
 	urlmap[short] = url
 	////////// дублирование в файл
 
-	urli := &URLInfo{URL: url, ShortURL: short}
+	urli := SetStructURL(url, short)
 
-	prod, err := NewProducer(storage)
+	producerURL, err := NewProducer(storageURL)
 	if err != nil {
 		return
 	}
-	defer prod.Close()
-	if err := prod.WriteURL(urli); err != nil {
+	defer producerURL.Close()
+	if err := producerURL.WriteURL(urli); err != nil {
 		log.Fatal(err)
 	}
 
@@ -58,4 +58,20 @@ func shortURL() string {
 		a[i] = letters[rand.Intn(len(letters))]
 	}
 	return string(a)
+}
+
+func SetStructURL(url string, short string) (info *URLInfo) {
+	urlInfo.URL = url
+	urlInfo.ShortURL = short
+	info = urlInfo
+	return
+}
+
+func SetStructCoockies(nameUser string, value string) {
+	urlInfo.CookiesAuthentication = CookiesAuthentication{nameUser, value}
+
+}
+
+func GetStructCoockies() *CookiesAuthentication {
+	return &urlInfo.CookiesAuthentication
 }

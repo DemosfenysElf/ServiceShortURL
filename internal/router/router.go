@@ -36,12 +36,13 @@ func (s *Server) Router() error {
 	if s.Cfg.Storage == "" {
 		flag.StringVar(&s.Cfg.Storage, "f", "shortsURl.log", "New FILE_STORAGE_PATH")
 	}
-
 	flag.Parse()
 
 	e := echo.New()
 
 	e.Use(s.gzipHandle)
+
+	e.Use(s.serviceAuthentication)
 
 	e.GET("/:id", s.GetShortToURL)
 	e.POST("/", s.PostURLToShort)

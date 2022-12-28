@@ -44,7 +44,7 @@ func (s *Server) APIShorten(c echo.Context) error {
 		}
 		c.Response().Header().Set("Content-Encoding", "gzip")
 	}
-
+	shorturlservice.GetStructCoockies()
 	c.Response().Header().Add("Content-Type", "application/json")
 	c.Response().WriteHeader(http.StatusCreated)
 	c.Response().Write(shortU)

@@ -5,9 +5,15 @@ import (
 	"os"
 )
 
+type CookiesAuthentication struct {
+	NameUser  string `json:"NameUser"`
+	ValueUser string `json:"ValueUser"`
+}
+
 type URLInfo struct {
-	URL      string `json:"url"`
-	ShortURL string `json:"shortURL"`
+	URL                   string `json:"url"`
+	ShortURL              string `json:"shortURL"`
+	CookiesAuthentication CookiesAuthentication
 }
 
 type producer struct {
@@ -29,6 +35,10 @@ func NewProducer(filename string) (*producer, error) {
 
 func (p *producer) WriteURL(short *URLInfo) error {
 	return p.encoder.Encode(&short)
+}
+
+func (p *producer) WriteUser(user *CookiesAuthentication) error {
+	return p.encoder.Encode(&user)
 }
 
 func (p *producer) Close() error {
@@ -58,6 +68,14 @@ func (c *consumer) ReadURL() (*URLInfo, error) {
 		return nil, err
 	}
 	return urli, nil
+}
+
+func (c *consumer) ReadUser() (*CookiesAuthentication, error) {
+	user := &CookiesAuthentication{}
+	if err := c.decoder.Decode(&user); err != nil {
+		return nil, err
+	}
+	return user, nil
 }
 
 func (c *consumer) Close() error {
