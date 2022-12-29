@@ -62,8 +62,6 @@ func SetURL(url string, storageURL string) (short string) {
 		log.Fatal(err)
 	}
 
-	fmt.Println("<Set<<00>>>>>> ", GetStructURL())
-
 	return
 }
 
