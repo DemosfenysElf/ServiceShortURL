@@ -16,7 +16,7 @@ func (s Server) serviceAuthentication(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		requestCookies := c.Request().Cookies()
 		if (len(requestCookies) > 0) && (requestCookies[0].Name == "Authentication") {
-
+			fmt.Println("<<<<<<00>>>>>> ", requestCookies)
 			deHexCookies, err := hex.DecodeString(requestCookies[0].Value)
 			if err != nil {
 				log.Fatal(err)

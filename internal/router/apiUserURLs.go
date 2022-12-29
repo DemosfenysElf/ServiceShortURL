@@ -16,7 +16,7 @@ type massiveURL struct {
 
 func (s *Server) APIUserURL(c echo.Context) error {
 	userCoockies := shorturlservice.GetStructCoockies()
-	fmt.Println("<=======1=======>", userCoockies.ValueUser)
+	fmt.Println("<====API==1=======>", userCoockies)
 
 	allURL := make([]massiveURL, 0)
 	element := massiveURL{}
@@ -34,9 +34,9 @@ func (s *Server) APIUserURL(c echo.Context) error {
 		}
 
 		if readURL.CookiesAuthentication.ValueUser == userCoockies.ValueUser {
-			fmt.Println("<=======2=======>", userCoockies.ValueUser)
-			fmt.Println("<=======3=======>", readURL.CookiesAuthentication.ValueUser)
-			fmt.Println("<=======3=======>", readURL.ShortURL)
+			fmt.Println("<====API==2=======>", userCoockies.ValueUser)
+			fmt.Println("<====API==3=======>", readURL.CookiesAuthentication.ValueUser)
+			fmt.Println("<====API==4=======>", readURL.ShortURL)
 			element.ShortURL = s.Cfg.BaseURL + "/" + readURL.ShortURL
 			element.OriginalURL = readURL.URL
 			allURL = append(allURL, element)
