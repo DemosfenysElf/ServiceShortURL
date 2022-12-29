@@ -26,6 +26,7 @@ func (s Server) serviceAuthentication(next echo.HandlerFunc) echo.HandlerFunc {
 				log.Fatal(err)
 			}
 			hexCookies := hex.EncodeToString(decryptoCookies)
+			fmt.Println(">>>>>Decoded cookie: ", hexCookies)
 
 			consumerUser, err := shorturlservice.NewConsumer(storageUsers)
 			if err != nil {
@@ -40,12 +41,13 @@ func (s Server) serviceAuthentication(next echo.HandlerFunc) echo.HandlerFunc {
 				}
 
 				if hexCookies == readUser.ValueUser {
-					shorturlservice.SetStructCoockies("Authentication", hexCookies)
+					fmt.Println(">>>>>Cookie found: ", hexCookies)
+					shorturlservice.SetStructCookies("Authentication", hexCookies)
 					return next(c)
 				}
 			}
 		}
-
+		fmt.Println(">>>>>Cookie not found: ")
 		consumerUser, err := shorturlservice.NewConsumer(storageUsers)
 		if err != nil {
 			log.Fatal(err)
@@ -83,7 +85,9 @@ func (s Server) serviceAuthentication(next echo.HandlerFunc) echo.HandlerFunc {
 		cookie.Name = "Authentication"
 		cookie.Value = hexCryproNewToken
 
-		shorturlservice.SetStructCoockies("Authentication", hex.EncodeToString(newToken))
+		shorturlservice.SetStructCookies("Authentication", hex.EncodeToString(newToken))
+		fmt.Println(">>>>>New cookie: ", hex.EncodeToString(newToken))
+		fmt.Println(">>>>>Saved cookie: ", shorturlservice.GetStructCookies())
 
 		producerUser, err := shorturlservice.NewProducer(storageUsers)
 		if err != nil {
@@ -91,7 +95,7 @@ func (s Server) serviceAuthentication(next echo.HandlerFunc) echo.HandlerFunc {
 		}
 		defer producerUser.Close()
 
-		if err := producerUser.WriteUser(shorturlservice.GetStructCoockies()); err != nil {
+		if err := producerUser.WriteUser(shorturlservice.GetStructCookies()); err != nil {
 			log.Fatal(err)
 		}
 		fmt.Println(">>>>>REQUEST-03<<<<<<", requestCookies)

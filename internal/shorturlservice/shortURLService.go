@@ -80,12 +80,12 @@ func SetStructURL(url string, short string) (info *URLInfo) {
 	return
 }
 
-func SetStructCoockies(nameUser string, value string) {
+func SetStructCookies(nameUser string, value string) {
 	urlInfo.CookiesAuthentication = CookiesAuthentication{nameUser, value}
 
 }
 
-func GetStructCoockies() *CookiesAuthentication {
+func GetStructCookies() *CookiesAuthentication {
 	return &urlInfo.CookiesAuthentication
 }
 
