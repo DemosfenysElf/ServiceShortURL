@@ -16,8 +16,11 @@ type massiveURL struct {
 
 func (s *Server) APIUserURL(c echo.Context) error {
 	userCoockies := shorturlservice.GetStructCoockies()
+	fmt.Println("<=======1=======>", userCoockies.ValueUser)
+
 	allURL := make([]massiveURL, 0)
 	element := massiveURL{}
+
 	consumerURL, err := shorturlservice.NewConsumer(s.Cfg.Storage)
 	if err != nil {
 		log.Fatal(err)
@@ -29,14 +32,16 @@ func (s *Server) APIUserURL(c echo.Context) error {
 		if err != nil {
 			break
 		}
+
 		if readURL.CookiesAuthentication.ValueUser == userCoockies.ValueUser {
+			fmt.Println("<=======2=======>", userCoockies.ValueUser)
+			fmt.Println("<=======3=======>", readURL.CookiesAuthentication.ValueUser)
+			fmt.Println("<=======3=======>", readURL.ShortURL)
 			element.ShortURL = s.Cfg.BaseURL + "/" + readURL.ShortURL
 			element.OriginalURL = readURL.URL
 			allURL = append(allURL, element)
 		}
-		fmt.Println("<==============>")
-		fmt.Println(readURL.CookiesAuthentication.ValueUser)
-		fmt.Println(userCoockies.ValueUser)
+
 	}
 	if len(allURL) == 0 {
 		c.Response().WriteHeader(http.StatusNoContent)

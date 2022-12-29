@@ -3,6 +3,7 @@ package router
 import (
 	"ServiceShortURL/internal/shorturlservice"
 	"encoding/hex"
+	"fmt"
 	"github.com/labstack/echo"
 	"log"
 	"net/http"
@@ -25,6 +26,10 @@ func (s Server) serviceAuthentication(next echo.HandlerFunc) echo.HandlerFunc {
 				log.Fatal(err)
 			}
 
+			///// надо посылать закодированные куки
+			hcookies := hex.EncodeToString(decryptoCookies)
+			fmt.Println("<<<<<<01>>>>>> ", hcookies)
+
 			consumerUser, err := shorturlservice.NewConsumer(storageUsers)
 			if err != nil {
 				log.Fatal(err)
@@ -42,17 +47,8 @@ func (s Server) serviceAuthentication(next echo.HandlerFunc) echo.HandlerFunc {
 				}
 
 				if string(deHexUser) == string(decryptoCookies) {
-					shorturlservice.SetStructCoockies("Authentication", readUser.ValueUser)
-
-					producerUser, err := shorturlservice.NewProducer(storageUsers)
-					if err != nil {
-						log.Fatal(err)
-					}
-					defer producerUser.Close()
-
-					if err := producerUser.WriteUser(shorturlservice.GetStructCoockies()); err != nil {
-						log.Fatal(err)
-					}
+					shorturlservice.SetStructCoockies(readUser.NameUser, readUser.ValueUser)
+					fmt.Println("<<<<<<02>>>>>> ", readUser)
 					return next(c)
 				}
 			}
