@@ -29,7 +29,7 @@ func (s *Server) PostURLToShort(c echo.Context) error {
 
 		c.Response().Header().Set("Content-Encoding", "gzip")
 	}
-	fmt.Println("<POST<00>>>>>> ", shorturlservice.GetStructURL())
+
 	c.Response().WriteHeader(http.StatusCreated)
 	c.Response().Write(write)
 	return nil
