@@ -62,6 +62,8 @@ func SetURL(url string, storageURL string) (short string) {
 		log.Fatal(err)
 	}
 
+	fmt.Println("<Set<<00>>>>>> ", GetStructURL())
+
 	return
 }
 
@@ -87,4 +89,8 @@ func SetStructCoockies(nameUser string, value string) {
 
 func GetStructCoockies() *CookiesAuthentication {
 	return &urlInfo.CookiesAuthentication
+}
+
+func GetStructURL() *URLInfo {
+	return urlInfo
 }
