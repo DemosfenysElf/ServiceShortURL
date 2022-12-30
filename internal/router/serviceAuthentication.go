@@ -98,7 +98,7 @@ func (s Server) serviceAuthentication(next echo.HandlerFunc) echo.HandlerFunc {
 		if err := producerUser.WriteUser(shorturlservice.GetStructCookies()); err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println(">>>>>REQUEST-03<<<<<<", requestCookies)
+
 		c.SetCookie(cookie)
 		return next(c)
 	}
