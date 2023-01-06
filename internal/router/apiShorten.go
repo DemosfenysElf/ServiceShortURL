@@ -37,8 +37,6 @@ func (s *Server) APIShorten(c echo.Context) error {
 		return fmt.Errorf("marshal error")
 	}
 
-	fmt.Println("<<<APIShorten>>>>>> URL: ", string(body), " | shortUrl: ", short)
-
 	if c.Request().Header.Get("Accept-Encoding") == "gzip" {
 		shortU, err = serviceCompress(shortU)
 		if err != nil {

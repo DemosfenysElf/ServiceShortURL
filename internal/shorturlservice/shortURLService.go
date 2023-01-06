@@ -25,11 +25,8 @@ func GetURL(short string, storage string) (url string, err error) {
 			break
 		}
 		if readURL.ShortURL == short {
-			return urlmap[readURL.ShortURL], nil
+			return readURL.URL, nil
 		}
-	}
-	if urlmap[short] != "" {
-		return urlmap[short], nil
 	}
 
 	return "", fmt.Errorf("no found url")
@@ -47,11 +44,6 @@ func SetURL(url string, storageURL string) (short string) {
 
 	fmt.Println("-----File-Short: ", short)
 
-	for _, ok := urlmap[short]; ok; {
-		short = shortURL()
-	}
-
-	urlmap[short] = url
 	////////// дублирование в файл
 
 	urli := SetStructURL(url, short)
