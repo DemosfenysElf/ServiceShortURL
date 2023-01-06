@@ -89,6 +89,6 @@ func GetStructCookies() *CookiesAuthentication {
 	return &urlInfo.CookiesAuthentication
 }
 
-func GetStructURL() *URLInfo {
-	return urlInfo
-}
+//func GetStructURL() *URLInfo {
+//	return urlInfo
+//}
