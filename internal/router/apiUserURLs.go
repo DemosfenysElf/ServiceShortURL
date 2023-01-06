@@ -17,7 +17,7 @@ type userURLstruct struct {
 func (s *Server) APIUserURL(c echo.Context) error {
 
 	userCookies := shorturlservice.GetStructCookies()
-	fmt.Println("<====API==1=======>", userCookies)
+	fmt.Println("<====APIUserURL=======>", userCookies)
 
 	allURL := make([]userURLstruct, 0)
 
@@ -32,10 +32,9 @@ func (s *Server) APIUserURL(c echo.Context) error {
 		if err != nil {
 			break
 		}
-		fmt.Println(">>>>>>Api>0>>>", readURL)
+		fmt.Println(">>>>>>APIUserURL>>> readURL:", readURL)
 		if readURL.CookiesAuthentication.ValueUser == userCookies.ValueUser {
-			fmt.Println(">>>>>>Api>1>>>", readURL.CookiesAuthentication.ValueUser)
-			fmt.Println(">>>>>>Api>2>>>", userCookies.ValueUser)
+
 			element := userURLstruct{
 				ShortURL:    s.Cfg.BaseURL + "/" + readURL.ShortURL,
 				OriginalURL: readURL.URL,
