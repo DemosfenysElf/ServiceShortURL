@@ -45,14 +45,17 @@ func SetURL(url string, storageURL string) (short string) {
 		short = shortURL()
 	}
 
+	fmt.Println("-----File-Short: ", short)
+
 	for _, ok := urlmap[short]; ok; {
 		short = shortURL()
 	}
+
 	urlmap[short] = url
 	////////// дублирование в файл
 
 	urli := SetStructURL(url, short)
-
+	fmt.Println("-----File-urli: ", urli)
 	producerURL, err := NewProducer(storageURL)
 	if err != nil {
 		return
