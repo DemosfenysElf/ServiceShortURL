@@ -24,6 +24,7 @@ func GetURL(short string, storage string) (url string, err error) {
 		if err != nil {
 			break
 		}
+		fmt.Println(readURL)
 		if readURL.ShortURL == short {
 			return readURL.URL, nil
 		}
@@ -42,12 +43,12 @@ func SetURL(url string, storageURL string) (short string) {
 		short = shortURL()
 	}
 
-	fmt.Println("-----File-Short: ", short)
+	//fmt.Println("-----File-Short: ", short)
 
 	////////// дублирование в файл
 
 	urli := SetStructURL(url, short)
-	fmt.Println("-----File-urli: ", urli)
+	//fmt.Println("-----File-urli: ", urli)
 	producerURL, err := NewProducer(storageURL)
 	if err != nil {
 		return
