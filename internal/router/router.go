@@ -6,6 +6,7 @@ import (
 	"github.com/labstack/echo"
 	"io"
 	"log"
+	"os"
 )
 
 type ConfigURL struct {
@@ -21,7 +22,7 @@ type Server struct {
 }
 
 func (s *Server) Router() error {
-
+	os.Remove(s.Cfg.Storage)
 	errConfig := env.Parse(&s.Cfg)
 	if errConfig != nil {
 		log.Fatal(errConfig)
