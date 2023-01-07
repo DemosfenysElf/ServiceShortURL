@@ -11,13 +11,11 @@ func (s *Server) GetShortToURL(c echo.Context) error {
 	short := c.Request().URL.String()
 	short = short[1:]
 
-	url := shorturlservice.GetURL(short, s.Cfg.Storage)
-
-	if url == "" {
+	url, err := shorturlservice.GetURL(short, s.Cfg.Storage)
+	if err != nil {
 		c.Response().WriteHeader(http.StatusBadRequest)
 		return fmt.Errorf("shortURL is not exist")
 	}
-
 	c.Response().Header().Add("Location", url)
 	c.Response().WriteHeader(http.StatusTemporaryRedirect)
 	c.Response().Header()
