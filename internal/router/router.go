@@ -6,6 +6,7 @@ import (
 	"github.com/labstack/echo"
 	"io"
 	"log"
+	"os"
 )
 
 type ConfigURL struct {
@@ -21,6 +22,7 @@ type Server struct {
 }
 
 func (s *Server) Router() error {
+	os.Remove(s.Cfg.Storage)
 
 	errConfig := env.Parse(&s.Cfg)
 	if errConfig != nil {
@@ -36,16 +38,18 @@ func (s *Server) Router() error {
 	if s.Cfg.Storage == "" {
 		flag.StringVar(&s.Cfg.Storage, "f", "shortsURl.log", "New FILE_STORAGE_PATH")
 	}
-
 	flag.Parse()
 
 	e := echo.New()
 
 	e.Use(s.gzipHandle)
 
+	e.Use(s.serviceAuthentication)
+
 	e.GET("/:id", s.GetShortToURL)
 	e.POST("/", s.PostURLToShort)
 	e.POST("/api/shorten", s.APIShorten)
+	e.GET("/api/user/urls", s.APIUserURL)
 
 	errStart := e.Start(s.Cfg.ServerAddress)
 

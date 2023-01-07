@@ -9,13 +9,17 @@ import (
 )
 
 func (s *Server) PostURLToShort(c echo.Context) error {
+
 	defer c.Request().Body.Close()
 	body, err := io.ReadAll(c.Request().Body)
 	if err != nil {
 		http.Error(c.Response(), err.Error(), http.StatusInternalServerError)
 		return fmt.Errorf("URL is not exist")
 	}
-
+	if len(body) == 0 {
+		c.Response().WriteHeader(http.StatusBadRequest)
+		return nil
+	}
 	short := shorturlservice.SetURL(string(body), s.Cfg.Storage)
 
 	write := []byte(s.Cfg.BaseURL + "/" + short)
