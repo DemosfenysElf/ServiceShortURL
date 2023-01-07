@@ -33,7 +33,7 @@ func (db *Database) Connect(connStr string) (err error) {
 	return nil
 }
 func (db *Database) Close() error {
-	return db.Close()
+	return db.connection.Close()
 }
 
 func (db *Database) Ping() error {
@@ -45,7 +45,7 @@ func (db *Database) Ping() error {
 	return nil
 }
 
-func (s *Server) PingBD(c echo.Context) error {
+func (s *Server) PingDB(c echo.Context) error {
 	if err := s.DB.Ping(); err != nil {
 		c.Response().WriteHeader(http.StatusInternalServerError)
 	}

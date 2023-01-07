@@ -65,7 +65,7 @@ func (s *Server) Router() error {
 	e.POST("/", s.PostURLToShort)
 	e.POST("/api/shorten", s.APIShorten)
 	e.GET("/api/user/urls", s.APIUserURL)
-	e.GET("/ping", s.PingBD)
+	e.GET("/ping", s.PingDB)
 
 	errStart := e.Start(s.Cfg.ServerAddress)
 
