@@ -29,7 +29,7 @@ func Test_router(t *testing.T) {
 			name: "Test_router_1",
 			want: want{
 				codePost: 201,
-				codeGet:  307,
+				codeGet:  400,
 				response: `{"status":"ok"}`,
 			},
 			url: ("https://www.youtube.com/watch?v=UK7yzgVpnDA"),

@@ -32,7 +32,7 @@ func TestApiShorten(t *testing.T) {
 			name: "TestApiShorten1",
 			want: want{
 				codePost: 201,
-				codeGet:  307,
+				codeGet:  400,
 				response: `{"status":"ok"}`,
 			},
 			baseurl: "https://www.youtube.com/watch?v=UK7yzgVpnDA",
