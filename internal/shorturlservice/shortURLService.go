@@ -14,14 +14,12 @@ func GetURL(short string, storage string) (url string, err error) {
 
 	consumerURL, err := NewConsumer(storage)
 	if err != nil {
-		fmt.Println("111 >> ", err)
 		return "", err
 	}
 	defer consumerURL.Close()
 
 	for {
 		readURL, err := consumerURL.ReadURLInfo()
-		fmt.Println("222 >> ", readURL)
 		if err != nil {
 			break
 		}
@@ -29,7 +27,6 @@ func GetURL(short string, storage string) (url string, err error) {
 			return readURL.URL, nil
 		}
 	}
-	fmt.Println("333 >> ", fmt.Errorf("no found url"))
 	return "", fmt.Errorf("no found url")
 }
 
