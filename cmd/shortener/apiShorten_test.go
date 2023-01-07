@@ -102,6 +102,8 @@ func TestApiShorten(t *testing.T) {
 			if res.Header.Get("Location") != tt.baseurl {
 				t.Errorf("Expected Location %s, got %s", tt.baseurl, res.Header.Get("Location"))
 			}
+
+			fmt.Println(res.Header)
 		})
 	}
 }
