@@ -39,19 +39,19 @@ func (s *Server) Router() error {
 		flag.StringVar(&s.Cfg.Storage, "f", "shortsURl.log", "New FILE_STORAGE_PATH")
 	}
 	if s.Cfg.ConnectDB == "" {
-		flag.StringVar(&s.Cfg.Storage, "d", "postgres://postgres:0000@localhost:5432/postgres", "New DATABASE_DSN")
+		flag.StringVar(&s.Cfg.ConnectDB, "d", "postgres://postgres:0000@localhost:5432/postgres", "New DATABASE_DSN")
 	}
 	flag.Parse()
 
 	// DB connection
-	var err error
-	s.DB, err = InitDB()
-	if err != nil {
-		return err
+	var errInit error
+	s.DB, errInit = InitDB()
+	if errInit != nil {
+		return errInit
 	}
-	if err := s.DB.Connect(s.Cfg.ConnectDB); err != nil {
+	if errConnect := s.DB.Connect(s.Cfg.ConnectDB); errConnect != nil {
 
-		return err
+		return errConnect
 	}
 	defer s.DB.Close()
 	//
