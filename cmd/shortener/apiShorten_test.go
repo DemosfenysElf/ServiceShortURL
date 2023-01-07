@@ -2,6 +2,7 @@ package main
 
 import (
 	"ServiceShortURL/internal/router"
+	"fmt"
 	"github.com/caarlos0/env"
 	"github.com/labstack/echo"
 	"io"
@@ -32,7 +33,7 @@ func TestApiShorten(t *testing.T) {
 			name: "TestApiShorten1",
 			want: want{
 				codePost: 201,
-				codeGet:  400,
+				codeGet:  307,
 				response: `{"status":"ok"}`,
 			},
 			baseurl: "https://www.youtube.com/watch?v=UK7yzgVpnDA",
@@ -73,6 +74,9 @@ func TestApiShorten(t *testing.T) {
 
 			resBodyShort := strings.Replace(string(resBody), s, "", -1)
 			resBodyShort = strings.Replace(resBodyShort, s2, "", -1)
+
+			fmt.Println(resBodyShort)
+
 			request1 := httptest.NewRequest(http.MethodGet, "/"+resBodyShort, nil)
 
 			rec1 := httptest.NewRecorder()
