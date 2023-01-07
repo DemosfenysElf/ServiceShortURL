@@ -16,7 +16,10 @@ func (s *Server) PostURLToShort(c echo.Context) error {
 		http.Error(c.Response(), err.Error(), http.StatusInternalServerError)
 		return fmt.Errorf("URL is not exist")
 	}
-
+	if len(body) == 0 {
+		c.Response().WriteHeader(http.StatusBadRequest)
+		return nil
+	}
 	short := shorturlservice.SetURL(string(body), s.Cfg.Storage)
 
 	write := []byte(s.Cfg.BaseURL + "/" + short)

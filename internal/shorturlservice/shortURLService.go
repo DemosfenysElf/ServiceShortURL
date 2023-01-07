@@ -6,7 +6,6 @@ import (
 	"math/rand"
 )
 
-var urlmap = make(map[string]string)
 var urlInfo = &URLInfo{}
 
 const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
@@ -15,7 +14,7 @@ func GetURL(short string, storage string) (url string, err error) {
 
 	consumerURL, err := NewConsumer(storage)
 	if err != nil {
-		return urlmap[short], nil
+		return "", err
 	}
 	defer consumerURL.Close()
 
@@ -24,7 +23,6 @@ func GetURL(short string, storage string) (url string, err error) {
 		if err != nil {
 			break
 		}
-		fmt.Println(readURL)
 		if readURL.ShortURL == short {
 			return readURL.URL, nil
 		}
@@ -36,19 +34,16 @@ func GetURL(short string, storage string) (url string, err error) {
 func SetURL(url string, storageURL string) (short string) {
 	short = shortURL()
 	for {
-		ssss, _ := GetURL(short, storageURL)
-		if ssss == "" {
+		_, err := GetURL(short, storageURL)
+		if err != nil {
 			break
 		}
 		short = shortURL()
 	}
 
-	//fmt.Println("-----File-Short: ", short)
-
 	////////// дублирование в файл
 
 	urli := SetStructURL(url, short)
-	//fmt.Println("-----File-urli: ", urli)
 	producerURL, err := NewProducer(storageURL)
 	if err != nil {
 		return
