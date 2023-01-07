@@ -14,6 +14,13 @@ var storageUsers = "storageUsers.log"
 func (s Server) serviceAuthentication(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		requestCookies := c.Request().Cookies()
+
+		consumerUser, err := shorturlservice.NewConsumer(storageUsers)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer consumerUser.Close()
+
 		if (len(requestCookies) > 0) && (requestCookies[0].Name == "Authentication") {
 			deHexCookies, err := hex.DecodeString(requestCookies[0].Value)
 			if err != nil {
@@ -24,12 +31,6 @@ func (s Server) serviceAuthentication(next echo.HandlerFunc) echo.HandlerFunc {
 				log.Fatal(err)
 			}
 			hexCookies := hex.EncodeToString(decryptoCookies)
-
-			consumerUser, err := shorturlservice.NewConsumer(storageUsers)
-			if err != nil {
-				log.Fatal(err)
-			}
-			defer consumerUser.Close()
 
 			for {
 				readUser, err := consumerUser.ReadUser()
@@ -44,31 +45,33 @@ func (s Server) serviceAuthentication(next echo.HandlerFunc) echo.HandlerFunc {
 			}
 		}
 
-		consumerUser, err := shorturlservice.NewConsumer(storageUsers)
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer consumerUser.Close()
-
 		newToken, err := shorturlservice.GenerateToken()
 		if err != nil {
 			log.Fatal(err)
 		}
+
+		userMap := make(map[string]bool, 0)
 
 		for {
 			readUser, err := consumerUser.ReadUser()
 			if err != nil {
 				break
 			}
+			userMap[readUser.ValueUser] = true
+		}
+
+		for {
 			hexNewToken := hex.EncodeToString(newToken)
 
-			if hexNewToken != readUser.ValueUser {
+			if _, ok := userMap[hexNewToken]; ok {
+				newToken, err = shorturlservice.GenerateToken()
+				if err != nil {
+					log.Fatal(err)
+				}
+			} else {
 				break
 			}
-			newToken, err = shorturlservice.GenerateToken()
-			if err != nil {
-				log.Fatal(err)
-			}
+
 		}
 
 		CryptoCookie, err := shorturlservice.CryptoToken(newToken)
