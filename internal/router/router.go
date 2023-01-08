@@ -51,6 +51,7 @@ func (s *Server) Router() error {
 	if DB, err := s.testDB(); err != nil {
 		fmt.Println(">>>>use BD<<<<")
 		fmt.Println(s.Cfg.ConnectDB)
+		defer DB.Close()
 		s.StorageInterface = DB
 		s.DB = DB
 
@@ -93,11 +94,6 @@ func (s Server) testDB() (*shorturlservice.Database, error) {
 
 	if errConnect := DB.Connect(s.Cfg.ConnectDB); errConnect != nil {
 		return nil, errConnect
-	}
-	defer DB.Close()
-
-	if err := s.DB.Ping(); err != nil {
-		return nil, err
 	}
 
 	return DB, nil
