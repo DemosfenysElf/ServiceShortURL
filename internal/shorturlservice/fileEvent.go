@@ -5,17 +5,7 @@ import (
 	"os"
 )
 
-type CookiesAuthentication struct {
-	NameUser  string `json:"NameUser"`
-	ValueUser string `json:"ValueUser"`
-}
-
-type URLInfo struct {
-	URL                   string `json:"url"`
-	ShortURL              string `json:"shortURL"`
-	CookiesAuthentication CookiesAuthentication
-}
-
+// Producer:
 type producer struct {
 	file    *os.File
 	encoder *json.Encoder
@@ -45,8 +35,7 @@ func (p *producer) Close() error {
 	return p.file.Close()
 }
 
-/////////////////////////////////
-
+// Consumer:
 type consumer struct {
 	file    *os.File
 	decoder *json.Decoder

@@ -1,6 +1,7 @@
 package router
 
 import (
+	"ServiceShortURL/internal/shorturlservice"
 	"flag"
 	"github.com/caarlos0/env"
 	"github.com/labstack/echo"
@@ -19,7 +20,8 @@ type Server struct {
 	Cfg    ConfigURL
 	Serv   *echo.Echo
 	Writer io.Writer
-	DB     DatabaseInterface
+	DB     shorturlservice.DatabaseInterface
+	shorturlservice.StorageInterface
 }
 
 func (s *Server) Router() error {
@@ -28,7 +30,6 @@ func (s *Server) Router() error {
 	if errConfig != nil {
 		log.Fatal(errConfig)
 	}
-
 	if s.Cfg.ServerAddress == "" {
 		flag.StringVar(&s.Cfg.ServerAddress, "a", ":8080", "New SERVER_ADDRESS")
 	}
@@ -43,29 +44,40 @@ func (s *Server) Router() error {
 	}
 	flag.Parse()
 
-	// DB connection
-	var errInit error
-	s.DB, errInit = InitDB()
-	if errInit != nil {
-		return errInit
-	}
-	if errConnect := s.DB.Connect(s.Cfg.ConnectDB); errConnect != nil {
+	if s.Cfg.ConnectDB != "" {
+		// DB connection
+		DB, errInit := shorturlservice.InitDB()
+		if errInit != nil {
+			return errInit
+		}
 
-		return errConnect
+		if errConnect := DB.Connect(s.Cfg.ConnectDB); errConnect != nil {
+			return errConnect
+		}
+		defer DB.Close()
+
+		s.StorageInterface = DB
+		s.DB = DB
+	} else if s.Cfg.Storage != "" {
+		s.StorageInterface = &shorturlservice.FileStorage{
+			FilePath: s.Cfg.Storage,
+		}
+	} else {
+		s.StorageInterface = shorturlservice.InitMem()
 	}
-	defer s.DB.Close()
+
 	//
 	e := echo.New()
 
 	e.Use(s.gzipHandle)
-
 	e.Use(s.serviceAuthentication)
 
 	e.GET("/:id", s.GetShortToURL)
-	e.POST("/", s.PostURLToShort)
-	e.POST("/api/shorten", s.APIShorten)
 	e.GET("/api/user/urls", s.APIUserURL)
 	e.GET("/ping", s.PingDB)
+
+	e.POST("/", s.PostURLToShort)
+	e.POST("/api/shorten", s.APIShorten)
 
 	errStart := e.Start(s.Cfg.ServerAddress)
 
@@ -73,5 +85,4 @@ func (s *Server) Router() error {
 		return errStart
 	}
 	return nil
-
 }
