@@ -1,7 +1,6 @@
 package router
 
 import (
-	"ServiceShortURL/internal/shorturlservice"
 	"encoding/json"
 	"fmt"
 	"github.com/labstack/echo"
@@ -28,7 +27,7 @@ func (s *Server) APIShorten(c echo.Context) error {
 	}
 
 	json.Unmarshal(body, &urlJ)
-	short := shorturlservice.SetURL(urlJ.URL, s.Cfg.Storage)
+	short := s.SetURL(urlJ.URL)
 	shortURL.ShortURL = s.Cfg.BaseURL + "/" + short
 
 	shortU, err := json.Marshal(shortURL)
