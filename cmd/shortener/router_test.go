@@ -2,6 +2,7 @@ package main
 
 import (
 	"ServiceShortURL/internal/router"
+	"ServiceShortURL/internal/shorturlservice"
 	"github.com/caarlos0/env"
 	"github.com/labstack/echo"
 	"io"
@@ -51,6 +52,8 @@ func Test_router(t *testing.T) {
 			c := e.NewContext(request, rec)
 
 			rout := router.Server{}
+			rout.StorageInterface = shorturlservice.InitMem()
+
 			errConfig := env.Parse(&rout.Cfg)
 			if errConfig != nil {
 				t.Fatal(errConfig)
