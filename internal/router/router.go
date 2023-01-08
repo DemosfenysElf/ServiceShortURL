@@ -48,9 +48,11 @@ func (s *Server) Router() error {
 	//s.Cfg.Storage = ""
 	//s.Cfg.ConnectDB = ""
 
-	if err := s.testDB(); err != nil {
+	if DB, err := s.testDB(); err != nil {
 		fmt.Println(">>>>use BD<<<<")
 		fmt.Println(s.Cfg.ConnectDB)
+		s.StorageInterface = DB
+		s.DB = DB
 
 	} else if s.Cfg.Storage != "" {
 		fmt.Println(">>>>use storage<<<<")
@@ -83,18 +85,16 @@ func (s *Server) Router() error {
 	return nil
 }
 
-func (s Server) testDB() error {
+func (s Server) testDB() (*shorturlservice.Database, error) {
 	DB, errInit := shorturlservice.InitDB()
 	if errInit != nil {
-		return errInit
+		return nil, errInit
 	}
 
 	if errConnect := DB.Connect(s.Cfg.ConnectDB); errConnect != nil {
-		return errConnect
+		return nil, errConnect
 	}
 	defer DB.Close()
 
-	s.StorageInterface = DB
-	s.DB = DB
-	return nil
+	return DB, nil
 }
