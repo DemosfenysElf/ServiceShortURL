@@ -98,24 +98,27 @@ func (s *Server) Router() error {
 
 func (s *Server) startBD() error {
 	if s.Cfg.ConnectDB == "" {
-		return fmt.Errorf("Error s.Cfg.ConnectDB == nil")
+		fmt.Println(">>>>>>>>>>1>>>>>>")
+		return fmt.Errorf("error s.Cfg.ConnectDB == nil")
 	}
 
 	// DB connection
 	DB, errInit := shorturlservice.InitDB()
 	if errInit != nil {
-		log.Fatal("Error initDB")
+		fmt.Println(">>>>>>>>>>2>>>>>>")
+		log.Fatal("error initDB")
 		return errInit
 	}
 
 	if errConnect := DB.Connect(s.Cfg.ConnectDB); errConnect != nil {
-		log.Fatal("Error DB.Connect")
+		fmt.Println(">>>>>>>>>>3>>>>>>")
+		log.Fatal("error DB.Connect")
 		return errConnect
 	}
 	//defer DB.Close()
 
 	s.StorageInterface = DB
 	s.DB = DB
-
+	fmt.Println(">>>>>>>>>>4>>>>>>")
 	return nil
 }
