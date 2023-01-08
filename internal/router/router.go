@@ -48,22 +48,10 @@ func (s *Server) Router() error {
 	//s.Cfg.Storage = ""
 	//s.Cfg.ConnectDB = ""
 
-	if s.Cfg.ConnectDB != "" {
+	if err := s.testDB(); err != nil {
 		fmt.Println(">>>>use BD<<<<")
 		fmt.Println(s.Cfg.ConnectDB)
-		// DB connection
-		DB, errInit := shorturlservice.InitDB()
-		if errInit != nil {
-			return errInit
-		}
 
-		if errConnect := DB.Connect(s.Cfg.ConnectDB); errConnect != nil {
-			return errConnect
-		}
-		defer DB.Close()
-
-		s.StorageInterface = DB
-		s.DB = DB
 	} else if s.Cfg.Storage != "" {
 		fmt.Println(">>>>use storage<<<<")
 		s.StorageInterface = &shorturlservice.FileStorage{
@@ -92,5 +80,21 @@ func (s *Server) Router() error {
 	if errStart != nil {
 		return errStart
 	}
+	return nil
+}
+
+func (s Server) testDB() error {
+	DB, errInit := shorturlservice.InitDB()
+	if errInit != nil {
+		return errInit
+	}
+
+	if errConnect := DB.Connect(s.Cfg.ConnectDB); errConnect != nil {
+		return errConnect
+	}
+	defer DB.Close()
+
+	s.StorageInterface = DB
+	s.DB = DB
 	return nil
 }
