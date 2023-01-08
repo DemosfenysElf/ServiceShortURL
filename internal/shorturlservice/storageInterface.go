@@ -45,7 +45,7 @@ func (ms *MemoryStorage) SetURL(url string) (short string) {
 				break
 			}
 
-			if i >= len(ms.data) {
+			if i+1 >= len(ms.data) {
 				t = false
 				break
 			}

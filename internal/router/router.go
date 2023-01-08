@@ -3,6 +3,7 @@ package router
 import (
 	"ServiceShortURL/internal/shorturlservice"
 	"flag"
+	"fmt"
 	"github.com/caarlos0/env"
 	"github.com/labstack/echo"
 	"io"
@@ -44,7 +45,11 @@ func (s *Server) Router() error {
 	}
 	flag.Parse()
 
+	s.Cfg.Storage = ""
+	s.Cfg.ConnectDB = ""
+
 	if s.Cfg.ConnectDB != "" {
+		fmt.Println(">>>>use BD<<<<")
 		// DB connection
 		DB, errInit := shorturlservice.InitDB()
 		if errInit != nil {
@@ -59,10 +64,12 @@ func (s *Server) Router() error {
 		s.StorageInterface = DB
 		s.DB = DB
 	} else if s.Cfg.Storage != "" {
+		fmt.Println(">>>>use storage<<<<")
 		s.StorageInterface = &shorturlservice.FileStorage{
 			FilePath: s.Cfg.Storage,
 		}
 	} else {
+		fmt.Println(">>>>use memory<<<<")
 		s.StorageInterface = shorturlservice.InitMem()
 	}
 
