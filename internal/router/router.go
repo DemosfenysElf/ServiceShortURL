@@ -50,6 +50,7 @@ func (s *Server) Router() error {
 
 	if s.Cfg.ConnectDB != "" {
 		fmt.Println(">>>>use BD<<<<")
+		fmt.Println(s.Cfg.ConnectDB)
 		// DB connection
 		DB, errInit := shorturlservice.InitDB()
 		if errInit != nil {
