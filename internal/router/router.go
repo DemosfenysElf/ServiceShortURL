@@ -48,22 +48,23 @@ func (s *Server) Router() error {
 	//s.Cfg.Storage = ""
 	//s.Cfg.ConnectDB = ""
 
-	if s.Cfg.ConnectDB != "" {
-		fmt.Println(">>>>use BD<<<<")
-		fmt.Println(s.Cfg.ConnectDB)
-		// DB connection
-		DB, errInit := shorturlservice.InitDB()
-		if errInit != nil {
-			log.Fatal("Error initDB")
-		}
-
-		if errConnect := DB.Connect(s.Cfg.ConnectDB); errConnect != nil {
-			log.Fatal("Error DB.Connect")
-		}
-		defer DB.Close()
-
-		s.StorageInterface = DB
-		s.DB = DB
+	if err := s.startBD(); err == nil {
+		//if s.Cfg.ConnectDB != "" {
+		fmt.Println(">>>>use BD<<<<", s.Cfg.ConnectDB)
+		//
+		//// DB connection
+		//DB, errInit := shorturlservice.InitDB()
+		//if errInit != nil {
+		//	log.Fatal("Error initDB")
+		//}
+		//
+		//if errConnect := DB.Connect(s.Cfg.ConnectDB); errConnect != nil {
+		//	log.Fatal("Error DB.Connect")
+		//}
+		//defer DB.Close()
+		//
+		//s.StorageInterface = DB
+		//s.DB = DB
 	} else if s.Cfg.Storage != "" {
 		fmt.Println(">>>>use storage<<<<")
 		s.StorageInterface = &shorturlservice.FileStorage{
@@ -92,5 +93,29 @@ func (s *Server) Router() error {
 	if errStart != nil {
 		return errStart
 	}
+	return nil
+}
+
+func (s *Server) startBD() error {
+	if s.Cfg.ConnectDB == "" {
+		return fmt.Errorf("Error s.Cfg.ConnectDB == nil")
+	}
+
+	// DB connection
+	DB, errInit := shorturlservice.InitDB()
+	if errInit != nil {
+		log.Fatal("Error initDB")
+		return errInit
+	}
+
+	if errConnect := DB.Connect(s.Cfg.ConnectDB); errConnect != nil {
+		log.Fatal("Error DB.Connect")
+		return errConnect
+	}
+	//defer DB.Close()
+
+	s.StorageInterface = DB
+	s.DB = DB
+
 	return nil
 }
