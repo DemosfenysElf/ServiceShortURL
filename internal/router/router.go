@@ -45,8 +45,8 @@ func (s *Server) Router() error {
 	}
 	flag.Parse()
 
-	s.Cfg.Storage = ""
-	s.Cfg.ConnectDB = ""
+	//s.Cfg.Storage = ""
+	//s.Cfg.ConnectDB = ""
 
 	if s.Cfg.ConnectDB != "" {
 		fmt.Println(">>>>use BD<<<<")
