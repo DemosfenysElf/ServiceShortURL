@@ -96,5 +96,9 @@ func (s Server) testDB() (*shorturlservice.Database, error) {
 	}
 	defer DB.Close()
 
+	if err := s.DB.Ping(); err != nil {
+		return nil, err
+	}
+
 	return DB, nil
 }
