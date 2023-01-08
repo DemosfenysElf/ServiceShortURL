@@ -106,13 +106,13 @@ func (s *Server) startBD() error {
 	DB, errInit := shorturlservice.InitDB()
 	if errInit != nil {
 		fmt.Println(">>>>>>>>>>2>>>>>>")
-		log.Fatal("error initDB")
+
 		return errInit
 	}
 
 	if errConnect := DB.Connect(s.Cfg.ConnectDB); errConnect != nil {
 		fmt.Println(">>>>>>>>>>3>>>>>>")
-		log.Fatal("error DB.Connect")
+
 		return errConnect
 	}
 	//defer DB.Close()
