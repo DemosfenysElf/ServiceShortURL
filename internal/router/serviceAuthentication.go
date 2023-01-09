@@ -3,6 +3,7 @@ package router
 import (
 	"ServiceShortURL/internal/shorturlservice"
 	"encoding/hex"
+	"fmt"
 	"github.com/labstack/echo"
 	"log"
 	"net/http"
@@ -12,6 +13,7 @@ var hexCryproNewToken string
 var storageUsers = "storageUsers.log"
 
 func (s Server) serviceAuthentication(next echo.HandlerFunc) echo.HandlerFunc {
+	fmt.Println("==>> serviceAuthentication")
 	return func(c echo.Context) error {
 		requestCookies := c.Request().Cookies()
 

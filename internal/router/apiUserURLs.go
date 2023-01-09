@@ -15,7 +15,7 @@ type userURLstruct struct {
 }
 
 func (s *Server) APIUserURL(c echo.Context) error {
-
+	fmt.Println("==>> APIUserURL")
 	userCookies := shorturlservice.GetStructCookies()
 
 	allURL := make([]userURLstruct, 0)

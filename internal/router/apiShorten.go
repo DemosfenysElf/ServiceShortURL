@@ -17,6 +17,7 @@ type shortURLJSON struct {
 }
 
 func (s *Server) APIShorten(c echo.Context) error {
+	fmt.Println("==>> APIShorten")
 	urlJ := urlJSON{}
 	shortURL := shortURLJSON{}
 	defer c.Request().Body.Close()

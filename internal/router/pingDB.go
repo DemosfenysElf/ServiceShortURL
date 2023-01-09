@@ -1,12 +1,14 @@
 package router
 
 import (
+	"fmt"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/labstack/echo"
 	"net/http"
 )
 
 func (s *Server) PingDB(c echo.Context) error {
+	fmt.Println("==>> PingDB")
 	if s.DB == nil {
 		c.Response().WriteHeader(http.StatusInternalServerError)
 	}

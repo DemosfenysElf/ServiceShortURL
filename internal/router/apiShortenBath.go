@@ -19,8 +19,10 @@ type shortURLApiShortenBath struct {
 }
 
 func (s *Server) APIShortenBatch(c echo.Context) error {
+	fmt.Println("==>> APIShortenBatch")
 	urlBath := []urlApiShortenBath{}
 	shortURLBath := []shortURLApiShortenBath{}
+	shortURLOne := shortURLApiShortenBath{}
 
 	defer c.Request().Body.Close()
 	body, err := io.ReadAll(c.Request().Body)
@@ -33,8 +35,11 @@ func (s *Server) APIShortenBatch(c echo.Context) error {
 
 	for i := range urlBath {
 		short := s.SetURL(urlBath[i].OriginalURL)
-		shortURLBath[i].ShortURL = s.Cfg.BaseURL + "/" + short
-		shortURLBath[i].CorrelationId = urlBath[i].CorrelationId
+		shortURLOne.ShortURL = s.Cfg.BaseURL + "/" + short
+		shortURLOne.CorrelationId = urlBath[i].CorrelationId
+		shortURLBath = append(shortURLBath, shortURLOne)
+		//shortURLBath[i].ShortURL = s.Cfg.BaseURL + "/" + short
+		//shortURLBath[i].CorrelationId = urlBath[i].CorrelationId
 	}
 
 	shortU, err := json.Marshal(shortURLBath)
