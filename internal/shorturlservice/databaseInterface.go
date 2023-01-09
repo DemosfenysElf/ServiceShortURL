@@ -3,6 +3,7 @@ package shorturlservice
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"time"
 )
 
@@ -67,8 +68,13 @@ func (db *Database) SetURL(url string) (short string) {
 	user := GetStructCookies()
 	_, err := db.connection.Exec("insert into ShortenerURL(url,short,nameAut,valueAut) values ($1,$2,$3,$4)", url, short, user.NameUser, user.ValueUser)
 	if err != nil {
+		fmt.Println("err: ", err)
 		return ""
 	}
+	fmt.Println("errnil: ", err)
+	//if errors.Is() {
+	//}
+	//pgerrcode.UniqueViolation
 	return short
 }
 
@@ -80,5 +86,11 @@ func (db *Database) GetURL(short string) (url string, err error) {
 
 func (db *Database) CreateTable() error {
 	_, err := db.connection.Exec(stringShortenerURL)
+	fmt.Println("err CreateTable: ", err)
+	if err != nil {
+		return err
+	}
+	_, err = db.connection.Exec("CREATE UNIQUE INDEX URL_index ON ShortenerURL (url)")
+	fmt.Println("err unique index: ", err)
 	return err
 }
