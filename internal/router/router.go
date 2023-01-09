@@ -87,6 +87,7 @@ func (s *Server) Router() error {
 
 	e.POST("/", s.PostURLToShort)
 	e.POST("/api/shorten", s.APIShorten)
+	e.POST("/api/shorten/batch", s.APIShortenBatch)
 
 	errStart := e.Start(s.Cfg.ServerAddress)
 
@@ -98,27 +99,21 @@ func (s *Server) Router() error {
 
 func (s *Server) startBD() error {
 	if s.Cfg.ConnectDB == "" {
-		fmt.Println(">>>>>>>>>>1>>>>>>")
 		return fmt.Errorf("error s.Cfg.ConnectDB == nil")
 	}
 
 	// DB connection
 	DB, errInit := shorturlservice.InitDB()
 	if errInit != nil {
-		fmt.Println(">>>>>>>>>>2>>>>>>")
-
 		return errInit
 	}
 
 	if errConnect := DB.Connect(s.Cfg.ConnectDB); errConnect != nil {
-		fmt.Println(">>>>>>>>>>3>>>>>>")
-
 		return errConnect
 	}
 	//defer DB.Close()
 
 	s.StorageInterface = DB
 	s.DB = DB
-	fmt.Println(">>>>>>>>>>4>>>>>>")
 	return nil
 }
