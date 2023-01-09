@@ -3,7 +3,9 @@ package shorturlservice
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
+	"github.com/jackc/pgerrcode"
 	"time"
 )
 
@@ -67,20 +69,28 @@ func (db *Database) SetURL(url string) (short string) {
 
 	user := GetStructCookies()
 	_, err := db.connection.Exec("insert into ShortenerURL(url,short,nameAut,valueAut) values ($1,$2,$3,$4)", url, short, user.NameUser, user.ValueUser)
+	testErr := fmt.Errorf(`%w`, pgerrcode.UniqueViolation)
+	//testErr := fmt.Errorf(`%w`, pgerrcode.InvalidTransactionState)
+	if (err != nil) && (errors.As(err, &testErr)) {
+		short, err = db.GetShortURL(url)
+		return short
+	}
+	fmt.Println("err: ", err)
 	if err != nil {
-		fmt.Println("err: ", err)
 		return ""
 	}
-	fmt.Println("errnil: ", err)
-	//if errors.Is() {
-	//}
-	//pgerrcode.UniqueViolation
 	return short
 }
 
 func (db *Database) GetURL(short string) (url string, err error) {
 	row := db.connection.QueryRow("select url from ShortenerURL where short = $1", short)
 	err = row.Scan(&url)
+	return
+}
+
+func (db *Database) GetShortURL(url string) (short string, err error) {
+	row := db.connection.QueryRow("select short from ShortenerURL where url = $1", url)
+	err = row.Scan(&short)
 	return
 }
 
