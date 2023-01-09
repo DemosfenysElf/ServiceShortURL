@@ -71,11 +71,11 @@ func (db *Database) SetURL(url string) (short string) {
 	_, err := db.connection.Exec("insert into ShortenerURL(url,short,nameAut,valueAut) values ($1,$2,$3,$4)", url, short, user.NameUser, user.ValueUser)
 	testErr := fmt.Errorf(`%w`, pgerrcode.UniqueViolation)
 	//testErr := fmt.Errorf(`%w`, pgerrcode.InvalidTransactionState)
-	if (err != nil) && (errors.As(err, &testErr)) {
+	if (err != nil) && (errors.As(testErr, &err)) {
 		short, err = db.GetShortURL(url)
 		return short
 	}
-	fmt.Println("err: ", err)
+
 	if err != nil {
 		return ""
 	}
