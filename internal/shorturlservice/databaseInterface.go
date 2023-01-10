@@ -70,7 +70,8 @@ func (db *Database) SetURL(url string) (short string) {
 	testErr := errors.New(pgerrcode.UniqueViolation)
 
 	if (err != nil) && (errors.Is(err, testErr)) {
-		short, err = db.GetShortURL(url)
+		short, _ = db.GetShortURL(url)
+
 		return short
 	}
 
