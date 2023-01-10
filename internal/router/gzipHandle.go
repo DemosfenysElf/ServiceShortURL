@@ -9,8 +9,8 @@ import (
 )
 
 func (s Server) gzipHandle(next echo.HandlerFunc) echo.HandlerFunc {
+	fmt.Println("==>> gzipHandle")
 	return func(c echo.Context) error {
-		fmt.Println(">>>> Content: ", c.Request().Header.Get("Content-Encoding"))
 		if c.Request().Header.Get("Content-Encoding") != "gzip" {
 			return next(c)
 		}
@@ -23,9 +23,8 @@ func (s Server) gzipHandle(next echo.HandlerFunc) echo.HandlerFunc {
 		body, err := io.ReadAll(qzBody)
 		if err != nil {
 			c.Error(echo.ErrInternalServerError)
-			return fmt.Errorf("URL is not exist")
+			return fmt.Errorf("URL does not exist")
 		}
-		fmt.Println(string(body))
 		stringReader := bytes.NewReader(body)
 
 		c.Request().Body = io.NopCloser(stringReader)

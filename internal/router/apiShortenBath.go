@@ -10,18 +10,22 @@ import (
 	"strings"
 )
 
-type urlJSON struct {
-	URL string `json:"url"`
+type urlAPIShortenBath struct {
+	CorrelationID string `json:"correlation_id"`
+	OriginalURL   string `json:"original_url"`
 }
 
-type shortURLJSON struct {
-	ShortURL string `json:"result"`
+type shortURLApiShortenBath struct {
+	CorrelationID string `json:"correlation_id"`
+	ShortURL      string `json:"short_url"`
 }
 
-func (s *Server) APIShorten(c echo.Context) error {
-	fmt.Println("==>> APIShorten")
-	urlJ := urlJSON{}
-	shortURL := shortURLJSON{}
+func (s *Server) APIShortenBatch(c echo.Context) error {
+	fmt.Println("==>> APIShortenBatch")
+	urlBath := []urlAPIShortenBath{}
+	shortURLBath := []shortURLApiShortenBath{}
+	shortURLOne := shortURLApiShortenBath{}
+
 	defer c.Request().Body.Close()
 	body, err := io.ReadAll(c.Request().Body)
 	if err != nil {
@@ -29,11 +33,17 @@ func (s *Server) APIShorten(c echo.Context) error {
 		return fmt.Errorf("URL is not exist")
 	}
 
-	json.Unmarshal(body, &urlJ)
-	short, setErr := s.SetURL(urlJ.URL)
-	shortURL.ShortURL = s.Cfg.BaseURL + "/" + short
+	json.Unmarshal(body, &urlBath)
+	var setErr error
+	var short string
+	for i := range urlBath {
+		short, setErr = s.SetURL(urlBath[i].OriginalURL)
+		shortURLOne.ShortURL = s.Cfg.BaseURL + "/" + short
+		shortURLOne.CorrelationID = urlBath[i].CorrelationID
+		shortURLBath = append(shortURLBath, shortURLOne)
+	}
 
-	shortU, err := json.Marshal(shortURL)
+	shortU, err := json.Marshal(shortURLBath)
 	if err != nil {
 		http.Error(c.Response(), err.Error(), http.StatusInternalServerError)
 		return fmt.Errorf("marshal error")
@@ -49,8 +59,8 @@ func (s *Server) APIShorten(c echo.Context) error {
 
 	c.Response().Header().Add("Content-Type", "application/json")
 	if setErr != nil {
-		sErr := setErr.Error()
-		if strings.Contains(sErr, pgerrcode.UniqueViolation) {
+		setErr := setErr.Error()
+		if strings.Contains(setErr, pgerrcode.UniqueViolation) {
 			c.Response().WriteHeader(http.StatusConflict)
 		}
 	} else {
