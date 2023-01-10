@@ -69,9 +69,11 @@ func (db *Database) SetURL(url string) (short string) {
 
 	user := GetStructCookies()
 	_, err := db.connection.Exec("insert into ShortenerURL(url,short,nameAut,valueAut) values ($1,$2,$3,$4)", url, short, user.NameUser, user.ValueUser)
-	testErr := fmt.Errorf(`%w`, pgerrcode.UniqueViolation)
-	//testErr := fmt.Errorf(`%w`, pgerrcode.InvalidTransactionState)
-	if (err != nil) && (errors.As(testErr, &err)) {
+	//testErr := fmt.Errorf(`%w`, pgerrcode.UniqueViolation)
+	testErr := errors.New(pgerrcode.UniqueViolation)
+
+	//if (err != nil) && (errors.As(testErr, &err)) {
+	if (err != nil) && (errors.Is(err, testErr)) {
 		short, err = db.GetShortURL(url)
 		return short
 	}
