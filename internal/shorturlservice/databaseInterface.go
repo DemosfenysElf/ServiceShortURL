@@ -61,24 +61,24 @@ func (db *Database) Ping() error {
 	return nil
 }
 
-func (db *Database) SetURL(url string) (short string) {
+func (db *Database) SetURL(url string) (short string, err error) {
 	short = shortURL()
 	// добавить проверку на оригинальность
 
 	user := GetStructCookies()
-	_, err := db.connection.Exec("insert into ShortenerURL(url,short,nameAut,valueAut) values ($1,$2,$3,$4)", url, short, user.NameUser, user.ValueUser)
+	_, err = db.connection.Exec("insert into ShortenerURL(url,short,nameAut,valueAut) values ($1,$2,$3,$4)", url, short, user.NameUser, user.ValueUser)
 
-	var s string
+	var sErr string
 	if err != nil {
-		s = err.Error()
-		if strings.Contains(s, pgerrcode.UniqueViolation) {
+		sErr = err.Error()
+		if strings.Contains(sErr, pgerrcode.UniqueViolation) {
 			short, _ = db.GetShortURL(url)
-			return short
+			return short, err
 		}
-		return ""
+		return "", err
 	}
 
-	return short
+	return short, err
 }
 
 func (db *Database) GetURL(short string) (url string, err error) {

@@ -3,9 +3,11 @@ package router
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/jackc/pgerrcode"
 	"github.com/labstack/echo"
 	"io"
 	"net/http"
+	"strings"
 )
 
 type urlAPIShortenBath struct {
@@ -32,13 +34,13 @@ func (s *Server) APIShortenBatch(c echo.Context) error {
 	}
 
 	json.Unmarshal(body, &urlBath)
-
+	var setErr error
+	var short string
 	for i := range urlBath {
-		short := s.SetURL(urlBath[i].OriginalURL)
+		short, setErr = s.SetURL(urlBath[i].OriginalURL)
 		shortURLOne.ShortURL = s.Cfg.BaseURL + "/" + short
 		shortURLOne.CorrelationID = urlBath[i].CorrelationID
 		shortURLBath = append(shortURLBath, shortURLOne)
-
 	}
 
 	shortU, err := json.Marshal(shortURLBath)
@@ -56,7 +58,14 @@ func (s *Server) APIShortenBatch(c echo.Context) error {
 	}
 
 	c.Response().Header().Add("Content-Type", "application/json")
-	c.Response().WriteHeader(http.StatusCreated)
+	if setErr != nil {
+		setErr := setErr.Error()
+		if strings.Contains(setErr, pgerrcode.UniqueViolation) {
+			c.Response().WriteHeader(http.StatusConflict)
+		}
+	} else {
+		c.Response().WriteHeader(http.StatusCreated)
+	}
 	c.Response().Write(shortU)
 	return nil
 }

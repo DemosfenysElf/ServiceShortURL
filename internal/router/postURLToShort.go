@@ -2,9 +2,11 @@ package router
 
 import (
 	"fmt"
+	"github.com/jackc/pgerrcode"
 	"github.com/labstack/echo"
 	"io"
 	"net/http"
+	"strings"
 )
 
 func (s *Server) PostURLToShort(c echo.Context) error {
@@ -20,7 +22,7 @@ func (s *Server) PostURLToShort(c echo.Context) error {
 		c.Response().WriteHeader(http.StatusBadRequest)
 		return nil
 	}
-	short := s.SetURL(string(body))
+	short, setErr := s.SetURL(string(body))
 
 	write := []byte(s.Cfg.BaseURL + "/" + short)
 
@@ -33,8 +35,14 @@ func (s *Server) PostURLToShort(c echo.Context) error {
 
 		c.Response().Header().Set("Content-Encoding", "gzip")
 	}
-
-	c.Response().WriteHeader(http.StatusCreated)
+	if setErr != nil {
+		sErr := setErr.Error()
+		if strings.Contains(sErr, pgerrcode.UniqueViolation) {
+			c.Response().WriteHeader(http.StatusConflict)
+		}
+	} else {
+		c.Response().WriteHeader(http.StatusCreated)
+	}
 	c.Response().Write(write)
 	return nil
 }

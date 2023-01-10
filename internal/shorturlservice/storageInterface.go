@@ -3,11 +3,10 @@ package shorturlservice
 import (
 	"fmt"
 	"io"
-	"log"
 )
 
 type StorageInterface interface {
-	SetURL(url string) (short string)
+	SetURL(url string) (short string, err error)
 	GetURL(short string) (url string, err error)
 }
 
@@ -33,7 +32,7 @@ func (ms *MemoryStorage) GetURL(short string) (url string, err error) {
 	return url, err
 }
 
-func (ms *MemoryStorage) SetURL(url string) (short string) {
+func (ms *MemoryStorage) SetURL(url string) (short string, err error) {
 
 	for t := true; t; {
 		short = shortURL()
@@ -53,7 +52,7 @@ func (ms *MemoryStorage) SetURL(url string) (short string) {
 	}
 	SetStructURL(url, short)
 	ms.data = append(ms.data, *GetStructURL())
-	return short
+	return short, nil
 }
 
 // Хранение в файле:
@@ -82,7 +81,7 @@ func (fs *FileStorage) GetURL(short string) (url string, err error) {
 	return "", fmt.Errorf("no found url")
 }
 
-func (fs *FileStorage) SetURL(url string) (short string) {
+func (fs *FileStorage) SetURL(url string) (short string, err error) {
 	short = shortURL()
 	for {
 		_, err := fs.GetURL(short)
@@ -95,14 +94,14 @@ func (fs *FileStorage) SetURL(url string) (short string) {
 	urli := SetStructURL(url, short)
 	producerURL, err := NewProducer(fs.FilePath)
 	if err != nil {
-		return
+		return "", err
 	}
 	defer producerURL.Close()
 	if err := producerURL.WriteURL(urli); err != nil {
-		log.Fatal(err)
+		return "", err
 	}
 
-	return
+	return short, nil
 }
 
 // Хранение в БД>: databaseInterface
