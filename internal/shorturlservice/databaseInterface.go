@@ -64,15 +64,11 @@ func (db *Database) Ping() error {
 func (db *Database) SetURL(url string) (short string) {
 	short = shortURL()
 	// добавить проверку на оригинальность
-	//ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
-	//defer cancel()
 
 	user := GetStructCookies()
 	_, err := db.connection.Exec("insert into ShortenerURL(url,short,nameAut,valueAut) values ($1,$2,$3,$4)", url, short, user.NameUser, user.ValueUser)
-	//testErr := fmt.Errorf(`%w`, pgerrcode.UniqueViolation)
 	testErr := errors.New(pgerrcode.UniqueViolation)
 
-	//if (err != nil) && (errors.As(testErr, &err)) {
 	if (err != nil) && (errors.Is(err, testErr)) {
 		short, err = db.GetShortURL(url)
 		return short

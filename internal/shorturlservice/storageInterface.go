@@ -105,4 +105,4 @@ func (fs *FileStorage) SetURL(url string) (short string) {
 	return
 }
 
-// Хранение в БД>:
+// Хранение в БД>: databaseInterface
