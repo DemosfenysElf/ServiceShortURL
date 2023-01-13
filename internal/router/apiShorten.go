@@ -3,11 +3,12 @@ package router
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/jackc/pgerrcode"
-	"github.com/labstack/echo"
 	"io"
 	"net/http"
 	"strings"
+
+	"github.com/jackc/pgerrcode"
+	"github.com/labstack/echo"
 )
 
 type urlJSON struct {

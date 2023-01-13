@@ -4,8 +4,9 @@ import (
 	"bytes"
 	"compress/gzip"
 	"fmt"
-	"github.com/labstack/echo"
 	"io"
+
+	"github.com/labstack/echo"
 )
 
 func (s Server) gzipHandle(next echo.HandlerFunc) echo.HandlerFunc {

@@ -2,8 +2,9 @@ package router
 
 import (
 	"fmt"
-	"github.com/labstack/echo"
 	"net/http"
+
+	"github.com/labstack/echo"
 )
 
 func (s *Server) GetShortToURL(c echo.Context) error {

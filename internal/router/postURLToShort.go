@@ -2,11 +2,12 @@ package router
 
 import (
 	"fmt"
-	"github.com/jackc/pgerrcode"
-	"github.com/labstack/echo"
 	"io"
 	"net/http"
 	"strings"
+
+	"github.com/jackc/pgerrcode"
+	"github.com/labstack/echo"
 )
 
 func (s *Server) PostURLToShort(c echo.Context) error {

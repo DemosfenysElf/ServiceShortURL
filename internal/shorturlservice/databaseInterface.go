@@ -4,9 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/jackc/pgerrcode"
 	"strings"
 	"time"
+
+	"github.com/jackc/pgerrcode"
 )
 
 type DatabaseInterface interface {

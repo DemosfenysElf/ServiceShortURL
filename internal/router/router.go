@@ -4,10 +4,11 @@ import (
 	"ServiceShortURL/internal/shorturlservice"
 	"flag"
 	"fmt"
-	"github.com/caarlos0/env"
-	"github.com/labstack/echo"
 	"io"
 	"log"
+
+	"github.com/caarlos0/env"
+	"github.com/labstack/echo"
 )
 
 type ConfigURL struct {

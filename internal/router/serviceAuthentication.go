@@ -4,9 +4,10 @@ import (
 	"ServiceShortURL/internal/shorturlservice"
 	"encoding/hex"
 	"fmt"
-	"github.com/labstack/echo"
 	"log"
 	"net/http"
+
+	"github.com/labstack/echo"
 )
 
 var hexCryproNewToken string

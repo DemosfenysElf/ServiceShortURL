@@ -4,9 +4,10 @@ import (
 	"ServiceShortURL/internal/shorturlservice"
 	"encoding/json"
 	"fmt"
-	"github.com/labstack/echo"
 	"log"
 	"net/http"
+
+	"github.com/labstack/echo"
 )
 
 type userURLstruct struct {

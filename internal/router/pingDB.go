@@ -2,9 +2,10 @@ package router
 
 import (
 	"fmt"
+	"net/http"
+
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/labstack/echo"
-	"net/http"
 )
 
 func (s *Server) PingDB(c echo.Context) error {
