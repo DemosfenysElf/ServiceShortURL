@@ -16,10 +16,9 @@ import (
 func TestApiShorten(t *testing.T) {
 
 	type want struct {
-		codePost    int
-		codeGet     int
-		response    string
-		contentType string
+		codePost int
+		codeGet  int
+		response string
 	}
 	tests := []struct {
 		name string

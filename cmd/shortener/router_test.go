@@ -16,10 +16,9 @@ import (
 func Test_router(t *testing.T) {
 
 	type want struct {
-		codePost    int
-		codeGet     int
-		response    string
-		contentType string
+		codePost int
+		codeGet  int
+		response string
 	}
 
 	tests := []struct {
