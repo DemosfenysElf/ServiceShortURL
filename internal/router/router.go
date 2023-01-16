@@ -48,7 +48,7 @@ func (s *URLServer) Router() error {
 	flag.Parse()
 
 	//s.Cfg.Storage = ""
-	s.Cfg.ConnectDB = ""
+	//s.Cfg.ConnectDB = ""
 
 	if err := s.startBD(); err == nil {
 		fmt.Println(">>>>use BD<<<<", s.Cfg.ConnectDB)
