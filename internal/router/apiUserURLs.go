@@ -16,7 +16,7 @@ type userURLstruct struct {
 	OriginalURL string `json:"original_url"`
 }
 
-func (s *URLServer) APIUserURL(c echo.Context) error {
+func (s *ServerShortener) APIUserURL(c echo.Context) error {
 	fmt.Println("==>> APIUserURL")
 	userCookies := shorturlservice.GetStructCookies()
 

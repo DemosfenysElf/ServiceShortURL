@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	rout := router.URLServer{}
+	rout := router.ServerShortener{}
 	err := rout.Router()
 	if err != nil {
 		log.Fatal("Router:", err)

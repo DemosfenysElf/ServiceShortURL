@@ -33,16 +33,13 @@ func (ms *MemoryStorage) GetURL(short string) (url string, err error) {
 }
 
 func (ms *MemoryStorage) SetURL(url string) (short string, err error) {
-
 	short = shortURL()
 	if len(ms.data) != 0 {
 		for i, data := range ms.data {
 			if short == data.ShortURL {
 				break
 			}
-
 			if i+1 >= len(ms.data) {
-
 				break
 			}
 

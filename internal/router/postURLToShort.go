@@ -10,7 +10,7 @@ import (
 	"github.com/labstack/echo"
 )
 
-func (s *URLServer) PostURLToShort(c echo.Context) error {
+func (s *ServerShortener) PostURLToShort(c echo.Context) error {
 	fmt.Println("==>> PostURLToShort")
 
 	defer c.Request().Body.Close()

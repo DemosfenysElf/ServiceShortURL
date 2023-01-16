@@ -52,7 +52,7 @@ func Test_router(t *testing.T) {
 			rec := httptest.NewRecorder()
 			c := e.NewContext(request, rec)
 
-			rout := router.URLServer{}
+			rout := router.ServerShortener{}
 			rout.StorageInterface = shorturlservice.InitMem()
 
 			errConfig := env.Parse(&rout.Cfg)

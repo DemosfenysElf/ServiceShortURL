@@ -12,19 +12,18 @@ import (
 )
 
 type urlAPIShortenBatch struct {
-	CorrelationID string `json:"correlation_id"`
-	OriginalURL   string `json:"original_url"`
+	ID          string `json:"correlation_id"`
+	OriginalURL string `json:"original_url"`
 }
 
 type shortURLApiShortenBatch struct {
-	CorrelationID string `json:"correlation_id"`
-	ShortURL      string `json:"short_url"`
+	ID       string `json:"correlation_id"`
+	ShortURL string `json:"short_url"`
 }
 
-func (s *URLServer) APIShortenBatch(c echo.Context) error {
+func (s *ServerShortener) APIShortenBatch(c echo.Context) error {
 	fmt.Println("==>> APIShortenBatch")
 	urlBatch := []urlAPIShortenBatch{}
-	shortURLBatch := []shortURLApiShortenBatch{}
 	shortURLOne := shortURLApiShortenBatch{}
 
 	defer c.Request().Body.Close()
@@ -39,12 +38,13 @@ func (s *URLServer) APIShortenBatch(c echo.Context) error {
 		c.Response().WriteHeader(http.StatusInternalServerError)
 		return fmt.Errorf("unmarshal error")
 	}
+	shortURLBatch := make([]shortURLApiShortenBatch, 0, len(urlBatch))
 	var setErr error
 	var short string
 	for i := range urlBatch {
 		short, setErr = s.SetURL(urlBatch[i].OriginalURL)
 		shortURLOne.ShortURL = s.Cfg.BaseURL + "/" + short
-		shortURLOne.CorrelationID = urlBatch[i].CorrelationID
+		shortURLOne.ID = urlBatch[i].ID
 		shortURLBatch = append(shortURLBatch, shortURLOne)
 	}
 

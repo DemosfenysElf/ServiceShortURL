@@ -19,7 +19,7 @@ type ConfigURL struct {
 	ConnectDB     string `env:"DATABASE_DSN"`
 }
 
-type URLServer struct {
+type ServerShortener struct {
 	Cfg    ConfigURL
 	Serv   *echo.Echo
 	Writer io.Writer
@@ -27,7 +27,7 @@ type URLServer struct {
 	shorturlservice.StorageInterface
 }
 
-func (s *URLServer) Router() error {
+func (s *ServerShortener) Router() error {
 
 	errConfig := env.Parse(&s.Cfg)
 	if errConfig != nil {
@@ -84,7 +84,7 @@ func (s *URLServer) Router() error {
 	return nil
 }
 
-func (s *URLServer) startBD() error {
+func (s *ServerShortener) startBD() error {
 	if s.Cfg.ConnectDB == "" {
 		return fmt.Errorf("error s.Cfg.ConnectDB == nil")
 	}
