@@ -23,7 +23,7 @@ type serverShortener struct {
 	Cfg    ConfigURL
 	Serv   *echo.Echo
 	Writer io.Writer
-	DB     shorturlservice.DatabaseInterface
+	DB     shorturlservice.DatabaseService
 	shorturlservice.StorageInterface
 }
 

@@ -9,7 +9,7 @@ import (
 	"github.com/jackc/pgerrcode"
 )
 
-type DatabaseInterface interface {
+type DatabaseService interface {
 	Connect(connStr string) error
 	Close() error
 	Ping() error
