@@ -10,7 +10,7 @@ import (
 	"github.com/labstack/echo"
 )
 
-func (s *Server) PostURLToShort(c echo.Context) error {
+func (s *URLServer) PostURLToShort(c echo.Context) error {
 	fmt.Println("==>> PostURLToShort")
 
 	defer c.Request().Body.Close()
@@ -20,7 +20,7 @@ func (s *Server) PostURLToShort(c echo.Context) error {
 		return fmt.Errorf("URL is not exist")
 	}
 	if len(body) == 0 {
-		c.Response().WriteHeader(http.StatusBadRequest)
+		c.Response().WriteHeader(http.StatusNoContent)
 		return nil
 	}
 	short, setErr := s.SetURL(string(body))

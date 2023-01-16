@@ -7,7 +7,7 @@ import (
 	"github.com/labstack/echo"
 )
 
-func (s *Server) GetShortToURL(c echo.Context) error {
+func (s *URLServer) GetShortToURL(c echo.Context) error {
 	fmt.Println("==>> GetShortToURL")
 	short := c.Request().URL.String()
 	short = short[1:]

@@ -1,19 +1,20 @@
 package router
 
 import (
-	"ServiceShortURL/internal/shorturlservice"
 	"encoding/hex"
 	"fmt"
 	"log"
 	"net/http"
 
+	"ServiceShortURL/internal/shorturlservice"
+
 	"github.com/labstack/echo"
 )
 
-var hexCryproNewToken string
+var hexCryptoNewToken string
 var storageUsers = "storageUsers.log"
 
-func (s Server) serviceAuthentication(next echo.HandlerFunc) echo.HandlerFunc {
+func (s URLServer) serviceAuthentication(next echo.HandlerFunc) echo.HandlerFunc {
 	fmt.Println("==>> serviceAuthentication")
 	return func(c echo.Context) error {
 		requestCookies := c.Request().Cookies()
@@ -29,11 +30,11 @@ func (s Server) serviceAuthentication(next echo.HandlerFunc) echo.HandlerFunc {
 			if err != nil {
 				log.Fatal(err)
 			}
-			decryptoCookies, err := shorturlservice.DecryptoToken(deHexCookies)
+			deCryptoCookies, err := shorturlservice.DeCryptoToken(deHexCookies)
 			if err != nil {
 				log.Fatal(err)
 			}
-			hexCookies := hex.EncodeToString(decryptoCookies)
+			hexCookies := hex.EncodeToString(deCryptoCookies)
 
 			for {
 				readUser, err := consumerUser.ReadUser()
@@ -81,11 +82,11 @@ func (s Server) serviceAuthentication(next echo.HandlerFunc) echo.HandlerFunc {
 		if err != nil {
 			log.Fatal(err)
 		}
-		hexCryproNewToken = hex.EncodeToString(CryptoCookie)
+		hexCryptoNewToken = hex.EncodeToString(CryptoCookie)
 
 		cookie := new(http.Cookie)
 		cookie.Name = "Authentication"
-		cookie.Value = hexCryproNewToken
+		cookie.Value = hexCryptoNewToken
 
 		shorturlservice.SetStructCookies("Authentication", hex.EncodeToString(newToken))
 

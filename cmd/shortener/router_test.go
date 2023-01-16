@@ -1,8 +1,6 @@
 package main
 
 import (
-	"ServiceShortURL/internal/router"
-	"ServiceShortURL/internal/shorturlservice"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -11,6 +9,9 @@ import (
 
 	"github.com/caarlos0/env"
 	"github.com/labstack/echo"
+
+	"ServiceShortURL/internal/router"
+	"ServiceShortURL/internal/shorturlservice"
 )
 
 func Test_router(t *testing.T) {
@@ -37,7 +38,7 @@ func Test_router(t *testing.T) {
 		}, {
 			name: "Test_router_2",
 			want: want{
-				codePost: 400,
+				codePost: 204,
 				codeGet:  307,
 				response: `{"status":"ok"}`,
 			},
@@ -51,7 +52,7 @@ func Test_router(t *testing.T) {
 			rec := httptest.NewRecorder()
 			c := e.NewContext(request, rec)
 
-			rout := router.Server{}
+			rout := router.URLServer{}
 			rout.StorageInterface = shorturlservice.InitMem()
 
 			errConfig := env.Parse(&rout.Cfg)

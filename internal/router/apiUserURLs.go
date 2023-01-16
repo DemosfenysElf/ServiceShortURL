@@ -1,13 +1,14 @@
 package router
 
 import (
-	"ServiceShortURL/internal/shorturlservice"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/labstack/echo"
+
+	"ServiceShortURL/internal/shorturlservice"
 )
 
 type userURLstruct struct {
@@ -15,7 +16,7 @@ type userURLstruct struct {
 	OriginalURL string `json:"original_url"`
 }
 
-func (s *Server) APIUserURL(c echo.Context) error {
+func (s *URLServer) APIUserURL(c echo.Context) error {
 	fmt.Println("==>> APIUserURL")
 	userCookies := shorturlservice.GetStructCookies()
 
@@ -45,13 +46,12 @@ func (s *Server) APIUserURL(c echo.Context) error {
 	}
 	if len(allURL) == 0 {
 		c.Response().WriteHeader(http.StatusNoContent)
-
 		return nil
 	}
 
 	allURLJSON, err := json.Marshal(allURL)
 	if err != nil {
-		http.Error(c.Response(), err.Error(), http.StatusInternalServerError)
+		c.Response().WriteHeader(http.StatusInternalServerError)
 		return fmt.Errorf("marshal error")
 	}
 

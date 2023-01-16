@@ -16,7 +16,7 @@ type DatabaseInterface interface {
 	Ping() error
 }
 
-var stringShortenerURL string = `CREATE TABLE ShortenerURL(
+var stringShortenerURL = `CREATE TABLE ShortenerURL(
 url            varchar(64),
 short          varchar(32),
 nameAut        varchar(32),

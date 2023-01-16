@@ -19,7 +19,7 @@ type shortURLJSON struct {
 	ShortURL string `json:"result"`
 }
 
-func (s *Server) APIShorten(c echo.Context) error {
+func (s *URLServer) APIShorten(c echo.Context) error {
 	fmt.Println("==>> APIShorten")
 	urlJ := urlJSON{}
 	shortURL := shortURLJSON{}
@@ -30,7 +30,16 @@ func (s *Server) APIShorten(c echo.Context) error {
 		return fmt.Errorf("URL is not exist")
 	}
 
-	json.Unmarshal(body, &urlJ)
+	err = json.Unmarshal(body, &urlJ)
+	if err != nil {
+		c.Response().WriteHeader(http.StatusNoContent)
+		return fmt.Errorf("unmarshal error")
+	}
+
+	if len(urlJ.URL) == 0 {
+		c.Response().WriteHeader(http.StatusBadRequest)
+		return fmt.Errorf("URL is nil")
+	}
 	short, setErr := s.SetURL(urlJ.URL)
 	shortURL.ShortURL = s.Cfg.BaseURL + "/" + short
 
@@ -53,10 +62,10 @@ func (s *Server) APIShorten(c echo.Context) error {
 		sErr := setErr.Error()
 		if strings.Contains(sErr, pgerrcode.UniqueViolation) {
 			c.Response().WriteHeader(http.StatusConflict)
+			return nil
 		}
-	} else {
-		c.Response().WriteHeader(http.StatusCreated)
 	}
+	c.Response().WriteHeader(http.StatusCreated)
 	c.Response().Write(shortU)
 	return nil
 }

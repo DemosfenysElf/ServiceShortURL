@@ -1,11 +1,12 @@
 package router
 
 import (
-	"ServiceShortURL/internal/shorturlservice"
 	"flag"
 	"fmt"
 	"io"
 	"log"
+
+	"ServiceShortURL/internal/shorturlservice"
 
 	"github.com/caarlos0/env"
 	"github.com/labstack/echo"
@@ -18,7 +19,7 @@ type ConfigURL struct {
 	ConnectDB     string `env:"DATABASE_DSN"`
 }
 
-type Server struct {
+type URLServer struct {
 	Cfg    ConfigURL
 	Serv   *echo.Echo
 	Writer io.Writer
@@ -26,7 +27,7 @@ type Server struct {
 	shorturlservice.StorageInterface
 }
 
-func (s *Server) Router() error {
+func (s *URLServer) Router() error {
 
 	errConfig := env.Parse(&s.Cfg)
 	if errConfig != nil {
@@ -47,7 +48,7 @@ func (s *Server) Router() error {
 	flag.Parse()
 
 	//s.Cfg.Storage = ""
-	//s.Cfg.ConnectDB = ""
+	s.Cfg.ConnectDB = ""
 
 	if err := s.startBD(); err == nil {
 		fmt.Println(">>>>use BD<<<<", s.Cfg.ConnectDB)
@@ -83,7 +84,7 @@ func (s *Server) Router() error {
 	return nil
 }
 
-func (s *Server) startBD() error {
+func (s *URLServer) startBD() error {
 	if s.Cfg.ConnectDB == "" {
 		return fmt.Errorf("error s.Cfg.ConnectDB == nil")
 	}

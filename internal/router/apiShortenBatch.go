@@ -11,42 +11,46 @@ import (
 	"github.com/labstack/echo"
 )
 
-type urlAPIShortenBath struct {
+type urlAPIShortenBatch struct {
 	CorrelationID string `json:"correlation_id"`
 	OriginalURL   string `json:"original_url"`
 }
 
-type shortURLApiShortenBath struct {
+type shortURLApiShortenBatch struct {
 	CorrelationID string `json:"correlation_id"`
 	ShortURL      string `json:"short_url"`
 }
 
-func (s *Server) APIShortenBatch(c echo.Context) error {
+func (s *URLServer) APIShortenBatch(c echo.Context) error {
 	fmt.Println("==>> APIShortenBatch")
-	urlBath := []urlAPIShortenBath{}
-	shortURLBath := []shortURLApiShortenBath{}
-	shortURLOne := shortURLApiShortenBath{}
+	urlBatch := []urlAPIShortenBatch{}
+	shortURLBatch := []shortURLApiShortenBatch{}
+	shortURLOne := shortURLApiShortenBatch{}
 
 	defer c.Request().Body.Close()
 	body, err := io.ReadAll(c.Request().Body)
 	if err != nil {
-		http.Error(c.Response(), err.Error(), http.StatusInternalServerError)
+		c.Response().WriteHeader(http.StatusInternalServerError)
 		return fmt.Errorf("URL is not exist")
 	}
 
-	json.Unmarshal(body, &urlBath)
+	err = json.Unmarshal(body, &urlBatch)
+	if err != nil {
+		c.Response().WriteHeader(http.StatusInternalServerError)
+		return fmt.Errorf("unmarshal error")
+	}
 	var setErr error
 	var short string
-	for i := range urlBath {
-		short, setErr = s.SetURL(urlBath[i].OriginalURL)
+	for i := range urlBatch {
+		short, setErr = s.SetURL(urlBatch[i].OriginalURL)
 		shortURLOne.ShortURL = s.Cfg.BaseURL + "/" + short
-		shortURLOne.CorrelationID = urlBath[i].CorrelationID
-		shortURLBath = append(shortURLBath, shortURLOne)
+		shortURLOne.CorrelationID = urlBatch[i].CorrelationID
+		shortURLBatch = append(shortURLBatch, shortURLOne)
 	}
 
-	shortU, err := json.Marshal(shortURLBath)
+	shortU, err := json.Marshal(shortURLBatch)
 	if err != nil {
-		http.Error(c.Response(), err.Error(), http.StatusInternalServerError)
+		c.Response().WriteHeader(http.StatusInternalServerError)
 		return fmt.Errorf("marshal error")
 	}
 
@@ -63,10 +67,10 @@ func (s *Server) APIShortenBatch(c echo.Context) error {
 		setErr := setErr.Error()
 		if strings.Contains(setErr, pgerrcode.UniqueViolation) {
 			c.Response().WriteHeader(http.StatusConflict)
+			return nil
 		}
-	} else {
-		c.Response().WriteHeader(http.StatusCreated)
 	}
+	c.Response().WriteHeader(http.StatusCreated)
 	c.Response().Write(shortU)
 	return nil
 }
