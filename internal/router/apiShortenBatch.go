@@ -67,7 +67,7 @@ func (s *URLServer) APIShortenBatch(c echo.Context) error {
 		setErr := setErr.Error()
 		if strings.Contains(setErr, pgerrcode.UniqueViolation) {
 			c.Response().WriteHeader(http.StatusConflict)
-			return nil
+
 		}
 	}
 	c.Response().WriteHeader(http.StatusCreated)
