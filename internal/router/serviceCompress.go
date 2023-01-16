@@ -13,10 +13,12 @@ func serviceCompress(b []byte) ([]byte, error) {
 	_, err := zw.Write(b)
 	if err != nil {
 		log.Fatal(err)
+		return nil, err
 	}
 
 	if err := zw.Close(); err != nil {
 		log.Fatal(err)
+		return nil, err
 	}
 
 	return buf.Bytes(), nil
