@@ -62,6 +62,7 @@ func (s *URLServer) APIShorten(c echo.Context) error {
 		sErr := setErr.Error()
 		if strings.Contains(sErr, pgerrcode.UniqueViolation) {
 			c.Response().WriteHeader(http.StatusConflict)
+			c.Response().Write(shortU)
 			return nil
 		}
 	}
