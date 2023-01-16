@@ -34,22 +34,22 @@ func (ms *MemoryStorage) GetURL(short string) (url string, err error) {
 
 func (ms *MemoryStorage) SetURL(url string) (short string, err error) {
 
-	for t := true; t; {
-		short = shortURL()
-		if len(ms.data) == 0 {
-			break
-		}
+	short = shortURL()
+	if len(ms.data) != 0 {
 		for i, data := range ms.data {
 			if short == data.ShortURL {
 				break
 			}
 
 			if i+1 >= len(ms.data) {
-				t = false
+
 				break
 			}
+
+			short = shortURL()
 		}
 	}
+
 	SetStructURL(url, short)
 	ms.data = append(ms.data, *GetStructURL())
 	return short, nil
