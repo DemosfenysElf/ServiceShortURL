@@ -49,10 +49,10 @@ func (s *URLServer) APIShortenBatch(c echo.Context) error {
 	}
 
 	shortU, err := json.Marshal(shortURLBatch)
-	if err != nil {
-		c.Response().WriteHeader(http.StatusInternalServerError)
-		return fmt.Errorf("marshal error")
-	}
+	//if err != nil {
+	//	c.Response().WriteHeader(http.StatusInternalServerError)
+	//	return fmt.Errorf("marshal error")
+	//}
 
 	if c.Request().Header.Get("Accept-Encoding") == "gzip" {
 		shortU, err = serviceCompress(shortU)
