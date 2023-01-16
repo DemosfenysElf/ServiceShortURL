@@ -28,7 +28,7 @@ func (s *serverShortener) APIUserURL(c echo.Context) error {
 	}
 	defer consumerURL.Close()
 
-	for readURL, err := consumerURL.ReadURLInfo(); err == nil; {
+	for readURL, err := consumerURL.ReadURLInfo(); err == nil; readURL, err = consumerURL.ReadURLInfo() {
 		if readURL.CookiesAuthentication.ValueUser == userCookies.ValueUser {
 			element := userURLstruct{
 				ShortURL:    s.Cfg.BaseURL + "/" + readURL.ShortURL,
@@ -37,6 +37,7 @@ func (s *serverShortener) APIUserURL(c echo.Context) error {
 			allURL = append(allURL, element)
 		}
 	}
+
 	if len(allURL) == 0 {
 		c.Response().WriteHeader(http.StatusNoContent)
 		return nil
