@@ -16,7 +16,7 @@ type userURLstruct struct {
 	OriginalURL string `json:"original_url"`
 }
 
-func (s *ServerShortener) APIUserURL(c echo.Context) error {
+func (s *serverShortener) APIUserURL(c echo.Context) error {
 	fmt.Println("==>> APIUserURL")
 	userCookies := shorturlservice.GetStructCookies()
 
@@ -28,21 +28,14 @@ func (s *ServerShortener) APIUserURL(c echo.Context) error {
 	}
 	defer consumerURL.Close()
 
-	for {
-		readURL, err := consumerURL.ReadURLInfo()
-		if err != nil {
-			break
-		}
-
+	for readURL, err := consumerURL.ReadURLInfo(); err == nil; {
 		if readURL.CookiesAuthentication.ValueUser == userCookies.ValueUser {
-
 			element := userURLstruct{
 				ShortURL:    s.Cfg.BaseURL + "/" + readURL.ShortURL,
 				OriginalURL: readURL.URL,
 			}
 			allURL = append(allURL, element)
 		}
-
 	}
 	if len(allURL) == 0 {
 		c.Response().WriteHeader(http.StatusNoContent)

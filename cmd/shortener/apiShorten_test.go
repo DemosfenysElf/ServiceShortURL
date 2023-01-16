@@ -58,7 +58,7 @@ func TestApiShorten(t *testing.T) {
 			request := httptest.NewRequest(http.MethodPost, "/api/shorten", strings.NewReader(tt.urlJSON))
 			rec := httptest.NewRecorder()
 			c := e.NewContext(request, rec)
-			rout := router.ServerShortener{}
+			rout := router.InitServer()
 			rout.StorageInterface = shorturlservice.InitMem()
 
 			errConfig := env.Parse(&rout.Cfg)

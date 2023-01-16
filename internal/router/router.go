@@ -19,7 +19,7 @@ type ConfigURL struct {
 	ConnectDB     string `env:"DATABASE_DSN"`
 }
 
-type ServerShortener struct {
+type serverShortener struct {
 	Cfg    ConfigURL
 	Serv   *echo.Echo
 	Writer io.Writer
@@ -27,8 +27,57 @@ type ServerShortener struct {
 	shorturlservice.StorageInterface
 }
 
-func (s *ServerShortener) Router() error {
+func InitServer() *serverShortener {
 
+	return &serverShortener{}
+}
+
+func (s *serverShortener) Router() error {
+	s.InitRouter()
+
+	e := echo.New()
+
+	e.Use(s.gzipHandle)
+	e.Use(s.serviceAuthentication)
+
+	e.GET("/:id", s.GetShortToURL)
+	e.GET("/api/user/urls", s.APIUserURL)
+	e.GET("/ping", s.PingDB)
+
+	e.POST("/", s.PostURLToShort)
+	e.POST("/api/shorten/batch", s.APIShortenBatch)
+	e.POST("/api/shorten", s.APIShorten)
+
+	errStart := e.Start(s.Cfg.ServerAddress)
+
+	if errStart != nil {
+		return errStart
+	}
+	return nil
+}
+
+func (s *serverShortener) startBD() error {
+	if s.Cfg.ConnectDB == "" {
+		return fmt.Errorf("error s.Cfg.ConnectDB == nil")
+	}
+
+	// DB connection
+	DB, errInit := shorturlservice.InitDB()
+	if errInit != nil {
+		return errInit
+	}
+
+	if errConnect := DB.Connect(s.Cfg.ConnectDB); errConnect != nil {
+		return errConnect
+	}
+	//defer DB.Close()
+
+	s.StorageInterface = DB
+	s.DB = DB
+	return nil
+}
+
+func (s *serverShortener) InitRouter() {
 	errConfig := env.Parse(&s.Cfg)
 	if errConfig != nil {
 		log.Fatal(errConfig)
@@ -61,46 +110,4 @@ func (s *ServerShortener) Router() error {
 		fmt.Println(">>>>use memory<<<<")
 		s.StorageInterface = shorturlservice.InitMem()
 	}
-
-	//
-	e := echo.New()
-
-	e.Use(s.gzipHandle)
-	e.Use(s.serviceAuthentication)
-
-	e.GET("/:id", s.GetShortToURL)
-	e.GET("/api/user/urls", s.APIUserURL)
-	e.GET("/ping", s.PingDB)
-
-	e.POST("/", s.PostURLToShort)
-	e.POST("/api/shorten/batch", s.APIShortenBatch)
-	e.POST("/api/shorten", s.APIShorten)
-
-	errStart := e.Start(s.Cfg.ServerAddress)
-
-	if errStart != nil {
-		return errStart
-	}
-	return nil
-}
-
-func (s *ServerShortener) startBD() error {
-	if s.Cfg.ConnectDB == "" {
-		return fmt.Errorf("error s.Cfg.ConnectDB == nil")
-	}
-
-	// DB connection
-	DB, errInit := shorturlservice.InitDB()
-	if errInit != nil {
-		return errInit
-	}
-
-	if errConnect := DB.Connect(s.Cfg.ConnectDB); errConnect != nil {
-		return errConnect
-	}
-	//defer DB.Close()
-
-	s.StorageInterface = DB
-	s.DB = DB
-	return nil
 }

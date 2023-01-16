@@ -3,7 +3,6 @@ package shorturlservice
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"strings"
 	"time"
 
@@ -96,11 +95,9 @@ func (db *Database) GetShortURL(url string) (short string, err error) {
 
 func (db *Database) CreateTable() error {
 	_, err := db.connection.Exec(stringShortenerURL)
-	fmt.Println("err CreateTable: ", err)
 	if err != nil {
 		return err
 	}
 	_, err = db.connection.Exec("CREATE UNIQUE INDEX URL_index ON ShortenerURL (url)")
-	fmt.Println("err unique index: ", err)
 	return err
 }

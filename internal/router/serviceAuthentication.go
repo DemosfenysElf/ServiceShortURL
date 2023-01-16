@@ -14,7 +14,7 @@ import (
 var hexCryptoNewToken string
 var storageUsers = "storageUsers.log"
 
-func (s ServerShortener) serviceAuthentication(next echo.HandlerFunc) echo.HandlerFunc {
+func (s serverShortener) serviceAuthentication(next echo.HandlerFunc) echo.HandlerFunc {
 	fmt.Println("==>> serviceAuthentication")
 	return func(c echo.Context) error {
 		requestCookies := c.Request().Cookies()

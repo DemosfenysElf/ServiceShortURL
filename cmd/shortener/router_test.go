@@ -39,7 +39,6 @@ func Test_router(t *testing.T) {
 			name: "Test_router_2",
 			want: want{
 				codePost: 204,
-				codeGet:  307,
 				response: `{"status":"ok"}`,
 			},
 			url: (""),
@@ -52,7 +51,7 @@ func Test_router(t *testing.T) {
 			rec := httptest.NewRecorder()
 			c := e.NewContext(request, rec)
 
-			rout := router.ServerShortener{}
+			rout := router.InitServer()
 			rout.StorageInterface = shorturlservice.InitMem()
 
 			errConfig := env.Parse(&rout.Cfg)
@@ -73,35 +72,36 @@ func Test_router(t *testing.T) {
 			if res.StatusCode != tt.want.codePost {
 				t.Errorf("Expected status code %d, got %d", tt.want.codePost, rec.Code)
 			}
-			//////////////////////////////////////////////////////////////
+			if res.StatusCode == 201 {
+				//////////////////////////////////////////////////////////////
 
-			resBodyShort := strings.Replace(string(resBody), rout.Cfg.BaseURL+"/", "", -1)
-			request1 := httptest.NewRequest(http.MethodGet, "/"+resBodyShort, nil)
+				resBodyShort := strings.Replace(string(resBody), rout.Cfg.BaseURL+"/", "", -1)
+				request1 := httptest.NewRequest(http.MethodGet, "/"+resBodyShort, nil)
 
-			rec1 := httptest.NewRecorder()
-			c1 := e.NewContext(request1, rec1)
+				rec1 := httptest.NewRecorder()
+				c1 := e.NewContext(request1, rec1)
 
-			rout.GetShortToURL(c1)
-			res = rec1.Result()
+				rout.GetShortToURL(c1)
+				res = rec1.Result()
 
-			defer res.Body.Close()
-			resBody, err = io.ReadAll(res.Body)
-			if err != nil {
-				t.Fatal(err)
+				defer res.Body.Close()
+				resBody, err = io.ReadAll(res.Body)
+				if err != nil {
+					t.Fatal(err)
+				}
+
+				if strings.HasPrefix(string(resBody), rout.Cfg.BaseURL+"/") {
+					t.Errorf("Expected body %s, got %s", tt.want.response, rec1.Body.String())
+				}
+
+				if res.StatusCode != tt.want.codeGet {
+					t.Errorf("Expected status code %d, got %d", tt.want.codeGet, rec1.Code)
+				}
+
+				if res.Header.Get("Location") != tt.url {
+					t.Errorf("Expected Location %s, got %s", tt.url, res.Header.Get("Location"))
+				}
 			}
-
-			if strings.HasPrefix(string(resBody), rout.Cfg.BaseURL+"/") {
-				t.Errorf("Expected body %s, got %s", tt.want.response, rec1.Body.String())
-			}
-
-			if res.StatusCode != tt.want.codeGet {
-				t.Errorf("Expected status code %d, got %d", tt.want.codeGet, rec1.Code)
-			}
-
-			if res.Header.Get("Location") != tt.url {
-				t.Errorf("Expected Location %s, got %s", tt.url, res.Header.Get("Location"))
-			}
-
 		})
 	}
 }

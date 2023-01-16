@@ -8,7 +8,7 @@ import (
 	"github.com/labstack/echo"
 )
 
-func (s *ServerShortener) PingDB(c echo.Context) error {
+func (s *serverShortener) PingDB(c echo.Context) error {
 	fmt.Println("==>> PingDB")
 	if s.DB == nil {
 		c.Response().WriteHeader(http.StatusInternalServerError)
