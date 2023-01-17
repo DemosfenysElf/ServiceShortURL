@@ -1,56 +1,21 @@
 package shorturlservice
 
-import (
-	"log"
-	"math/rand"
-)
-
-var urlmap = make(map[string]string)
+import "math/rand"
 
 const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
-func GetURL(short string, storage string) (url string) {
-
-	cons, err := NewConsumer(storage)
-	if err != nil {
-		return urlmap[short]
-	}
-	defer cons.Close()
-
-	for {
-		readURL, err := cons.ReadURL()
-		if err != nil {
-			break
-		}
-		if readURL.ShortURL == short {
-			return urlmap[readURL.ShortURL]
-		}
-	}
-
-	return urlmap[short]
+type CookiesAuthentication struct {
+	NameUser  string `json:"NameUser"`
+	ValueUser string `json:"ValueUser"`
 }
 
-func SetURL(url string, storage string) (short string) {
-	short = shortURL()
-	for _, ok := urlmap[short]; ok; {
-		short = shortURL()
-	}
-	urlmap[short] = url
-	////////// дублирование в файл
-
-	urli := &URLInfo{URL: url, ShortURL: short}
-
-	prod, err := NewProducer(storage)
-	if err != nil {
-		return
-	}
-	defer prod.Close()
-	if err := prod.WriteURL(urli); err != nil {
-		log.Fatal(err)
-	}
-
-	return
+type URLInfo struct {
+	URL                   string `json:"url"`
+	ShortURL              string `json:"shortURL"`
+	CookiesAuthentication CookiesAuthentication
 }
+
+var urlInfo = &URLInfo{}
 
 func shortURL() string {
 	a := make([]byte, 7)
@@ -58,4 +23,24 @@ func shortURL() string {
 		a[i] = letters[rand.Intn(len(letters))]
 	}
 	return string(a)
+}
+
+func SetStructURL(url string, short string) (info *URLInfo) {
+	urlInfo.URL = url
+	urlInfo.ShortURL = short
+	info = urlInfo
+	return
+}
+
+func SetStructCookies(nameUser string, value string) {
+	urlInfo.CookiesAuthentication = CookiesAuthentication{nameUser, value}
+
+}
+
+func GetStructCookies() *CookiesAuthentication {
+	return &urlInfo.CookiesAuthentication
+}
+
+func GetStructURL() *URLInfo {
+	return urlInfo
 }

@@ -1,12 +1,13 @@
 package main
 
 import (
-	"ServiceShortURL/internal/router"
 	"log"
+
+	"ServiceShortURL/internal/router"
 )
 
 func main() {
-	rout := router.Server{}
+	rout := router.InitServer()
 	err := rout.Router()
 	if err != nil {
 		log.Fatal("Router:", err)
