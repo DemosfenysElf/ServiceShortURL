@@ -61,7 +61,6 @@ func (s *serverShortener) startBD() error {
 		return fmt.Errorf("error s.Cfg.ConnectDB == nil")
 	}
 
-	// DB connection
 	DB, errInit := shorturlservice.InitDB()
 	if errInit != nil {
 		return errInit

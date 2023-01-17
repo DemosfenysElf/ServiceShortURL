@@ -12,7 +12,7 @@ import (
 type DatabaseService interface {
 	Connect(connStr string) error
 	Close() error
-	Ping() error
+	Ping(ctx context.Context) error
 }
 
 var stringShortenerURL = `CREATE TABLE ShortenerURL(
@@ -24,11 +24,10 @@ valueAut       varchar(32)
 
 type Database struct {
 	connection *sql.DB
-	ctx        context.Context
 }
 
 func InitDB() (*Database, error) {
-	return &Database{ctx: context.Background()}, nil
+	return &Database{}, nil
 }
 
 func (db *Database) Connect(connStr string) (err error) {
@@ -41,7 +40,10 @@ func (db *Database) Connect(connStr string) (err error) {
 	if err != nil {
 		return err
 	}
-	err = db.Ping()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	err = db.Ping(ctx)
 	if err != nil {
 		return err
 	}
@@ -52,9 +54,7 @@ func (db *Database) Close() error {
 	return db.connection.Close()
 }
 
-func (db *Database) Ping() error {
-	ctx, cancel := context.WithTimeout(db.ctx, 1*time.Second)
-	defer cancel()
+func (db *Database) Ping(ctx context.Context) error {
 	if err := db.connection.PingContext(ctx); err != nil {
 		return err
 	}
