@@ -51,6 +51,9 @@ func GetStructURL() *URLInfo {
 }
 
 func GetCookieValue(body []*http.Cookie) string {
+	if len(body) == 0 {
+		return ""
+	}
 	deHexCookies, err := hex.DecodeString(body[0].Value)
 	if err != nil {
 		log.Fatal(err)
