@@ -65,6 +65,7 @@ func (db *Database) Ping(ctx context.Context) error {
 }
 
 func (db *Database) SetURL(url string) (short string, err error) {
+	fmt.Println(">>>>>>>>>SetURL, DB")
 	short = shortURL()
 	// добавить проверку на оригинальность
 
