@@ -11,6 +11,7 @@ import (
 
 func (s serverShortener) gzipHandle(next echo.HandlerFunc) echo.HandlerFunc {
 	fmt.Println("==>> gzipHandle")
+	s.WG.Wait()
 	return func(c echo.Context) error {
 		if c.Request().Header.Get("Content-Encoding") != "gzip" {
 			return next(c)
