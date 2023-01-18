@@ -42,7 +42,7 @@ func (s *serverShortener) Router() error {
 	e.Use(s.gzipHandle)
 	e.Use(s.serviceAuthentication)
 
-	e.GET("/:id", s.GetAPIUserURL)
+	e.GET("/:id", s.GetShortToURL)
 	e.GET("/api/user/urls", s.GetAPIUserURL)
 	e.GET("/ping", s.GetPingDB)
 
@@ -100,8 +100,8 @@ func (s *serverShortener) InitRouter() {
 	}
 	flag.Parse()
 
-	//s.Cfg.Storage = ""
-	//s.Cfg.ConnectDB = ""
+	s.Cfg.Storage = ""
+	s.Cfg.ConnectDB = ""
 
 	if err := s.startBD(); err == nil {
 		fmt.Println(">>>>use BD<<<<", s.Cfg.ConnectDB)
