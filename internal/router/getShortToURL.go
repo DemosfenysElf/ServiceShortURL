@@ -10,6 +10,7 @@ import (
 
 func (s *serverShortener) GetShortToURL(c echo.Context) error {
 	s.WG.Wait()
+
 	fmt.Println("==>> GetShortToURL")
 	short := c.Request().URL.String()
 	short = short[1:]
