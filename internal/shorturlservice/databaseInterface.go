@@ -22,7 +22,7 @@ url            varchar(64),
 short          varchar(32),
 nameUser        varchar(32),
 valueUser       varchar(32),
-deleted			boolean(32)
+deleted			bool
 )`
 
 type Database struct {
