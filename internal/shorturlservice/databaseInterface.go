@@ -22,7 +22,7 @@ url            varchar(64),
 short          varchar(32),
 nameUser        varchar(32),
 valueUser       varchar(32),
-deleted			varchar(8)
+deleted			varchar(32)
 )`
 
 type Database struct {
@@ -69,7 +69,7 @@ func (db *Database) SetURL(url string) (short string, err error) {
 	// добавить проверку на оригинальность
 
 	user := GetStructCookies()
-	_, err = db.connection.Exec("insert into ShortenerURL(url,short,nameUser,valueUser) values ($1,$2,$3,$4)", url, short, user.NameUser, user.ValueUser)
+	_, err = db.connection.Exec("insert into ShortenerURL (url,short,nameUser,valueUser,deleted) values ($1,$2,$3,$4,$5)", url, short, user.NameUser, user.ValueUser, false)
 
 	var sErr string
 	if err != nil {
