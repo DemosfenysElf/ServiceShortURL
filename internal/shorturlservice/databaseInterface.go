@@ -88,7 +88,7 @@ func (db *Database) SetURL(url string) (short string, err error) {
 
 func (db *Database) GetURL(short string) (url string, err error) {
 	deleted := false
-	row := db.connection.QueryRow("select url from ShortenerURL where short = $1", short)
+	row := db.connection.QueryRow("select url,deleted from ShortenerURL where short = $1", short)
 	err = row.Scan(&url, &deleted)
 	fmt.Println(">>>>>URL: ", url)
 	fmt.Println(">>>>>deleted: ", deleted)
