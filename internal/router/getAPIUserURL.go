@@ -19,7 +19,8 @@ type userURLstruct struct {
 func (s *serverShortener) GetAPIUserURL(c echo.Context) error {
 	s.WG.Wait()
 	fmt.Println("==>> APIUserURL")
-	userCookies := shorturlservice.GetStructCookies()
+
+	userCookies := shorturlservice.GetCookieValue(c.Request().Cookies())
 
 	allURL := make([]userURLstruct, 0)
 
@@ -30,7 +31,7 @@ func (s *serverShortener) GetAPIUserURL(c echo.Context) error {
 	defer consumerURL.Close()
 
 	for readURL, err := consumerURL.ReadURLInfo(); err == nil; readURL, err = consumerURL.ReadURLInfo() {
-		if readURL.CookiesAuthentication.ValueUser == userCookies.ValueUser {
+		if readURL.CookiesAuthentication.ValueUser == userCookies {
 			element := userURLstruct{
 				ShortURL:    s.Cfg.BaseURL + "/" + readURL.ShortURL,
 				OriginalURL: readURL.URL,
