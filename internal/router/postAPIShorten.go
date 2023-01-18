@@ -19,7 +19,8 @@ type shortURLJSON struct {
 	ShortURL string `json:"result"`
 }
 
-func (s *serverShortener) APIShorten(c echo.Context) error {
+func (s *serverShortener) PostAPIShorten(c echo.Context) error {
+	s.wg.Wait()
 	fmt.Println("==>> APIShorten")
 	urlJ := urlJSON{}
 	shortURL := shortURLJSON{}

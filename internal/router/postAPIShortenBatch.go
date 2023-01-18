@@ -21,7 +21,8 @@ type shortURLApiShortenBatch struct {
 	ShortURL string `json:"short_url"`
 }
 
-func (s *serverShortener) APIShortenBatch(c echo.Context) error {
+func (s *serverShortener) PostAPIShortenBatch(c echo.Context) error {
+	s.wg.Wait()
 	fmt.Println("==>> APIShortenBatch")
 	urlBatch := []urlAPIShortenBatch{}
 	shortURLOne := shortURLApiShortenBatch{}

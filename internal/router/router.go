@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"sync"
 
 	"ServiceShortURL/internal/shorturlservice"
 
@@ -23,6 +24,7 @@ type serverShortener struct {
 	Cfg    ConfigURL
 	Serv   *echo.Echo
 	Writer io.Writer
+	wg     sync.WaitGroup
 	DB     shorturlservice.DatabaseService
 	shorturlservice.StorageInterface
 }
@@ -40,13 +42,15 @@ func (s *serverShortener) Router() error {
 	e.Use(s.gzipHandle)
 	e.Use(s.serviceAuthentication)
 
-	e.GET("/:id", s.GetShortToURL)
-	e.GET("/api/user/urls", s.APIUserURL)
-	e.GET("/ping", s.PingDB)
+	e.GET("/:id", s.GetAPIUserURL)
+	e.GET("/api/user/urls", s.GetAPIUserURL)
+	e.GET("/ping", s.GetPingDB)
 
 	e.POST("/", s.PostURLToShort)
-	e.POST("/api/shorten/batch", s.APIShortenBatch)
-	e.POST("/api/shorten", s.APIShorten)
+	e.POST("/api/shorten/batch", s.PostAPIShortenBatch)
+	e.POST("/api/shorten", s.PostAPIShorten)
+
+	e.DELETE("/api/user/urls", s.DeleteAPIUserURL)
 
 	errStart := e.Start(s.Cfg.ServerAddress)
 
@@ -61,6 +65,7 @@ func (s *serverShortener) startBD() error {
 		return fmt.Errorf("error s.Cfg.ConnectDB == nil")
 	}
 
+	// DB connection
 	DB, errInit := shorturlservice.InitDB()
 	if errInit != nil {
 		return errInit

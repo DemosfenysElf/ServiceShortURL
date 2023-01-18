@@ -13,13 +13,15 @@ type DatabaseService interface {
 	Connect(connStr string) error
 	Close() error
 	Ping(ctx context.Context) error
+	DeleteURL(listURL []string) error
 }
 
 var stringShortenerURL = `CREATE TABLE ShortenerURL(
 url            varchar(64),
 short          varchar(32),
-nameAut        varchar(32),
-valueAut       varchar(32)
+nameUser        varchar(32),
+valueUser       varchar(32),
+deleted			varchar(8)
 )`
 
 type Database struct {
@@ -66,7 +68,7 @@ func (db *Database) SetURL(url string) (short string, err error) {
 	// добавить проверку на оригинальность
 
 	user := GetStructCookies()
-	_, err = db.connection.Exec("insert into ShortenerURL(url,short,nameAut,valueAut) values ($1,$2,$3,$4)", url, short, user.NameUser, user.ValueUser)
+	_, err = db.connection.Exec("insert into ShortenerURL(url,short,nameUser,valueUser) values ($1,$2,$3,$4)", url, short, user.NameUser, user.ValueUser)
 
 	var sErr string
 	if err != nil {
@@ -84,6 +86,7 @@ func (db *Database) SetURL(url string) (short string, err error) {
 func (db *Database) GetURL(short string) (url string, err error) {
 	row := db.connection.QueryRow("select url from ShortenerURL where short = $1", short)
 	err = row.Scan(&url)
+
 	return
 }
 
@@ -100,4 +103,15 @@ func (db *Database) CreateTable() error {
 	}
 	_, err = db.connection.Exec("CREATE UNIQUE INDEX URL_index ON ShortenerURL (url)")
 	return err
+}
+
+func (db *Database) DeleteURL(listURL []string) error {
+	user := GetStructCookies()
+	for _, u := range listURL {
+		_, err := db.connection.Exec("UPDATE ShortenerURL SET deleted = true WHERE (url=$1)&&(valueUser=$2)", u, user.ValueUser)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

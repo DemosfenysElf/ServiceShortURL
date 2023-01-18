@@ -66,7 +66,7 @@ func TestApiShorten(t *testing.T) {
 				t.Fatal(errConfig)
 			}
 			rout.Serv = e
-			rout.APIShorten(c)
+			rout.PostAPIShorten(c)
 
 			res := rec.Result()
 
