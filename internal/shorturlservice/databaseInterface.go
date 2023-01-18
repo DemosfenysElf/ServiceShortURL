@@ -3,6 +3,7 @@ package shorturlservice
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"strings"
 	"time"
 
@@ -13,7 +14,7 @@ type DatabaseService interface {
 	Connect(connStr string) error
 	Close() error
 	Ping(ctx context.Context) error
-	DeleteURL(listURL []string) error
+	DeleteURL(user string, listURL []string) error
 }
 
 var stringShortenerURL = `CREATE TABLE ShortenerURL(
@@ -105,10 +106,10 @@ func (db *Database) CreateTable() error {
 	return err
 }
 
-func (db *Database) DeleteURL(listURL []string) error {
-	user := GetStructCookies()
+func (db *Database) DeleteURL(user string, listURL []string) error {
+	fmt.Println(">>>Delete<<<")
 	for _, u := range listURL {
-		_, err := db.connection.Exec("UPDATE ShortenerURL SET deleted = true WHERE (url=$1)&&(valueUser=$2)", u, user.ValueUser)
+		_, err := db.connection.Exec("UPDATE ShortenerURL SET deleted = true WHERE (url=$1)&&(valueUser=$2)", u, user)
 		if err != nil {
 			return err
 		}

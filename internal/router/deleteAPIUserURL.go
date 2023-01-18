@@ -8,6 +8,8 @@ import (
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/labstack/echo"
+
+	"ServiceShortURL/internal/shorturlservice"
 )
 
 func (s *serverShortener) DeleteAPIUserURL(c echo.Context) error {
@@ -22,6 +24,7 @@ func (s *serverShortener) DeleteAPIUserURL(c echo.Context) error {
 		c.Response().WriteHeader(http.StatusInternalServerError)
 		return fmt.Errorf("URL is not exist")
 	}
+	user := shorturlservice.GetCookieValue(c.Request().Cookies())
 
 	err = json.Unmarshal(body, &newlist)
 	if err != nil {
@@ -29,7 +32,7 @@ func (s *serverShortener) DeleteAPIUserURL(c echo.Context) error {
 		return fmt.Errorf("unmarshal error")
 	}
 
-	go s.DB.DeleteURL(newlist)
+	go s.DB.DeleteURL(user, newlist)
 
 	c.Response().WriteHeader(http.StatusAccepted)
 	return nil

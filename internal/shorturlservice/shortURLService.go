@@ -1,6 +1,11 @@
 package shorturlservice
 
-import "math/rand"
+import (
+	"encoding/hex"
+	"log"
+	"math/rand"
+	"net/http"
+)
 
 const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
@@ -43,4 +48,18 @@ func GetStructCookies() *CookiesAuthentication {
 
 func GetStructURL() *URLInfo {
 	return urlInfo
+}
+
+func GetCookieValue(body []*http.Cookie) string {
+	requestCookies := body
+	deHexCookies, err := hex.DecodeString(requestCookies[0].Value)
+	if err != nil {
+		log.Fatal(err)
+	}
+	deCryptoCookies, err := DeCryptoToken(deHexCookies)
+	if err != nil {
+		log.Fatal(err)
+	}
+	hexCookies := hex.EncodeToString(deCryptoCookies)
+	return hexCookies
 }
