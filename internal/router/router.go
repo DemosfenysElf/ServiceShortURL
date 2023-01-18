@@ -31,7 +31,7 @@ type serverShortener struct {
 
 func InitServer() *serverShortener {
 
-	return &serverShortener{}
+	return &serverShortener{WG: new(sync.WaitGroup)}
 }
 
 func (s *serverShortener) Router() error {
@@ -100,8 +100,8 @@ func (s *serverShortener) InitRouter() {
 	}
 	flag.Parse()
 
-	//s.Cfg.Storage = ""
-	//s.Cfg.ConnectDB = ""
+	s.Cfg.Storage = ""
+	s.Cfg.ConnectDB = ""
 
 	if err := s.startBD(); err == nil {
 		fmt.Println(">>>>use BD<<<<", s.Cfg.ConnectDB)
@@ -114,4 +114,5 @@ func (s *serverShortener) InitRouter() {
 		fmt.Println(">>>>use memory<<<<")
 		s.StorageInterface = shorturlservice.InitMem()
 	}
+
 }
