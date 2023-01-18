@@ -101,7 +101,6 @@ func (s *serverShortener) InitRouter() {
 	flag.Parse()
 
 	//s.Cfg.Storage = ""
-
 	//s.Cfg.ConnectDB = ""
 
 	if err := s.startBD(); err == nil {
