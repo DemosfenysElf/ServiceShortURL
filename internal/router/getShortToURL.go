@@ -20,10 +20,10 @@ func (s *serverShortener) GetShortToURL(c echo.Context) error {
 		sErr := err.Error()
 		if strings.Contains(sErr, "deleted") {
 			c.Response().WriteHeader(http.StatusGone)
-			return fmt.Errorf("Url deleted")
+			return nil
 		}
 		c.Response().WriteHeader(http.StatusBadRequest)
-		return fmt.Errorf("url was deleted earlier")
+		return nil
 	}
 
 	c.Response().Header().Add("Location", url)
