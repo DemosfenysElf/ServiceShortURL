@@ -16,7 +16,6 @@ var storageUsers = "storageUsers.log"
 
 func (s serverShortener) serviceAuthentication(next echo.HandlerFunc) echo.HandlerFunc {
 	fmt.Println("==>> serviceAuthentication")
-	s.WG.Wait()
 	return func(c echo.Context) error {
 		requestCookies := c.Request().Cookies()
 
