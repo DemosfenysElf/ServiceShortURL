@@ -17,7 +17,7 @@ type userURLstruct struct {
 }
 
 func (s *serverShortener) GetAPIUserURL(c echo.Context) error {
-	s.wg.Wait()
+	s.WG.Wait()
 	fmt.Println("==>> APIUserURL")
 	userCookies := shorturlservice.GetStructCookies()
 

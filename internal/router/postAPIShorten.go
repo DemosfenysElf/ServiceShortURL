@@ -20,7 +20,7 @@ type shortURLJSON struct {
 }
 
 func (s *serverShortener) PostAPIShorten(c echo.Context) error {
-	s.wg.Wait()
+	s.WG.Wait()
 	fmt.Println("==>> APIShorten")
 	urlJ := urlJSON{}
 	shortURL := shortURLJSON{}

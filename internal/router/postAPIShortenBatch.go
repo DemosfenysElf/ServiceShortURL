@@ -22,7 +22,7 @@ type shortURLApiShortenBatch struct {
 }
 
 func (s *serverShortener) PostAPIShortenBatch(c echo.Context) error {
-	s.wg.Wait()
+	s.WG.Wait()
 	fmt.Println("==>> APIShortenBatch")
 	urlBatch := []urlAPIShortenBatch{}
 	shortURLOne := shortURLApiShortenBatch{}

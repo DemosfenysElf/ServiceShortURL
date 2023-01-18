@@ -11,7 +11,7 @@ import (
 )
 
 func (s *serverShortener) PostURLToShort(c echo.Context) error {
-	s.wg.Wait()
+	s.WG.Wait()
 	fmt.Println("==>> PostURLToShort")
 	defer c.Request().Body.Close()
 	body, err := io.ReadAll(c.Request().Body)

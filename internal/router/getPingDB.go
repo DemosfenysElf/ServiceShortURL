@@ -11,7 +11,7 @@ import (
 )
 
 func (s *serverShortener) GetPingDB(c echo.Context) error {
-	s.wg.Wait()
+	s.WG.Wait()
 	fmt.Println("==>> PingDB")
 	if s.DB == nil {
 		c.Response().WriteHeader(http.StatusInternalServerError)

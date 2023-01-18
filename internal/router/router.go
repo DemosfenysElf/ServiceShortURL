@@ -24,7 +24,7 @@ type serverShortener struct {
 	Cfg    ConfigURL
 	Serv   *echo.Echo
 	Writer io.Writer
-	wg     sync.WaitGroup
+	WG     sync.WaitGroup
 	DB     shorturlservice.DatabaseService
 	shorturlservice.StorageInterface
 }
