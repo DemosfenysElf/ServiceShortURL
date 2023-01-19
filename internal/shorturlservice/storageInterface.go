@@ -101,4 +101,27 @@ func (fs *FileStorage) SetURL(url string) (short string, err error) {
 	return short, nil
 }
 
+//////////////////////////////test
+
+func (fs *FileStorage) Delete(user string, listURL []string) {
+	fmt.Println(">>>Storage_Delete_list<<<  ", listURL, "User: ", user)
+
+	fileRW, _ := fs.newRW(fs.FilePath)
+	defer fileRW.Close()
+
+	for {
+		readURL, err := fileRW.ReadURLInfo()
+		if err != nil {
+			break
+		}
+		for _, u := range listURL {
+			if (readURL.ShortURL == u) && (readURL.CookiesAuthentication.ValueUser == user) {
+				readURL.deleted = true
+				fileRW.WriteURLInfo(readURL)
+			}
+		}
+
+	}
+}
+
 // Хранение в БД>: databaseInterface

@@ -18,6 +18,7 @@ type URLInfo struct {
 	URL                   string `json:"url"`
 	ShortURL              string `json:"shortURL"`
 	CookiesAuthentication CookiesAuthentication
+	deleted               bool `json:"deleted"`
 }
 
 var urlInfo = &URLInfo{}
