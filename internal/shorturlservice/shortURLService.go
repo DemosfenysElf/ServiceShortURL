@@ -17,8 +17,8 @@ type CookiesAuthentication struct {
 type URLInfo struct {
 	URL                   string `json:"url"`
 	ShortURL              string `json:"shortURL"`
+	deleted               bool   `json:"deleted" defult:"false"`
 	CookiesAuthentication CookiesAuthentication
-	deleted               bool `json:"deleted"`
 }
 
 var urlInfo = &URLInfo{}
