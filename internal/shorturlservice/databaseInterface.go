@@ -113,14 +113,14 @@ func (db *Database) CreateTable() error {
 	return err
 }
 
-func (db *Database) DeleteURL(user string, listURL []string) error {
+func (db *Database) DeleteURL(user string, listURL []string) {
 	fmt.Println(">>>Delete_list<<<  ", listURL, "User: ", user)
 
 	for _, u := range listURL {
 		_, err := db.connection.Exec("UPDATE ShortenerURL SET deleted = true WHERE short=$1 AND valueUser=$2", u, user)
 		if err != nil {
-			return err
+			fmt.Println(">>>>>>>>>>>>>>>>>>>>>", err)
 		}
 	}
-	return nil
+
 }
