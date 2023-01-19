@@ -32,6 +32,11 @@ func (s *serverShortener) DeleteAPIUserURL(c echo.Context) error {
 		return fmt.Errorf("unmarshal error")
 	}
 
+	if len(newlist) == 0 {
+		c.Response().WriteHeader(http.StatusAccepted)
+		return nil
+	}
+
 	go s.DB.DeleteURL(user, newlist)
 
 	c.Response().WriteHeader(http.StatusAccepted)
