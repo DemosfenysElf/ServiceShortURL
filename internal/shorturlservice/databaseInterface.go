@@ -14,7 +14,6 @@ type DatabaseService interface {
 	Connect(connStr string) error
 	Close() error
 	Ping(ctx context.Context) error
-	DeleteURL(user string, listURL []string)
 }
 
 var stringShortenerURL = `CREATE TABLE ShortenerURL(
@@ -113,7 +112,7 @@ func (db *Database) CreateTable() error {
 	return err
 }
 
-func (db *Database) DeleteURL(user string, listURL []string) {
+func (db *Database) Delete(user string, listURL []string) {
 	fmt.Println(">>>BD_Delete_list<<<  ", listURL, "User: ", user)
 
 	for _, u := range listURL {
