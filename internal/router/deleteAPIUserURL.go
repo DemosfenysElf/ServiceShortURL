@@ -36,6 +36,8 @@ func (s *serverShortener) DeleteAPIUserURL(c echo.Context) error {
 		c.Response().WriteHeader(http.StatusAccepted)
 		return nil
 	}
+	fmt.Println(">>>>User  for delete url: ", user)
+	fmt.Println(">>>>newList  for delete url: ", newlist)
 
 	go s.DB.DeleteURL(user, newlist)
 
