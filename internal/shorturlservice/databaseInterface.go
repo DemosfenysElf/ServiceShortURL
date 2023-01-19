@@ -78,11 +78,12 @@ func (db *Database) SetURL(url string) (short string, err error) {
 		sErr = err.Error()
 		if strings.Contains(sErr, pgerrcode.UniqueViolation) {
 			short, _ = db.GetShortURL(url)
+			fmt.Println(">>>>>>>>>SetURL, DB. Short: ", short)
 			return short, err
 		}
 		return "", err
 	}
-
+	fmt.Println(">>>>>>>>>SetURL, DB. Short: ", short)
 	return short, err
 }
 
