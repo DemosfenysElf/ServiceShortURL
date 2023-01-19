@@ -114,7 +114,7 @@ func (db *Database) CreateTable() error {
 }
 
 func (db *Database) DeleteURL(user string, listURL []string) error {
-	fmt.Println(">>>Delete<<<")
+	fmt.Println(">>>Delete_list<<<  ", listURL, "User: ", user)
 
 	for _, u := range listURL {
 		_, err := db.connection.Exec("UPDATE ShortenerURL SET deleted = true WHERE (url=$1)&&(valueUser=$2)", u, user)
