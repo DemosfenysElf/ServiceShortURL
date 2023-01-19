@@ -123,7 +123,7 @@ func (fs *FileStorage) Delete(user string, listURL []string) {
 		}
 		for _, u := range listURL {
 			if (readURL.ShortURL == u) && (readURL.CookiesAuthentication.ValueUser == user) {
-				readURL.deleted = true
+				readURL.Deleted = true
 				fileRW.WriteURLInfo(readURL)
 			}
 		}
