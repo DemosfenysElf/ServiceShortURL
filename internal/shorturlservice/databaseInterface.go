@@ -14,7 +14,7 @@ type DatabaseService interface {
 	Connect(connStr string) error
 	Close() error
 	Ping(ctx context.Context) error
-	DeleteURL(user string, listURL []string) error
+	DeleteURL(user string, listURL []string)
 }
 
 var stringShortenerURL = `CREATE TABLE ShortenerURL(
