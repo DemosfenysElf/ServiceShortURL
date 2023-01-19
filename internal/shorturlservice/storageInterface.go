@@ -3,12 +3,13 @@ package shorturlservice
 import (
 	"fmt"
 	"io"
+	"sync"
 )
 
 type StorageInterface interface {
 	SetURL(url string) (short string, err error)
 	GetURL(short string) (url string, err error)
-	Delete(user string, listURL []string)
+	Delete(user string, listURL []string, wg *sync.WaitGroup)
 }
 
 // Хранение в памяти:
@@ -53,10 +54,10 @@ func (ms *MemoryStorage) SetURL(url string) (short string, err error) {
 	return short, nil
 }
 
-func (ms *MemoryStorage) Delete(user string, listURL []string) {
+func (ms *MemoryStorage) Delete(user string, listURL []string, wg *sync.WaitGroup) {
 	fmt.Println(">>>Storage_Delete_list<<<  ", listURL, "User: ", user)
 	fmt.Println(">>>>хранение и удаление кук в памяти не реализованно")
-
+	defer wg.Done()
 }
 
 // Хранение в файле:
@@ -110,9 +111,9 @@ func (fs *FileStorage) SetURL(url string) (short string, err error) {
 
 //////////////////////////////test
 
-func (fs *FileStorage) Delete(user string, listURL []string) {
+func (fs *FileStorage) Delete(user string, listURL []string, wg *sync.WaitGroup) {
 	fmt.Println(">>>Storage_Delete_list<<<  ", listURL, "User: ", user)
-
+	defer wg.Done()
 	fileRW, _ := fs.newRW(fs.FilePath)
 	defer fileRW.Close()
 

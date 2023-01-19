@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/jackc/pgerrcode"
@@ -112,9 +113,9 @@ func (db *Database) CreateTable() error {
 	return err
 }
 
-func (db *Database) Delete(user string, listURL []string) {
+func (db *Database) Delete(user string, listURL []string, wg *sync.WaitGroup) {
 	fmt.Println(">>>BD_Delete_list<<<  ", listURL, "User: ", user)
-
+	defer wg.Done()
 	for _, u := range listURL {
 		_, err := db.connection.Exec("UPDATE ShortenerURL SET deleted = true WHERE short=$1 AND valueUser=$2", u, user)
 		if err != nil {
