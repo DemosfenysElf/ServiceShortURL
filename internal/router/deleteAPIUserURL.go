@@ -24,6 +24,7 @@ func (s *serverShortener) DeleteAPIUserURL(c echo.Context) error {
 		c.Response().WriteHeader(http.StatusInternalServerError)
 		return fmt.Errorf("URL is not exist")
 	}
+	fmt.Println(len(body))
 	user := shorturlservice.GetCookieValue(c.Request().Cookies())
 
 	err = json.Unmarshal(body, &newlist)
