@@ -65,7 +65,7 @@ func (db *Database) Ping(ctx context.Context) error {
 }
 
 func (db *Database) SetURL(url string) (short string, err error) {
-	fmt.Println(">>>>>>>>>SetURL, DB")
+	fmt.Println(">>>>>>>>>SetURL, DB. URL: ", url)
 	short = shortURL()
 	// добавить проверку на оригинальность
 
@@ -90,8 +90,7 @@ func (db *Database) GetURL(short string) (url string, err error) {
 	deleted := false
 	row := db.connection.QueryRow("select url,deleted from ShortenerURL where short = $1", short)
 	err = row.Scan(&url, &deleted)
-	fmt.Println(">>>>>URL: ", url)
-	fmt.Println(">>>>>deleted: ", deleted)
+	fmt.Println(">>>>>URL: ", url, " ; shortURL: ", short, " ; deleted?: ", deleted)
 	if deleted {
 		return "", fmt.Errorf("deleted")
 	}
