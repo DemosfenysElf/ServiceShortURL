@@ -137,7 +137,7 @@ func (fs *FileStorage) Delete(user string, listURL []string) {
 			}
 		}
 	}
-	for i, _ := range iSlice {
+	for i := range iSlice {
 		fileRW.WriteDelet(iSlice[i])
 	}
 
