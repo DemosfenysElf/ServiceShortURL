@@ -131,7 +131,7 @@ func (fs *FileStorage) Delete(user string, listURL []string) {
 		position = position + int64(len1string) + 1
 
 		for i, u := range listURL {
-			if (readURL.ShortURL == u) && (readURL.CookiesAuthentication.ValueUser == user) && (readURL.Deleted == "false") {
+			if (readURL.ShortURL == u) && (readURL.CookiesAuthentication.ValueUser == user) && (readURL.Deleted == "false") && (u != "") {
 				//if (readURL.ShortURL == u) && (readURL.Deleted == "false") {
 				iSlice[i] = position - 8
 			}
