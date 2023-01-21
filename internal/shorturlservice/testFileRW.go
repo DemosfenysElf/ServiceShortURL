@@ -29,18 +29,24 @@ func (p *nRW) WriteURLInfo(short *URLInfo) error {
 	return p.encoder.Encode(&short)
 }
 
-func (p *nRW) WriteBool() error {
-	p.file.Write([]byte("delet"))
+func (p *nRW) WriteDelet(i int64) error {
+	del := []byte("delet")
+	_, err := p.file.WriteAt(del, i)
+	if err != nil {
+		return err
+	}
 	return nil
-	//return p.encoder.Encode(true)
 }
 
-func (p *nRW) ReadURLInfo() (*URLInfo, error) {
+func (p *nRW) ReadURLInfo() (*URLInfo, int, error) {
 	urli := &URLInfo{}
+	var lenInfo int
 	if err := p.decoder.Decode(&urli); err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	return urli, nil
+	jString, _ := json.Marshal(urli)
+	lenInfo = len(jString)
+	return urli, lenInfo, nil
 }
 
 func (p *nRW) Close() error {

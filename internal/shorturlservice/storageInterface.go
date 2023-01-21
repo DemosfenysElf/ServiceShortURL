@@ -3,13 +3,12 @@ package shorturlservice
 import (
 	"fmt"
 	"io"
-	"sync"
 )
 
 type StorageInterface interface {
 	SetURL(url string) (short string, err error)
 	GetURL(short string) (url string, err error)
-	Delete(user string, listURL []string, wg *sync.WaitGroup)
+	Delete(user string, listURL []string)
 }
 
 // Хранение в памяти:
@@ -54,10 +53,10 @@ func (ms *MemoryStorage) SetURL(url string) (short string, err error) {
 	return short, nil
 }
 
-func (ms *MemoryStorage) Delete(user string, listURL []string, wg *sync.WaitGroup) {
+func (ms *MemoryStorage) Delete(user string, listURL []string) {
 	fmt.Println(">>>Storage_Delete_list<<<  ", listURL, "User: ", user)
 	fmt.Println(">>>>хранение и удаление кук в памяти не реализованно")
-	defer wg.Done()
+
 }
 
 // Хранение в файле:
@@ -78,6 +77,9 @@ func (fs *FileStorage) GetURL(short string) (url string, err error) {
 		readURL, err := consumerURL.ReadURLInfo()
 		if err != nil {
 			break
+		}
+		if readURL.Deleted == "delet" {
+			return "", fmt.Errorf("deleted")
 		}
 		if readURL.ShortURL == short {
 			return readURL.URL, nil
@@ -111,30 +113,34 @@ func (fs *FileStorage) SetURL(url string) (short string, err error) {
 
 //////////////////////////////test
 
-func (fs *FileStorage) Delete(user string, listURL []string, wg *sync.WaitGroup) {
+func (fs *FileStorage) Delete(user string, listURL []string) {
 	fmt.Println(">>>Storage_Delete_list<<<  ", listURL, "User: ", user)
-	defer wg.Done()
+
 	fileRW, _ := fs.newRW(fs.FilePath)
 	defer fileRW.Close()
 
-	for {
-		readURL, err := fileRW.ReadURLInfo()
-		fmt.Println(err)
+	var iSlice = make([]int64, len(listURL), cap(listURL))
+	var position int64
 
+	for {
+		readURL, len1string, err := fileRW.ReadURLInfo()
 		if err != nil {
 			break
 		}
 		fmt.Println("readURL,	", readURL.ShortURL)
-		fmt.Println(fileRW.file.Seek(0, 1))
-		for _, u := range listURL {
-			if (readURL.ShortURL == u) && (readURL.CookiesAuthentication.ValueUser == user) {
-				fileRW.file.Seek(-28, 1)
-				fileRW.WriteBool()
-				fileRW.file.Seek(2, 1)
+		position = position + int64(len1string) + 1
 
+		for i, u := range listURL {
+			if (readURL.ShortURL == u) && (readURL.CookiesAuthentication.ValueUser == user) && (readURL.Deleted == "false") {
+				//if (readURL.ShortURL == u) && (readURL.Deleted == "false") {
+				iSlice[i] = position - 8
 			}
 		}
 	}
+	for i, _ := range iSlice {
+		fileRW.WriteDelet(iSlice[i])
+	}
+
 }
 
 // Хранение в БД>: databaseInterface

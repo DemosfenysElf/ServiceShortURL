@@ -41,7 +41,7 @@ func (s *serverShortener) DeleteAPIUserURL(c echo.Context) error {
 	fmt.Println(">>>>User  for delete url: ", user)
 	fmt.Println(">>>>newList  for delete url: ", newlist)
 
-	go s.Delete(user, newlist, s.WG)
+	go s.Delete(user, newlist)
 
 	c.Response().WriteHeader(http.StatusAccepted)
 	return nil

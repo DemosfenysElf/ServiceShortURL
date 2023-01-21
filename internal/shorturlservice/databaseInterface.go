@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/jackc/pgerrcode"
@@ -113,7 +112,7 @@ func (db *Database) CreateTable() error {
 	return err
 }
 
-func (db *Database) Delete(user string, listURL []string, wg *sync.WaitGroup) {
+func (db *Database) Delete(user string, listURL []string) {
 	fmt.Println(">>>BD_Delete_list<<<  ", listURL, "User: ", user)
 	//defer wg.Done()
 	for _, u := range listURL {
