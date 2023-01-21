@@ -15,10 +15,11 @@ type CookiesAuthentication struct {
 }
 
 type URLInfo struct {
-	URL                   string `json:"url"`
-	ShortURL              string `json:"shortURL"`
-	Deleted               bool   `json:"deleted" defult:"false"`
+	URL      string `json:"url"`
+	ShortURL string `json:"shortURL"`
+	//D                     string `json:"d"`
 	CookiesAuthentication CookiesAuthentication
+	Deleted               string `json:"deleted"`
 }
 
 var urlInfo = &URLInfo{}
@@ -34,7 +35,8 @@ func shortURL() string {
 func SetStructURL(url string, short string) (info *URLInfo) {
 	urlInfo.URL = url
 	urlInfo.ShortURL = short
-	urlInfo.Deleted = false
+	urlInfo.Deleted = "false"
+	//urlInfo.D = " "
 	info = urlInfo
 	return
 }

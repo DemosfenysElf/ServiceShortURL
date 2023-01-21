@@ -29,6 +29,12 @@ func (p *nRW) WriteURLInfo(short *URLInfo) error {
 	return p.encoder.Encode(&short)
 }
 
+func (p *nRW) WriteBool() error {
+	p.file.Write([]byte("delet"))
+	return nil
+	//return p.encoder.Encode(true)
+}
+
 func (p *nRW) ReadURLInfo() (*URLInfo, error) {
 	urli := &URLInfo{}
 	if err := p.decoder.Decode(&urli); err != nil {

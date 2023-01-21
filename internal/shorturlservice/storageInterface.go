@@ -119,16 +119,21 @@ func (fs *FileStorage) Delete(user string, listURL []string, wg *sync.WaitGroup)
 
 	for {
 		readURL, err := fileRW.ReadURLInfo()
+		fmt.Println(err)
+
 		if err != nil {
 			break
 		}
+		fmt.Println("readURL,	", readURL.ShortURL)
+		fmt.Println(fileRW.file.Seek(0, 1))
 		for _, u := range listURL {
 			if (readURL.ShortURL == u) && (readURL.CookiesAuthentication.ValueUser == user) {
-				readURL.Deleted = true
-				fileRW.WriteURLInfo(readURL)
+				fileRW.file.Seek(-28, 1)
+				fileRW.WriteBool()
+				fileRW.file.Seek(2, 1)
+
 			}
 		}
-
 	}
 }
 
