@@ -16,7 +16,7 @@ func (s *serverShortener) DeleteAPIUserURL(c echo.Context) error {
 	fmt.Println("==>> DeleteAPIUserURL")
 	s.WG.Wait()
 	s.WG.Add(1)
-
+	defer s.WG.Done()
 	var newlist []string
 
 	defer c.Request().Body.Close()
