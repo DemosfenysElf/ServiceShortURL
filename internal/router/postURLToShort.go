@@ -41,10 +41,11 @@ func (s *serverShortener) PostURLToShort(c echo.Context) error {
 		sErr := setErr.Error()
 		if strings.Contains(sErr, pgerrcode.UniqueViolation) {
 			c.Response().WriteHeader(http.StatusConflict)
+			c.Response().Write(write)
+			return nil
 		}
-	} else {
-		c.Response().WriteHeader(http.StatusCreated)
 	}
+	c.Response().WriteHeader(http.StatusCreated)
 	c.Response().Write(write)
 	return nil
 }
