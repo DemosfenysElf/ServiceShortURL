@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/labstack/echo"
@@ -42,7 +43,7 @@ func (s *serverShortener) DeleteAPIUserURL(c echo.Context) error {
 	fmt.Println(">>>>newList  for delete url: ", newlist)
 
 	go s.Delete(user, newlist)
-
+	time.Sleep(1 * time.Second)
 	c.Response().WriteHeader(http.StatusAccepted)
 	return nil
 }

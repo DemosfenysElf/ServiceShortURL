@@ -40,12 +40,11 @@ func (p *nRW) WriteDelet(i int64) error {
 
 func (p *nRW) ReadURLInfo() (*URLInfo, int, error) {
 	urli := &URLInfo{}
-	var lenInfo int
 	if err := p.decoder.Decode(&urli); err != nil {
 		return nil, 0, err
 	}
 	jString, _ := json.Marshal(urli)
-	lenInfo = len(jString)
+	lenInfo := len(jString)
 	return urli, lenInfo, nil
 }
 
