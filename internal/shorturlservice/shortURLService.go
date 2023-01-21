@@ -15,9 +15,8 @@ type CookiesAuthentication struct {
 }
 
 type URLInfo struct {
-	URL      string `json:"url"`
-	ShortURL string `json:"shortURL"`
-	//D                     string `json:"d"`
+	URL                   string `json:"url"`
+	ShortURL              string `json:"shortURL"`
 	CookiesAuthentication CookiesAuthentication
 	Deleted               string `json:"deleted"`
 }

@@ -16,6 +16,7 @@ func (s *serverShortener) GetShortToURL(c echo.Context) error {
 	short = short[1:]
 
 	url, err := s.GetURL(short)
+	fmt.Println(url)
 
 	if err != nil {
 		sErr := err.Error()
@@ -23,10 +24,11 @@ func (s *serverShortener) GetShortToURL(c echo.Context) error {
 			c.Response().WriteHeader(http.StatusGone)
 			return nil
 		}
+		fmt.Println(">>>>>Get Status: ", http.StatusBadRequest)
 		c.Response().WriteHeader(http.StatusBadRequest)
 		return nil
 	}
-
+	fmt.Println(">>>>>Get Status: ", http.StatusTemporaryRedirect)
 	c.Response().Header().Add("Location", url)
 	c.Response().WriteHeader(http.StatusTemporaryRedirect)
 	c.Response().Header()
