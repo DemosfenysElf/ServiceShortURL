@@ -16,11 +16,12 @@ func (s *serverShortener) GetShortToURL(c echo.Context) error {
 	short = short[1:]
 
 	url, err := s.GetURL(short)
-	fmt.Println(url)
+	fmt.Println("getURL: ", url)
 
 	if err != nil {
 		sErr := err.Error()
 		if strings.Contains(sErr, "deleted") {
+			fmt.Println(">>>>>Get Status: ", http.StatusGone)
 			c.Response().WriteHeader(http.StatusGone)
 			return nil
 		}
