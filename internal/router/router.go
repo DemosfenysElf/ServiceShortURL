@@ -30,7 +30,6 @@ type serverShortener struct {
 }
 
 func InitServer() *serverShortener {
-
 	return &serverShortener{WG: new(sync.WaitGroup)}
 }
 
