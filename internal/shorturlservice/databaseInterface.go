@@ -88,7 +88,7 @@ func (db *Database) SetURL(url string) (short string, err error) {
 	pgErr.Code = pgerrcode.UniqueViolation
 
 	if err != nil {
-		if errors.As(err, pgErr) {
+		if errors.As(err, &pgErr) {
 			short, _ = db.GetShortURL(url)
 			fmt.Println(">>>>>>>>>SetURL, DB. Short: ", short)
 			return short, err
