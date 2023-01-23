@@ -85,16 +85,19 @@ func (db *Database) SetURL(url string) (short string, err error) {
 	//}
 
 	var pgErr *pgconn.PgError
-	pgErr.Code = pgerrcode.UniqueViolation
 
-	if err != nil {
-		if errors.As(err, &pgErr) {
+	if errors.As(err, &pgErr) {
+		switch pgErr.Code {
+		case pgerrcode.UniqueViolation:
 			short, _ = db.GetShortURL(url)
 			fmt.Println(">>>>>>>>>SetURL, DB. Short: ", short)
 			return short, err
+		default:
+			return "", err
 		}
-		return "", err
+
 	}
+
 	fmt.Println(">>>>>>>>>SetURL, DB. Short: ", short)
 	return short, err
 }
