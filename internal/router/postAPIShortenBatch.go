@@ -68,8 +68,7 @@ func (s *serverShortener) PostAPIShortenBatch(c echo.Context) error {
 		setErr := setErr.Error()
 		if strings.Contains(setErr, pgerrcode.UniqueViolation) {
 			c.Response().WriteHeader(http.StatusConflict)
-			c.Response().Write(shortU)
-			return nil
+
 		}
 	}
 	c.Response().WriteHeader(http.StatusCreated)
