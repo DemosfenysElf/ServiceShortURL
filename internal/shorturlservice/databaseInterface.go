@@ -95,6 +95,7 @@ func (db *Database) SetURL(url string) (short string, err error) {
 		default:
 			return "", err
 		}
+
 	}
 
 	fmt.Println(">>>>>>>>>SetURL, DB. Short: ", short)
