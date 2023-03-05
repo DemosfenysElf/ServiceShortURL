@@ -73,7 +73,6 @@ func (s *serverShortener) startBD() error {
 	if errConnect := DB.Connect(s.Cfg.ConnectDB); errConnect != nil {
 		return errConnect
 	}
-	//defer DB.Close()
 
 	s.StorageInterface = DB
 	s.DB = DB

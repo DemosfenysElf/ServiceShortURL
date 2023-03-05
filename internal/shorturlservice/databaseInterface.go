@@ -73,17 +73,6 @@ func (db *Database) SetURL(url string) (short string, err error) {
 	_, err = db.connection.Exec("insert into ShortenerURL (url,short,nameUser,valueUser,deleted) values ($1,$2,$3,$4,$5)",
 		url, short, user.NameUser, user.ValueUser, false)
 
-	//var sErr string
-	//if err != nil {
-	//	sErr = err.Error()
-	//	if strings.Contains(sErr, pgerrcode.UniqueViolation) {
-	//		short, _ = db.GetShortURL(url)
-	//		fmt.Println(">>>>>>>>>SetURL, DB. Short: ", short)
-	//		return short, err
-	//	}
-	//	return "", err
-	//}
-
 	var pgErr *pgconn.PgError
 
 	if errors.As(err, &pgErr) {
