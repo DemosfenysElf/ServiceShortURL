@@ -38,11 +38,12 @@ func (db *Database) Connect(connStr string) (err error) {
 	if err != nil {
 		return err
 	}
+
 	//db.connection.Exec("Drop TABLE ShortenerURL")
-	err = db.CreateTable()
-	if err != nil {
-		return err
-	}
+	_ = db.CreateTable()
+	//if err != nil {
+	//	return err
+	//}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
@@ -51,6 +52,15 @@ func (db *Database) Connect(connStr string) (err error) {
 		return err
 	}
 	return nil
+}
+
+func (db *Database) CreateTable() error {
+	_, err := db.connection.Exec(stringShortenerURL)
+	if err != nil {
+		return err
+	}
+	_, err = db.connection.Exec("CREATE UNIQUE INDEX URL_index ON ShortenerURL (url)")
+	return err
 }
 
 func (db *Database) Close() error {
@@ -106,15 +116,6 @@ func (db *Database) GetShortURL(url string) (short string, err error) {
 	row := db.connection.QueryRow("select short from ShortenerURL where url = $1", url)
 	err = row.Scan(&short)
 	return
-}
-
-func (db *Database) CreateTable() error {
-	_, err := db.connection.Exec(stringShortenerURL)
-	if err != nil {
-		return err
-	}
-	_, err = db.connection.Exec("CREATE UNIQUE INDEX URL_index ON ShortenerURL (url)")
-	return err
 }
 
 func (db *Database) Delete(user string, listURL []string) {
