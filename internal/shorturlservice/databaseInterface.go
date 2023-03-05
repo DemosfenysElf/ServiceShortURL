@@ -38,7 +38,7 @@ func (db *Database) Connect(connStr string) (err error) {
 	if err != nil {
 		return err
 	}
-	db.connection.Exec("Drop TABLE ShortenerURL")
+	//db.connection.Exec("Drop TABLE ShortenerURL")
 	err = db.CreateTable()
 	if err != nil {
 		return err
