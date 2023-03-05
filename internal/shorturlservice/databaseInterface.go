@@ -39,11 +39,7 @@ func (db *Database) Connect(connStr string) (err error) {
 		return err
 	}
 
-	//db.connection.Exec("Drop TABLE ShortenerURL")
-	_ = db.CreateTable()
-	//if err != nil {
-	//	return err
-	//}
+	db.CreateTable()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
