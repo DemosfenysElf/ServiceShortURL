@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net/http"
+	"net/http/pprof"
 	"sync"
 
 	"ServiceShortURL/internal/shorturlservice"
@@ -51,12 +53,39 @@ func (s *serverShortener) Router() error {
 
 	e.DELETE("/api/user/urls", s.DeleteAPIUserURL)
 
+	RegisterPprof(e, "/debug/pprof")
+
 	errStart := e.Start(s.Cfg.ServerAddress)
 
 	if errStart != nil {
 		return errStart
 	}
 	return nil
+}
+
+func RegisterPprof(e *echo.Echo, prefixOptions string) {
+	prefixRouter := e.Group(prefixOptions)
+	{
+		prefixRouter.GET("/", handler(pprof.Index))
+		prefixRouter.GET("/allocs", handler(pprof.Handler("allocs").ServeHTTP))
+		prefixRouter.GET("/block", handler(pprof.Handler("block").ServeHTTP))
+		prefixRouter.GET("/cmdline", handler(pprof.Cmdline))
+		prefixRouter.GET("/goroutine", handler(pprof.Handler("goroutine").ServeHTTP))
+		prefixRouter.GET("/heap", handler(pprof.Handler("heap").ServeHTTP))
+		prefixRouter.GET("/mutex", handler(pprof.Handler("mutex").ServeHTTP))
+		prefixRouter.GET("/profile", handler(pprof.Profile))
+		prefixRouter.POST("/symbol", handler(pprof.Symbol))
+		prefixRouter.GET("/symbol", handler(pprof.Symbol))
+		prefixRouter.GET("/threadcreate", handler(pprof.Handler("threadcreate").ServeHTTP))
+		prefixRouter.GET("/trace", handler(pprof.Trace))
+	}
+}
+
+func handler(h http.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		h.ServeHTTP(c.Response().Writer, c.Request())
+		return nil
+	}
 }
 
 func (s *serverShortener) startBD() error {
