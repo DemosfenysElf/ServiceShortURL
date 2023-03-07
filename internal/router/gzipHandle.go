@@ -9,6 +9,7 @@ import (
 	"github.com/labstack/echo"
 )
 
+// gzipHandle распаковка запакованных данных находящихся в body
 func (s serverShortener) gzipHandle(next echo.HandlerFunc) echo.HandlerFunc {
 	fmt.Println("==>> gzipHandle")
 	return func(c echo.Context) error {

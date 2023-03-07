@@ -14,6 +14,7 @@ import (
 var hexCryptoNewToken string
 var storageUsers = "storageUsers.log"
 
+// serviceAuthentication
 func (s serverShortener) serviceAuthentication(next echo.HandlerFunc) echo.HandlerFunc {
 	fmt.Println("==>> serviceAuthentication")
 	return func(c echo.Context) error {
