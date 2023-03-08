@@ -30,10 +30,6 @@ type Database struct {
 	connection *sql.DB
 }
 
-func InitDB() (*Database, error) {
-	return &Database{}, nil
-}
-
 func (db *Database) Connect(connStr string) (err error) {
 	db.connection, err = sql.Open("pgx", connStr)
 	if err != nil {

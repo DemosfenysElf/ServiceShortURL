@@ -10,7 +10,7 @@ import (
 func BenchmarkXxx(b *testing.B) {
 	cfgDB := "postgres://postgres:0000@localhost:5432/postgres"
 	var userList []string
-	DB, _ := InitDB()
+	DB := &Database{}
 	DB.Connect(cfgDB)
 
 	b.ResetTimer()

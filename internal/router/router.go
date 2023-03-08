@@ -39,6 +39,7 @@ func InitServer() *serverShortener {
 	return &serverShortener{WG: new(sync.WaitGroup)}
 }
 
+// Router - роутер
 func (s *serverShortener) Router() error {
 	s.InitRouter()
 
@@ -98,11 +99,7 @@ func (s *serverShortener) startBD() error {
 		return fmt.Errorf("error s.Cfg.ConnectDB == nil")
 	}
 
-	// DB connection
-	DB, errInit := shorturlservice.InitDB()
-	if errInit != nil {
-		return errInit
-	}
+	DB := &shorturlservice.Database{}
 
 	if errConnect := DB.Connect(s.Cfg.ConnectDB); errConnect != nil {
 		return errConnect
