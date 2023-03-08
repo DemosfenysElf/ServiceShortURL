@@ -25,10 +25,12 @@ func (fs *FileStorage) newRW(filename string) (*nRW, error) {
 	}, nil
 }
 
+// WriteURLInfo сохраняем в файл короткий url, оригинальный, пользователя
 func (p *nRW) WriteURLInfo(short *URLInfo) error {
 	return p.encoder.Encode(&short)
 }
 
+// WriteDelet перезапись метки об удалении
 func (p *nRW) WriteDelet(i int64) error {
 	del := []byte("delet")
 	_, err := p.file.WriteAt(del, i)
@@ -38,6 +40,7 @@ func (p *nRW) WriteDelet(i int64) error {
 	return nil
 }
 
+// ReadURLInfo получение данных о сохраненной ссылке
 func (p *nRW) ReadURLInfo() (*URLInfo, int, error) {
 	urli := &URLInfo{}
 	if err := p.decoder.Decode(&urli); err != nil {

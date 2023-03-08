@@ -30,6 +30,7 @@ type Database struct {
 	connection *sql.DB
 }
 
+// Подключние к БД по пути
 func (db *Database) Connect(connStr string) (err error) {
 	db.connection, err = sql.Open("pgx", connStr)
 	if err != nil {
@@ -47,6 +48,7 @@ func (db *Database) Connect(connStr string) (err error) {
 	return nil
 }
 
+// CreateTable() создание таблицы
 func (db *Database) CreateTable() error {
 	_, err := db.connection.Exec(stringShortenerURL)
 	if err != nil {
@@ -60,6 +62,8 @@ func (db *Database) Close() error {
 	return db.connection.Close()
 }
 
+// Ping(ctx context.Context)
+// проверяет, что соединение с базой данных все еще работает
 func (db *Database) Ping(ctx context.Context) error {
 	if err := db.connection.PingContext(ctx); err != nil {
 		return err
@@ -67,6 +71,9 @@ func (db *Database) Ping(ctx context.Context) error {
 	return nil
 }
 
+// SetURL передаём оригинальный URL
+// получаем сгенерированный короткий URL
+// вместе с данными о пользователе сохраняем в БД
 func (db *Database) SetURL(url string) (short string, err error) {
 	fmt.Println(">>>>>>>>>SetURL, DB. URL: ", url)
 	short = shortURL()
@@ -94,6 +101,9 @@ func (db *Database) SetURL(url string) (short string, err error) {
 	return short, err
 }
 
+// GetURL передаём короткий URL
+// вместе с данными о пользователе сохраняем в БД
+// получаем сгенерированный оригинальный URL
 func (db *Database) GetURL(short string) (url string, err error) {
 	deleted := false
 	row := db.connection.QueryRow("select url,deleted from ShortenerURL where short = $1", short)
@@ -105,12 +115,16 @@ func (db *Database) GetURL(short string) (url string, err error) {
 	return
 }
 
+// GetShortURL передаём оригинальный URL
+// получаем сохраненный в БД короткий URL
 func (db *Database) GetShortURL(url string) (short string, err error) {
 	row := db.connection.QueryRow("select short from ShortenerURL where url = $1", url)
 	err = row.Scan(&short)
 	return
 }
 
+// Delete передаём данные о пользователе и список URL
+// удаляем все URL из списка, принадлежащие этому пользователю
 func (db *Database) Delete(user string, listURL []string) {
 	fmt.Println(">>>BD_Delete_list<<<  ", listURL, "User: ", user)
 	//defer wg.Done()

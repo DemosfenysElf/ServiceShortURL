@@ -20,6 +20,7 @@ func InitMem() *MemoryStorage {
 	return &MemoryStorage{data: make([]URLInfo, 0)}
 }
 
+// GetURL передаём короткую ссылку, получаем оригинальную
 func (ms *MemoryStorage) GetURL(short string) (url string, err error) {
 	for i, data := range ms.data {
 		if short == data.ShortURL {
@@ -33,6 +34,9 @@ func (ms *MemoryStorage) GetURL(short string) (url string, err error) {
 	return url, err
 }
 
+// SetURL передаём оригинальную ссылку, получаем короткую
+// перед записью её в память и выдачей проверяет на оригинальность
+// путем поиска её в памяти.
 func (ms *MemoryStorage) SetURL(url string) (short string, err error) {
 	short = shortURL()
 	if len(ms.data) != 0 {
@@ -53,6 +57,7 @@ func (ms *MemoryStorage) SetURL(url string) (short string, err error) {
 	return short, nil
 }
 
+// Delete хранение и удаление кук в памяти не реализованно.
 func (ms *MemoryStorage) Delete(user string, listURL []string) {
 	fmt.Println(">>>Storage_Delete_list<<<  ", listURL, "User: ", user)
 	fmt.Println(">>>>хранение и удаление кук в памяти не реализованно")
@@ -65,8 +70,8 @@ type FileStorage struct {
 	FilePath string
 }
 
+// GetURL передаём короткую ссылку, получаем оригинальную
 func (fs *FileStorage) GetURL(short string) (url string, err error) {
-
 	consumerURL, err := NewConsumer(fs.FilePath)
 	if err != nil {
 		return "", err
@@ -88,6 +93,8 @@ func (fs *FileStorage) GetURL(short string) (url string, err error) {
 	return "", fmt.Errorf("no found url")
 }
 
+// SetURL передаём оригинальную ссылку, получаем короткую
+// сохраняем в файл
 func (fs *FileStorage) SetURL(url string) (short string, err error) {
 	short = shortURL()
 	for {
@@ -111,8 +118,7 @@ func (fs *FileStorage) SetURL(url string) (short string, err error) {
 	return short, nil
 }
 
-//////////////////////////////test
-
+// Delete меняем метку удаления у удаляемых url
 func (fs *FileStorage) Delete(user string, listURL []string) {
 	fmt.Println(">>>Storage_Delete_list<<<  ", listURL, "User: ", user)
 
@@ -132,7 +138,6 @@ func (fs *FileStorage) Delete(user string, listURL []string) {
 
 		for i, u := range listURL {
 			if (readURL.ShortURL == u) && (readURL.CookiesAuthentication.ValueUser == user) && (readURL.Deleted == "false") && (u != "") {
-				//if (readURL.ShortURL == u) && (readURL.Deleted == "false") {
 				iSlice[i] = position - 8
 			}
 		}

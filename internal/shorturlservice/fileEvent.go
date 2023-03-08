@@ -23,10 +23,12 @@ func NewProducer(filename string) (*producer, error) {
 	}, nil
 }
 
+// WriteURL сохраняем в файл короткий url, оригинальный, пользователя
 func (p *producer) WriteURL(short *URLInfo) error {
 	return p.encoder.Encode(&short)
 }
 
+// WriteUser сохраняем в файл пользователя
 func (p *producer) WriteUser(user *CookiesAuthentication) error {
 	return p.encoder.Encode(&user)
 }
@@ -51,6 +53,8 @@ func NewConsumer(filename string) (*consumer, error) {
 		decoder: json.NewDecoder(file),
 	}, nil
 }
+
+// ReadURLInfo получаем из файла строку данных о сохранённом URL в виде структуры URLInfo.
 func (c *consumer) ReadURLInfo() (*URLInfo, error) {
 	urli := &URLInfo{}
 	if err := c.decoder.Decode(&urli); err != nil {
@@ -59,6 +63,7 @@ func (c *consumer) ReadURLInfo() (*URLInfo, error) {
 	return urli, nil
 }
 
+// ReadUser получаем из файла строку данных о пользователе в виде структуры CookiesAuthentication.
 func (c *consumer) ReadUser() (*CookiesAuthentication, error) {
 	user := &CookiesAuthentication{}
 	if err := c.decoder.Decode(&user); err != nil {
