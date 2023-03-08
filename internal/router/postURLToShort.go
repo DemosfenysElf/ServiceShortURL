@@ -10,6 +10,10 @@ import (
 	"github.com/labstack/echo"
 )
 
+// PostURLToShort e.POST("/")
+// принимает в теле запроса строку URL для сокращения
+// и возвращает ответ с кодом 201 и сокращённым URL в
+// виде текстовой строки в теле.
 func (s *serverShortener) PostURLToShort(c echo.Context) error {
 	s.WG.Wait()
 

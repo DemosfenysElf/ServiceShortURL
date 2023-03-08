@@ -16,6 +16,10 @@ type userURLstruct struct {
 	OriginalURL string `json:"original_url"`
 }
 
+// GetAPIUserURL e.GET("/api/user/urls")
+// возвращает пользователю все когда-либо сокращённые им URL в формате
+// [{"short_url":"http://...","original_url":"http://..."},...]
+// при отсутствии сокращённых пользователем URL: http.StatusNoContent
 func (s *serverShortener) GetAPIUserURL(c echo.Context) error {
 	s.WG.Wait()
 	fmt.Println("==>> GetAPIUserURL")

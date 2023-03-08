@@ -13,6 +13,10 @@ import (
 	"ServiceShortURL/internal/shorturlservice"
 )
 
+// DeleteAPIUserURL e.DELETE("/api/user/urls")
+// принимает список идентификаторов сокращённых URL для удаления в формате:
+// [ "a", "b", "c", "d", ...]
+// в случае успешного приёма запроса возвращает http.StatusAccepted.
 func (s *serverShortener) DeleteAPIUserURL(c echo.Context) error {
 	fmt.Println("==>> DeleteAPIUserURL")
 	//s.WG.Wait()
@@ -26,7 +30,6 @@ func (s *serverShortener) DeleteAPIUserURL(c echo.Context) error {
 		c.Response().WriteHeader(http.StatusInternalServerError)
 		return fmt.Errorf("URL is not exist")
 	}
-	//fmt.Println(len(body))
 	user := shorturlservice.GetCookieValue(c.Request().Cookies())
 
 	err = json.Unmarshal(body, &newlist)
@@ -39,8 +42,6 @@ func (s *serverShortener) DeleteAPIUserURL(c echo.Context) error {
 		c.Response().WriteHeader(http.StatusAccepted)
 		return nil
 	}
-	fmt.Println(">>>>User  for delete url: ", user)
-	fmt.Println(">>>>newList  for delete url: ", newlist)
 
 	go s.Delete(user, newlist)
 	time.Sleep(1 * time.Second)

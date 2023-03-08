@@ -10,6 +10,9 @@ import (
 	"github.com/labstack/echo"
 )
 
+// GetPingDB проверяет соединение с базой данных.
+// При успешной проверке хендлер должен вернуть HTTP-статус 200 OK,
+// при неуспешной — 500 Internal Server Error
 func (s *serverShortener) GetPingDB(c echo.Context) error {
 	s.WG.Wait()
 	fmt.Println("==>> PingDB")

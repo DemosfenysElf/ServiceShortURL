@@ -15,6 +15,10 @@ import (
 	"github.com/labstack/echo"
 )
 
+// SERVER_ADDRESS адрес запуска HTTP-сервера.
+// BASE_URL базовый адрес результирующего сокращённого URL.
+// FILE_STORAGE_PATH путь до файла должен.
+// DATABASE_DSN адрес подключения к БД.
 type ConfigURL struct {
 	ServerAddress string `env:"SERVER_ADDRESS"`
 	BaseURL       string `env:"BASE_URL"`
@@ -40,8 +44,8 @@ func (s *serverShortener) Router() error {
 
 	e := echo.New()
 
-	e.Use(s.gzipHandle)
-	e.Use(s.serviceAuthentication)
+	e.Use(s.mwGzipHandle)
+	e.Use(s.mwAuthentication)
 
 	e.GET("/:id", s.GetShortToURL)
 	e.GET("/api/user/urls", s.GetAPIUserURL)
@@ -63,6 +67,7 @@ func (s *serverShortener) Router() error {
 	return nil
 }
 
+// Пакет хендлеров pprof.
 func RegisterPprof(e *echo.Echo, prefixOptions string) {
 	prefixRouter := e.Group(prefixOptions)
 	{
@@ -108,6 +113,14 @@ func (s *serverShortener) startBD() error {
 	return nil
 }
 
+// InitRouter парсим флаги
+// флаг -a, отвечающий за адрес запуска HTTP-сервера (переменная SERVER_ADDRESS);
+// флаг -b, отвечающий за базовый адрес результирующего сокращённого URL (переменная BASE_URL);
+// флаг -f, отвечающий за путь до файла с сокращёнными URL (переменная FILE_STORAGE_PATH);
+// флаг -d, отвечающий за путь до DB (переменная DATABASE_DSN).
+//
+// Подключаемся к БД, если не получается проверяем к файлу с данными,
+// если не получается, то храним данные в памяти.
 func (s *serverShortener) InitRouter() {
 	errConfig := env.Parse(&s.Cfg)
 	if errConfig != nil {
@@ -127,6 +140,7 @@ func (s *serverShortener) InitRouter() {
 	}
 	flag.Parse()
 
+	//для быстрого локального тестирования деградации
 	//s.Cfg.Storage = ""
 	//s.Cfg.ConnectDB = ""
 

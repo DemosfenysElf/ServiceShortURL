@@ -21,6 +21,11 @@ type shortURLApiShortenBatch struct {
 	ShortURL string `json:"short_url"`
 }
 
+// PostAPIShortenBatch e.POST("/api/shorten/batch)
+// принимающий в теле запроса множество URL для сокращения в формате
+// [{"correlation_id": "<строковый идентификатор>","original_url": "<URL для сокращения>"},...]
+// возвращает данные в формате:
+// [{"correlation_id": "<строковый идентификатор из объекта запроса>","short_url": "<результирующий сокращённый URL>"},...]
 func (s *serverShortener) PostAPIShortenBatch(c echo.Context) error {
 	s.WG.Wait()
 	fmt.Println("==>> APIShortenBatch")

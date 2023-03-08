@@ -8,6 +8,9 @@ import (
 	"github.com/labstack/echo"
 )
 
+// GetShortToURL GET("/:id")
+// принимает в качестве URL-параметра идентификатор сокращённого URL
+// и возвращает ответ с кодом 307 и оригинальным URL в HTTP-заголовке Location
 func (s *serverShortener) GetShortToURL(c echo.Context) error {
 	s.WG.Wait()
 
@@ -16,20 +19,17 @@ func (s *serverShortener) GetShortToURL(c echo.Context) error {
 	short = short[1:]
 
 	url, err := s.GetURL(short)
-	fmt.Println("getURL: ", url)
 
 	if err != nil {
 		sErr := err.Error()
 		if strings.Contains(sErr, "deleted") {
-			fmt.Println(">>>>>Get Status: ", http.StatusGone)
 			c.Response().WriteHeader(http.StatusGone)
 			return nil
 		}
-		fmt.Println(">>>>>Get Status: ", http.StatusBadRequest)
+
 		c.Response().WriteHeader(http.StatusBadRequest)
 		return nil
 	}
-	fmt.Println(">>>>>Get Status: ", http.StatusTemporaryRedirect)
 	c.Response().Header().Add("Location", url)
 	c.Response().WriteHeader(http.StatusTemporaryRedirect)
 	c.Response().Header()
