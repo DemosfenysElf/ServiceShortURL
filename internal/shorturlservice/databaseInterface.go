@@ -12,6 +12,7 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
+// DatabaseService
 type DatabaseService interface {
 	Connect(connStr string) error
 	Close() error
@@ -26,6 +27,7 @@ valueUser       varchar(32),
 deleted			bool
 )`
 
+// Database connection *sql.DB
 type Database struct {
 	connection *sql.DB
 }

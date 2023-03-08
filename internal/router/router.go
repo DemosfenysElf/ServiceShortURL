@@ -15,6 +15,7 @@ import (
 	"github.com/labstack/echo"
 )
 
+// ConfigURL
 // SERVER_ADDRESS адрес запуска HTTP-сервера.
 // BASE_URL базовый адрес результирующего сокращённого URL.
 // FILE_STORAGE_PATH путь до файла должен.
@@ -35,6 +36,7 @@ type serverShortener struct {
 	shorturlservice.StorageInterface
 }
 
+// InitServer инициализация сервера
 func InitServer() *serverShortener {
 	return &serverShortener{WG: new(sync.WaitGroup)}
 }
@@ -94,6 +96,7 @@ func handler(h http.HandlerFunc) echo.HandlerFunc {
 	}
 }
 
+// startBD подключение к БД
 func (s *serverShortener) startBD() error {
 	if s.Cfg.ConnectDB == "" {
 		return fmt.Errorf("error s.Cfg.ConnectDB == nil")

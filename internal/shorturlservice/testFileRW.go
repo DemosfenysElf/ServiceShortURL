@@ -12,6 +12,7 @@ type nRW struct {
 	decoder *json.Decoder
 }
 
+// NewProducer открываем файл для записи и чтения
 func (fs *FileStorage) newRW(filename string) (*nRW, error) {
 	file, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_SYNC, 0777)
 	if err != nil {
@@ -51,6 +52,7 @@ func (p *nRW) ReadURLInfo() (*URLInfo, int, error) {
 	return urli, lenInfo, nil
 }
 
+// Close закрываем файл
 func (p *nRW) Close() error {
 	return p.file.Close()
 }

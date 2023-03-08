@@ -16,6 +16,7 @@ type MemoryStorage struct {
 	data []URLInfo
 }
 
+// InitMem инициализация
 func InitMem() *MemoryStorage {
 	return &MemoryStorage{data: make([]URLInfo, 0)}
 }

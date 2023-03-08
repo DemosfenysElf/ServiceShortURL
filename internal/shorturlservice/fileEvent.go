@@ -11,6 +11,7 @@ type producer struct {
 	encoder *json.Encoder
 }
 
+// NewProducer открываем файл для записи
 func NewProducer(filename string) (*producer, error) {
 	file, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0777)
 	if err != nil {
@@ -33,6 +34,7 @@ func (p *producer) WriteUser(user *CookiesAuthentication) error {
 	return p.encoder.Encode(&user)
 }
 
+// Close producer.
 func (p *producer) Close() error {
 	return p.file.Close()
 }
@@ -43,6 +45,7 @@ type consumer struct {
 	decoder *json.Decoder
 }
 
+// NewConsumer открываем файл для чтения
 func NewConsumer(filename string) (*consumer, error) {
 	file, err := os.OpenFile(filename, os.O_RDONLY|os.O_CREATE, 0777)
 	if err != nil {
@@ -72,6 +75,7 @@ func (c *consumer) ReadUser() (*CookiesAuthentication, error) {
 	return user, nil
 }
 
+// Close сonsumer.
 func (c *consumer) Close() error {
 	return c.file.Close()
 }

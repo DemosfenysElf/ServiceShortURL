@@ -9,11 +9,13 @@ import (
 
 const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
+// Данные о пользователе
 type CookiesAuthentication struct {
 	NameUser  string `json:"NameUser"`
 	ValueUser string `json:"ValueUser"`
 }
 
+// Данные о URL и  пользователе
 type URLInfo struct {
 	URL                   string `json:"url"`
 	ShortURL              string `json:"shortURL"`
