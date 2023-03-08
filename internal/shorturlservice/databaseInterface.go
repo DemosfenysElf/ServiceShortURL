@@ -60,12 +60,12 @@ func (db *Database) CreateTable() error {
 	return err
 }
 
+// Close закрывашка
 func (db *Database) Close() error {
 	return db.connection.Close()
 }
 
-// Ping(ctx context.Context)
-// проверяет, что соединение с базой данных все еще работает
+// Ping проверяет, что соединение с базой данных все еще работает
 func (db *Database) Ping(ctx context.Context) error {
 	if err := db.connection.PingContext(ctx); err != nil {
 		return err

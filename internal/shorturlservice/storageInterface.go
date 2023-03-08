@@ -5,6 +5,7 @@ import (
 	"io"
 )
 
+// StorageInterface
 type StorageInterface interface {
 	SetURL(url string) (short string, err error)
 	GetURL(short string) (url string, err error)
