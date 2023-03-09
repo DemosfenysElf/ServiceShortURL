@@ -66,8 +66,6 @@ func ExamplePostAPIShortenBatch() {
 			fmt.Println("Original URL " + baseurl[b.ID])
 		}
 
-		//
-
 		// Output:
 		// >>>>use BD<<<< postgres://postgres:0000@localhost:5432/postgres
 		// ==>> APIShortenBatch
