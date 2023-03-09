@@ -69,7 +69,6 @@ func ExamplePostAPIShortenBatch() {
 		}
 
 		// Output:
-		// >>>>use BD<<<< postgres://postgres:0000@localhost:5432/postgres
 		// ==>> APIShortenBatch
 		// Original URL https://www.youtube.com/watch?v=UK7yzgVpnDA
 		// Original URL https://metanit.com/
