@@ -76,7 +76,8 @@ func TestApiShortenBatch(t *testing.T) {
 			rout := router.InitServer()
 
 			DB := &shorturlservice.Database{}
-			if errConnect := DB.Connect("postgres://postgres:0000@localhost:5432/postgres"); errConnect != nil {
+			cfg := router.ConfigURL{}
+			if errConnect := DB.Connect(cfg.ConnectDB); errConnect != nil {
 				t.Errorf("DB.Connect fail")
 			}
 			rout.StorageInterface = DB
