@@ -77,7 +77,6 @@ func (db *Database) Ping(ctx context.Context) error {
 // получаем сгенерированный короткий URL
 // вместе с данными о пользователе сохраняем в БД
 func (db *Database) SetURL(url string) (short string, err error) {
-	fmt.Println(">>>>>>>>>SetURL, DB. URL: ", url)
 	short = shortURL()
 	// добавить проверку на оригинальность
 
@@ -91,15 +90,12 @@ func (db *Database) SetURL(url string) (short string, err error) {
 		switch pgErr.Code {
 		case pgerrcode.UniqueViolation:
 			short, _ = db.GetShortURL(url)
-			fmt.Println(">>>>>>>>>SetURL, DB. Short: ", short)
 			return short, err
 		default:
 			return "", err
 		}
 
 	}
-
-	fmt.Println(">>>>>>>>>SetURL, DB. Short: ", short)
 	return short, err
 }
 
