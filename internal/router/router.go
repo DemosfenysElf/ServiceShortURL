@@ -48,7 +48,7 @@ func (s *serverShortener) Router() error {
 	e := echo.New()
 
 	e.Use(s.mwGzipHandle)
-	e.Use(s.mwAuthentication)
+	e.Use(s.MWAuthentication)
 
 	e.GET("/:id", s.GetShortToURL)
 	e.GET("/api/user/urls", s.GetAPIUserURL)

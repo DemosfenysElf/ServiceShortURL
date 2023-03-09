@@ -44,6 +44,7 @@ func (s *serverShortener) PostAPIShortenBatch(c echo.Context) error {
 		c.Response().WriteHeader(http.StatusInternalServerError)
 		return fmt.Errorf("unmarshal error")
 	}
+
 	shortURLBatch := make([]shortURLApiShortenBatch, 0, len(urlBatch))
 	var setErr error
 	var short string
