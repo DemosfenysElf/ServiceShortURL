@@ -38,11 +38,13 @@ func ExamplePostAPIShortenBatch() {
 	rout := router.InitServer()
 	rout.InitRouter()
 
-	DB := &shorturlservice.Database{}
-	if errConnect := DB.Connect(rout.Cfg.ConnectDB); errConnect != nil {
-		fmt.Println("DB.Connect fail")
+	//DB := &shorturlservice.Database{}
+	//if errConnect := DB.Connect(rout.Cfg.ConnectDB); errConnect != nil {
+	//	fmt.Println("DB.Connect fail")
+	//}
+	rout.StorageInterface = &shorturlservice.FileStorage{
+		FilePath: rout.Cfg.Storage,
 	}
-	rout.StorageInterface = DB
 
 	rout.Serv = e
 	rout.PostAPIShortenBatch(c)
