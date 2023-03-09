@@ -69,6 +69,7 @@ func ExamplePostAPIShortenBatch() {
 		}
 
 		// Output:
+		// >>>>use storage<<<<
 		// ==>> APIShortenBatch
 		// Original URL https://www.youtube.com/watch?v=UK7yzgVpnDA
 		// Original URL https://metanit.com/
