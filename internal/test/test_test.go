@@ -3,6 +3,7 @@ package test
 import (
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -77,6 +78,7 @@ func TestApiShortenBatch(t *testing.T) {
 
 			DB := &shorturlservice.Database{}
 			cfg := router.ConfigURL{}
+			fmt.Println(cfg.ConnectDB)
 			if errConnect := DB.Connect(cfg.ConnectDB); errConnect != nil {
 				t.Errorf("DB.Connect fail")
 			}
