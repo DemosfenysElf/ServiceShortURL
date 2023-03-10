@@ -1,8 +1,10 @@
 package shorturlservice
 
 import (
+	"context"
 	"math/rand"
 	"testing"
+	"time"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
@@ -22,10 +24,11 @@ func BenchmarkXxx(b *testing.B) {
 			user := randomString(7)
 			SetStructCookies("Authentication", user)
 			b.StartTimer()
-
-			short, _ := DB.SetURL(url)
+			ctx, cancel := context.WithTimeout(context.Background(), time.Duration(1000))
+			defer cancel()
+			short, _ := DB.SetURL(ctx, url)
 			if short != "" {
-				DB.GetURL(short)
+				DB.GetURL(ctx, short)
 			}
 			b.StopTimer()
 			if i%2 == 0 {
@@ -34,7 +37,7 @@ func BenchmarkXxx(b *testing.B) {
 			}
 			b.StartTimer()
 			if i%5 == 0 {
-				DB.Delete(user, userList)
+				DB.Delete(ctx, user, userList)
 				b.StopTimer()
 				userList = nil
 				b.StartTimer()
