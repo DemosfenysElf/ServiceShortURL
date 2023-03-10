@@ -49,7 +49,7 @@ func (s *serverShortener) PostAPIShortenBatch(c echo.Context) error {
 	var setErr error
 	var short string
 	for i := range urlBatch {
-		short, setErr = s.SetURL(urlBatch[i].OriginalURL)
+		short, setErr = s.SetURL(c.Request().Context(), urlBatch[i].OriginalURL)
 		shortURLOne.ShortURL = s.Cfg.BaseURL + "/" + short
 		shortURLOne.ID = urlBatch[i].ID
 		shortURLBatch = append(shortURLBatch, shortURLOne)

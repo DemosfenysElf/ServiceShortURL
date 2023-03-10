@@ -18,7 +18,7 @@ func (s *serverShortener) GetShortToURL(c echo.Context) error {
 	short := c.Request().URL.String()
 	short = short[1:]
 
-	url, err := s.GetURL(short)
+	url, err := s.GetURL(c.Request().Context(), short)
 
 	if err != nil {
 		sErr := err.Error()

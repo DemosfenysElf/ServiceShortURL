@@ -27,7 +27,7 @@ func (s *serverShortener) PostURLToShort(c echo.Context) error {
 		c.Response().WriteHeader(http.StatusNoContent)
 		return nil
 	}
-	short, setErr := s.SetURL(string(body))
+	short, setErr := s.SetURL(c.Request().Context(), string(body))
 
 	write := []byte(s.Cfg.BaseURL + "/" + short)
 

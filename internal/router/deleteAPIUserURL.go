@@ -43,7 +43,7 @@ func (s *serverShortener) DeleteAPIUserURL(c echo.Context) error {
 		return nil
 	}
 
-	go s.Delete(user, newlist)
+	go s.Delete(c.Request().Context(), user, newlist)
 	time.Sleep(1 * time.Second)
 	c.Response().WriteHeader(http.StatusAccepted)
 	return nil

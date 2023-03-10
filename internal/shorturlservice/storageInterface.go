@@ -1,15 +1,16 @@
 package shorturlservice
 
 import (
+	"context"
 	"fmt"
 	"io"
 )
 
 // StorageInterface
 type StorageInterface interface {
-	SetURL(url string) (short string, err error)
-	GetURL(short string) (url string, err error)
-	Delete(user string, listURL []string)
+	SetURL(ctx context.Context, url string) (short string, err error)
+	GetURL(ctx context.Context, short string) (url string, err error)
+	Delete(ctx context.Context, user string, listURL []string)
 }
 
 // Хранение в памяти:
@@ -23,7 +24,7 @@ func InitMem() *MemoryStorage {
 }
 
 // GetURL передаём короткую ссылку, получаем оригинальную
-func (ms *MemoryStorage) GetURL(short string) (url string, err error) {
+func (ms *MemoryStorage) GetURL(_ context.Context, short string) (url string, err error) {
 	for i, data := range ms.data {
 		if short == data.ShortURL {
 			url = data.URL
@@ -39,7 +40,7 @@ func (ms *MemoryStorage) GetURL(short string) (url string, err error) {
 // SetURL передаём оригинальную ссылку, получаем короткую
 // перед записью её в память и выдачей проверяет на оригинальность
 // путем поиска её в памяти.
-func (ms *MemoryStorage) SetURL(url string) (short string, err error) {
+func (ms *MemoryStorage) SetURL(_ context.Context, url string) (short string, err error) {
 	short = shortURL()
 	if len(ms.data) != 0 {
 		for i, data := range ms.data {
@@ -60,7 +61,7 @@ func (ms *MemoryStorage) SetURL(url string) (short string, err error) {
 }
 
 // Delete хранение и удаление кук в памяти не реализованно.
-func (ms *MemoryStorage) Delete(user string, listURL []string) {
+func (ms *MemoryStorage) Delete(_ context.Context, user string, listURL []string) {
 	fmt.Println(">>>Storage_Delete_list<<<  ", listURL, "User: ", user)
 	fmt.Println(">>>>хранение и удаление кук в памяти не реализованно")
 
@@ -73,7 +74,7 @@ type FileStorage struct {
 }
 
 // GetURL передаём короткую ссылку, получаем оригинальную
-func (fs *FileStorage) GetURL(short string) (url string, err error) {
+func (fs *FileStorage) GetURL(_ context.Context, short string) (url string, err error) {
 	consumerURL, err := NewConsumer(fs.FilePath)
 	if err != nil {
 		return "", err
@@ -97,10 +98,10 @@ func (fs *FileStorage) GetURL(short string) (url string, err error) {
 
 // SetURL передаём оригинальную ссылку, получаем короткую
 // сохраняем в файл
-func (fs *FileStorage) SetURL(url string) (short string, err error) {
+func (fs *FileStorage) SetURL(ctx context.Context, url string) (short string, err error) {
 	short = shortURL()
 	for {
-		_, err := fs.GetURL(short)
+		_, err := fs.GetURL(ctx, short)
 		if err != nil {
 			break
 		}
@@ -121,7 +122,7 @@ func (fs *FileStorage) SetURL(url string) (short string, err error) {
 }
 
 // Delete меняем метку удаления у удаляемых url
-func (fs *FileStorage) Delete(user string, listURL []string) {
+func (fs *FileStorage) Delete(_ context.Context, user string, listURL []string) {
 	fmt.Println(">>>Storage_Delete_list<<<  ", listURL, "User: ", user)
 
 	fileRW, _ := fs.newRW(fs.FilePath)

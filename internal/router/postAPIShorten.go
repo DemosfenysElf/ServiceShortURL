@@ -44,7 +44,7 @@ func (s *serverShortener) PostAPIShorten(c echo.Context) error {
 		c.Response().WriteHeader(http.StatusBadRequest)
 		return fmt.Errorf("URL is nil")
 	}
-	short, setErr := s.SetURL(urlJ.URL)
+	short, setErr := s.SetURL(c.Request().Context(), urlJ.URL)
 	shortURL.ShortURL = s.Cfg.BaseURL + "/" + short
 
 	shortU, err := json.Marshal(shortURL)
