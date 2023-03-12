@@ -86,7 +86,7 @@ func (fs *FileStorage) GetURL(_ context.Context, short string) (url string, err 
 		if err != nil {
 			break
 		}
-		if readURL.Deleted == "delet" {
+		if (readURL.Deleted == "delet") && (readURL.ShortURL == short) {
 			return "", fmt.Errorf("deleted")
 		}
 		if readURL.ShortURL == short {
@@ -136,7 +136,6 @@ func (fs *FileStorage) Delete(_ context.Context, user string, listURL []string) 
 		if err != nil {
 			break
 		}
-		fmt.Println("readURL,	", readURL.ShortURL)
 		position = position + int64(len1string) + 1
 
 		for i, u := range listURL {

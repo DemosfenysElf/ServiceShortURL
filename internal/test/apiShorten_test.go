@@ -1,4 +1,4 @@
-package main
+package test
 
 import (
 	"io"
@@ -7,50 +7,57 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/caarlos0/env"
-	"github.com/labstack/echo"
-
 	"ServiceShortURL/internal/router"
 	"ServiceShortURL/internal/shorturlservice"
+
+	"github.com/caarlos0/env"
+	"github.com/labstack/echo"
 )
 
-func Test_router(t *testing.T) {
+func TestApiShorten(t *testing.T) {
 
 	type want struct {
 		codePost int
 		codeGet  int
 		response string
 	}
-
 	tests := []struct {
 		name string
-		want want
-		url  string
+
+		want    want
+		wantErr bool
+		baseurl string
+		urlJSON string
+		urlRes  string
 	}{
 		{
-			name: "Test_router_1",
+			name: "TestApiShorten1",
 			want: want{
 				codePost: 201,
 				codeGet:  307,
 				response: `{"status":"ok"}`,
 			},
-			url: ("https://www.youtube.com/watch?v=UK7yzgVpnDA"),
-		}, {
-			name: "Test_router_2",
+			baseurl: "https://www.youtube.com/watch?v=UK7yzgVpnDA",
+			urlJSON: `{"url":"https://www.youtube.com/watch?v=UK7yzgVpnDA"}`,
+			urlRes:  `{"result":"https://www.youtube.com/watch?v=UK7yzgVpnDA"}`,
+		},
+		{
+			name: "TestApiShorten2",
 			want: want{
-				codePost: 204,
+				codePost: 400,
 				response: `{"status":"ok"}`,
 			},
-			url: (""),
+			baseurl: "",
+			urlJSON: `{"url":""}`,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+
 			e := echo.New()
-			request := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(tt.url))
+			request := httptest.NewRequest(http.MethodPost, "/api/shorten", strings.NewReader(tt.urlJSON))
 			rec := httptest.NewRecorder()
 			c := e.NewContext(request, rec)
-
 			rout := router.InitServer()
 			rout.StorageInterface = shorturlservice.InitMem()
 
@@ -59,7 +66,7 @@ func Test_router(t *testing.T) {
 				t.Fatal(errConfig)
 			}
 			rout.Serv = e
-			rout.PostURLToShort(c)
+			rout.PostAPIShorten(c)
 
 			res := rec.Result()
 
@@ -72,10 +79,14 @@ func Test_router(t *testing.T) {
 			if res.StatusCode != tt.want.codePost {
 				t.Errorf("Expected status code %d, got %d", tt.want.codePost, rec.Code)
 			}
+			//////////////////////////////////////////////////////////////
 			if res.StatusCode == 201 {
-				//////////////////////////////////////////////////////////////
+				s := `{"result":"` + rout.Cfg.BaseURL + "/"
+				s2 := `"}`
 
-				resBodyShort := strings.Replace(string(resBody), rout.Cfg.BaseURL+"/", "", -1)
+				resBodyShort := strings.Replace(string(resBody), s, "", -1)
+				resBodyShort = strings.Replace(resBodyShort, s2, "", -1)
+
 				request1 := httptest.NewRequest(http.MethodGet, "/"+resBodyShort, nil)
 
 				rec1 := httptest.NewRecorder()
@@ -98,8 +109,8 @@ func Test_router(t *testing.T) {
 					t.Errorf("Expected status code %d, got %d", tt.want.codeGet, rec1.Code)
 				}
 
-				if res.Header.Get("Location") != tt.url {
-					t.Errorf("Expected Location %s, got %s", tt.url, res.Header.Get("Location"))
+				if res.Header.Get("Location") != tt.baseurl {
+					t.Errorf("Expected Location %s, got %s", tt.baseurl, res.Header.Get("Location"))
 				}
 			}
 		})
