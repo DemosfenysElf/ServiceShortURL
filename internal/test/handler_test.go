@@ -326,66 +326,75 @@ func TestApiShorten(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-
-			e := echo.New()
-			request := httptest.NewRequest(http.MethodPost, "/api/shorten", strings.NewReader(tt.urlJSON))
-			rec := httptest.NewRecorder()
-			c := e.NewContext(request, rec)
 			rout := router.InitServer()
-			rout.StorageInterface = shorturlservice.InitMem()
+			rout.Cfg.Storage = "shortsURl.log"
 
-			errConfig := env.Parse(&rout.Cfg)
-			if errConfig != nil {
-				t.Fatal(errConfig)
-			}
-			rout.Serv = e
-			rout.PostAPIShorten(c)
+			teststor := func(s shorturlservice.StorageInterface) {
 
-			res := rec.Result()
+				e := echo.New()
+				request := httptest.NewRequest(http.MethodPost, "/api/shorten", strings.NewReader(tt.urlJSON))
+				rec := httptest.NewRecorder()
+				c := e.NewContext(request, rec)
+				rout.StorageInterface = s
 
-			defer res.Body.Close()
-			resBody, err := io.ReadAll(res.Body)
-			if err != nil {
-				t.Fatal(err)
-			}
+				errConfig := env.Parse(&rout.Cfg)
+				if errConfig != nil {
+					t.Fatal(errConfig)
+				}
+				rout.Serv = e
+				rout.PostAPIShorten(c)
 
-			if res.StatusCode != tt.want.codePost {
-				t.Errorf("Expected status code %d, got %d", tt.want.codePost, rec.Code)
-			}
-			//////////////////////////////////////////////////////////////
-			if res.StatusCode == 201 {
-				s := `{"result":"` + rout.Cfg.BaseURL + "/"
-				s2 := `"}`
-
-				resBodyShort := strings.Replace(string(resBody), s, "", -1)
-				resBodyShort = strings.Replace(resBodyShort, s2, "", -1)
-
-				request1 := httptest.NewRequest(http.MethodGet, "/"+resBodyShort, nil)
-
-				rec1 := httptest.NewRecorder()
-				c1 := e.NewContext(request1, rec1)
-
-				rout.GetShortToURL(c1)
-				res = rec1.Result()
+				res := rec.Result()
 
 				defer res.Body.Close()
-				resBody, err = io.ReadAll(res.Body)
+				resBody, err := io.ReadAll(res.Body)
 				if err != nil {
 					t.Fatal(err)
 				}
 
-				if strings.HasPrefix(string(resBody), rout.Cfg.BaseURL+"/") {
-					t.Errorf("Expected body %s, got %s", tt.want.response, rec1.Body.String())
+				if res.StatusCode != tt.want.codePost {
+					t.Errorf("Expected status code %d, got %d", tt.want.codePost, rec.Code)
 				}
+				//////////////////////////////////////////////////////////////
+				if res.StatusCode == 201 {
+					s := `{"result":"` + rout.Cfg.BaseURL + "/"
+					s2 := `"}`
 
-				if res.StatusCode != tt.want.codeGet {
-					t.Errorf("Expected status code %d, got %d", tt.want.codeGet, rec1.Code)
-				}
+					resBodyShort := strings.Replace(string(resBody), s, "", -1)
+					resBodyShort = strings.Replace(resBodyShort, s2, "", -1)
 
-				if res.Header.Get("Location") != tt.baseurl {
-					t.Errorf("Expected Location %s, got %s", tt.baseurl, res.Header.Get("Location"))
+					request1 := httptest.NewRequest(http.MethodGet, "/"+resBodyShort, nil)
+
+					rec1 := httptest.NewRecorder()
+					c1 := e.NewContext(request1, rec1)
+
+					rout.GetShortToURL(c1)
+					res = rec1.Result()
+
+					defer res.Body.Close()
+					resBody, err = io.ReadAll(res.Body)
+					if err != nil {
+						t.Fatal(err)
+					}
+
+					if strings.HasPrefix(string(resBody), rout.Cfg.BaseURL+"/") {
+						t.Errorf("Expected body %s, got %s", tt.want.response, rec1.Body.String())
+					}
+
+					if res.StatusCode != tt.want.codeGet {
+						t.Errorf("Expected status code %d, got %d", tt.want.codeGet, rec1.Code)
+					}
+
+					if res.Header.Get("Location") != tt.baseurl {
+						t.Errorf("Expected Location %s, got %s", tt.baseurl, res.Header.Get("Location"))
+					}
 				}
 			}
+			teststor(&shorturlservice.FileStorage{
+				FilePath: rout.Cfg.Storage,
+			})
+			teststor(shorturlservice.InitMem())
+
 		})
 	}
 }
