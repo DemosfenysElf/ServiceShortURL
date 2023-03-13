@@ -16,9 +16,15 @@ type userURLstruct struct {
 	OriginalURL string `json:"original_url"`
 }
 
-func (s *serverShortener) APIUserURL(c echo.Context) error {
-	fmt.Println("==>> APIUserURL")
-	userCookies := shorturlservice.GetStructCookies()
+// GetAPIUserURL e.GET("/api/user/urls")
+// возвращает пользователю все когда-либо сокращённые им URL в формате
+// [{"short_url":"http://...","original_url":"http://..."},...]
+// при отсутствии сокращённых пользователем URL: http.StatusNoContent
+func (s *serverShortener) GetAPIUserURL(c echo.Context) error {
+	s.WG.Wait()
+	fmt.Println("==>> GetAPIUserURL")
+
+	userCookies := shorturlservice.GetCookieValue(c.Request().Cookies())
 
 	allURL := make([]userURLstruct, 0)
 
@@ -29,7 +35,7 @@ func (s *serverShortener) APIUserURL(c echo.Context) error {
 	defer consumerURL.Close()
 
 	for readURL, err := consumerURL.ReadURLInfo(); err == nil; readURL, err = consumerURL.ReadURLInfo() {
-		if readURL.CookiesAuthentication.ValueUser == userCookies.ValueUser {
+		if readURL.CookiesAuthentication.ValueUser == userCookies {
 			element := userURLstruct{
 				ShortURL:    s.Cfg.BaseURL + "/" + readURL.ShortURL,
 				OriginalURL: readURL.URL,

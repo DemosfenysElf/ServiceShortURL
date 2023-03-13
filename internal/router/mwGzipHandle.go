@@ -9,8 +9,10 @@ import (
 	"github.com/labstack/echo"
 )
 
-func (s serverShortener) gzipHandle(next echo.HandlerFunc) echo.HandlerFunc {
-	fmt.Println("==>> gzipHandle")
+// mwGzipHandle принимает запросы в сжатом формате
+// и распаковывает их обратно в body
+func (s serverShortener) mwGzipHandle(next echo.HandlerFunc) echo.HandlerFunc {
+	fmt.Println("==>> mwGzipHandle")
 	return func(c echo.Context) error {
 		if c.Request().Header.Get("Content-Encoding") != "gzip" {
 			return next(c)

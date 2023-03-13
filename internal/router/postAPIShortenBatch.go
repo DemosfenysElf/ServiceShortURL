@@ -21,7 +21,13 @@ type shortURLApiShortenBatch struct {
 	ShortURL string `json:"short_url"`
 }
 
-func (s *serverShortener) APIShortenBatch(c echo.Context) error {
+// PostAPIShortenBatch e.POST("/api/shorten/batch)
+// принимающий в теле запроса множество URL для сокращения в формате
+// [{"correlation_id": "<строковый идентификатор>","original_url": "<URL для сокращения>"},...]
+// возвращает данные в формате:
+// [{"correlation_id": "<строковый идентификатор из объекта запроса>","short_url": "<результирующий сокращённый URL>"},...]
+func (s *serverShortener) PostAPIShortenBatch(c echo.Context) error {
+	s.WG.Wait()
 	fmt.Println("==>> APIShortenBatch")
 	urlBatch := []urlAPIShortenBatch{}
 	shortURLOne := shortURLApiShortenBatch{}
@@ -38,11 +44,15 @@ func (s *serverShortener) APIShortenBatch(c echo.Context) error {
 		c.Response().WriteHeader(http.StatusInternalServerError)
 		return fmt.Errorf("unmarshal error")
 	}
+
 	shortURLBatch := make([]shortURLApiShortenBatch, 0, len(urlBatch))
-	var setErr error
+	var setErr, cheakErr error
 	var short string
 	for i := range urlBatch {
-		short, setErr = s.SetURL(urlBatch[i].OriginalURL)
+		short, setErr = s.SetURL(c.Request().Context(), urlBatch[i].OriginalURL)
+		if setErr != nil {
+			cheakErr = setErr
+		}
 		shortURLOne.ShortURL = s.Cfg.BaseURL + "/" + short
 		shortURLOne.ID = urlBatch[i].ID
 		shortURLBatch = append(shortURLBatch, shortURLOne)
@@ -63,9 +73,9 @@ func (s *serverShortener) APIShortenBatch(c echo.Context) error {
 	}
 
 	c.Response().Header().Add("Content-Type", "application/json")
-	if setErr != nil {
-		setErr := setErr.Error()
-		if strings.Contains(setErr, pgerrcode.UniqueViolation) {
+	if cheakErr != nil {
+		setError := cheakErr.Error()
+		if strings.Contains(setError, pgerrcode.UniqueViolation) {
 			c.Response().WriteHeader(http.StatusConflict)
 
 		}

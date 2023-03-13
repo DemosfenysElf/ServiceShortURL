@@ -14,8 +14,11 @@ import (
 var hexCryptoNewToken string
 var storageUsers = "storageUsers.log"
 
-func (s serverShortener) serviceAuthentication(next echo.HandlerFunc) echo.HandlerFunc {
-	fmt.Println("==>> serviceAuthentication")
+// MWAuthentication проверяем наличие ранее выданной куки
+// если кука соответствует, то далее будет использоваться эта же кука
+// если кука не соответствует или отсутствует, то выдаётся новая
+func (s serverShortener) MWAuthentication(next echo.HandlerFunc) echo.HandlerFunc {
+	fmt.Println("==>> MWAuthentication")
 	return func(c echo.Context) error {
 		requestCookies := c.Request().Cookies()
 
