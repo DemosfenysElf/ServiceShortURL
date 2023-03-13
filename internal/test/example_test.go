@@ -14,6 +14,8 @@ import (
 	"ServiceShortURL/internal/shorturlservice"
 )
 
+var fileStorage = "shortsURl.log"
+
 func ExamplePostAPIShortenBatch() {
 
 	baseurl := map[string]string{
@@ -36,14 +38,14 @@ func ExamplePostAPIShortenBatch() {
 	responseRecorder := httptest.NewRecorder()
 	c := e.NewContext(request, responseRecorder)
 	rout := router.InitServer()
-	rout.InitRouter()
+	//rout.InitRouter()
 
 	//DB := &shorturlservice.Database{}
 	//if errConnect := DB.Connect(rout.Cfg.ConnectDB); errConnect != nil {
 	//	fmt.Println("DB.Connect fail")
 	//}
 	rout.StorageInterface = &shorturlservice.FileStorage{
-		FilePath: rout.Cfg.Storage,
+		FilePath: fileStorage,
 	}
 
 	rout.Serv = e
@@ -69,7 +71,6 @@ func ExamplePostAPIShortenBatch() {
 		}
 
 		// Output:
-		// >>>>use storage<<<<
 		// ==>> APIShortenBatch
 		// Original URL https://www.youtube.com/watch?v=UK7yzgVpnDA
 		// Original URL https://metanit.com/
