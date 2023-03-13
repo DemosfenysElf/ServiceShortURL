@@ -2,7 +2,6 @@ package shorturlservice
 
 import (
 	"crypto/aes"
-	"log"
 	"math/rand"
 )
 
@@ -22,7 +21,6 @@ func GenerateToken() ([]byte, error) {
 func CryptoToken(token []byte) ([]byte, error) {
 	aesBlock, err := aes.NewCipher(key)
 	if err != nil {
-		log.Fatal(err)
 		return nil, err
 	}
 	cryptoString := make([]byte, len(token))
@@ -34,7 +32,6 @@ func CryptoToken(token []byte) ([]byte, error) {
 func DeCryptoToken(token []byte) ([]byte, error) {
 	aesBlock, err := aes.NewCipher(key)
 	if err != nil {
-		log.Fatal(err)
 		return nil, err
 	}
 	deCryptoString := make([]byte, len(token))

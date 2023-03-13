@@ -46,10 +46,13 @@ func (s *serverShortener) PostAPIShortenBatch(c echo.Context) error {
 	}
 
 	shortURLBatch := make([]shortURLApiShortenBatch, 0, len(urlBatch))
-	var setErr error
+	var setErr, cheakErr error
 	var short string
 	for i := range urlBatch {
 		short, setErr = s.SetURL(c.Request().Context(), urlBatch[i].OriginalURL)
+		if setErr != nil {
+			cheakErr = setErr
+		}
 		shortURLOne.ShortURL = s.Cfg.BaseURL + "/" + short
 		shortURLOne.ID = urlBatch[i].ID
 		shortURLBatch = append(shortURLBatch, shortURLOne)
@@ -70,9 +73,9 @@ func (s *serverShortener) PostAPIShortenBatch(c echo.Context) error {
 	}
 
 	c.Response().Header().Add("Content-Type", "application/json")
-	if setErr != nil {
-		setErr := setErr.Error()
-		if strings.Contains(setErr, pgerrcode.UniqueViolation) {
+	if cheakErr != nil {
+		setError := setErr.Error()
+		if strings.Contains(setError, pgerrcode.UniqueViolation) {
 			c.Response().WriteHeader(http.StatusConflict)
 
 		}

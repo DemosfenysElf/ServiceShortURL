@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"strings"
 )
 
 // StorageInterface
@@ -62,9 +63,7 @@ func (ms *MemoryStorage) SetURL(_ context.Context, url string) (short string, er
 
 // Delete хранение и удаление кук в памяти не реализованно.
 func (ms *MemoryStorage) Delete(_ context.Context, user string, listURL []string) {
-	fmt.Println(">>>Storage_Delete_list<<<  ", listURL, "User: ", user)
 	fmt.Println(">>>>хранение и удаление кук в памяти не реализованно")
-
 }
 
 // Хранение в файле:
@@ -103,7 +102,10 @@ func (fs *FileStorage) SetURL(ctx context.Context, url string) (short string, er
 	for {
 		_, err := fs.GetURL(ctx, short)
 		if err != nil {
-			break
+			sErr := err.Error()
+			if !strings.Contains(sErr, "deleted") {
+				break
+			}
 		}
 		short = shortURL()
 	}
