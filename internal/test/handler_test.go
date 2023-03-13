@@ -342,8 +342,16 @@ func TestApiShorten(t *testing.T) {
 				codePost: 400,
 				response: `{"status":"ok"}`,
 			},
-			baseurl: "",
+
 			urlJSON: `{"url":""}`,
+		},
+		{
+			name: "TestApiShorten3",
+			want: want{
+				codePost: 204,
+				response: `{"status":"ok"}`,
+			},
+			urlJSON: ``,
 		},
 	}
 	for _, tt := range tests {

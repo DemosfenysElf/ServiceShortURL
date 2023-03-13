@@ -74,7 +74,7 @@ func (s *serverShortener) PostAPIShortenBatch(c echo.Context) error {
 
 	c.Response().Header().Add("Content-Type", "application/json")
 	if cheakErr != nil {
-		setError := setErr.Error()
+		setError := cheakErr.Error()
 		if strings.Contains(setError, pgerrcode.UniqueViolation) {
 			c.Response().WriteHeader(http.StatusConflict)
 
