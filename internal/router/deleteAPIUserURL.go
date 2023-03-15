@@ -19,7 +19,7 @@ import (
 // в случае успешного приёма запроса возвращает http.StatusAccepted.
 func (s *serverShortener) DeleteAPIUserURLs(c echo.Context) error {
 	fmt.Println("==>> DeleteAPIUserURLs")
-	time.Sleep(time.Duration(time.Millisecond * 100))
+	//time.Sleep(time.Duration(time.Millisecond * 100))
 	s.WG.Add(1)
 	defer s.WG.Done()
 	var newlist []string
