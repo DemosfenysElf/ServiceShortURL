@@ -13,13 +13,12 @@ import (
 	"ServiceShortURL/internal/shorturlservice"
 )
 
-// DeleteAPIUserURL e.DELETE("/api/user/urls")
+// DeleteAPIUserURLs e.DELETE("/api/user/urls")
 // принимает список идентификаторов сокращённых URL для удаления в формате:
 // [ "a", "b", "c", "d", ...]
 // в случае успешного приёма запроса возвращает http.StatusAccepted.
-func (s *serverShortener) DeleteAPIUserURL(c echo.Context) error {
-	fmt.Println("==>> DeleteAPIUserURL")
-	//s.WG.Wait()
+func (s *serverShortener) DeleteAPIUserURLs(c echo.Context) error {
+	fmt.Println("==>> DeleteAPIUserURLs")
 	s.WG.Add(1)
 	defer s.WG.Done()
 	var newlist []string

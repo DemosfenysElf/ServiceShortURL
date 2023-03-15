@@ -120,7 +120,7 @@ func TestBatchGetDelete(t *testing.T) {
 				}
 
 				//////////////////////////////////////////////////////////////
-				if response.StatusCode == 201 {
+				if response.StatusCode == http.StatusCreated {
 
 					urlBatch := []shortURLApiShortenBatch{}
 					err = json.Unmarshal(resBody, &urlBatch)
@@ -145,7 +145,7 @@ func TestBatchGetDelete(t *testing.T) {
 							recorder2 := httptest.NewRecorder()
 							ctx2 := e.NewContext(request2, recorder2)
 
-							rout.DeleteAPIUserURL(ctx2)
+							rout.DeleteAPIUserURLs(ctx2)
 
 						}
 
@@ -271,7 +271,7 @@ func TestPostGet(t *testing.T) {
 				}
 
 				//////////////////////////////////////////////////////////////
-				if response.StatusCode == 201 {
+				if response.StatusCode == http.StatusCreated {
 
 					str2 := `/`
 
@@ -386,7 +386,7 @@ func TestApiShorten(t *testing.T) {
 					t.Errorf("Expected status code %d, got %d", tt.want.codePost, rec.Code)
 				}
 				//////////////////////////////////////////////////////////////
-				if res.StatusCode == 201 {
+				if res.StatusCode == http.StatusCreated {
 					s := `{"result":"` + rout.Cfg.BaseURL + "/"
 					s2 := `"}`
 

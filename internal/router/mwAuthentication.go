@@ -29,19 +29,19 @@ func (s serverShortener) MWAuthentication(next echo.HandlerFunc) echo.HandlerFun
 		defer consumerUser.Close()
 
 		if (len(requestCookies) > 0) && (requestCookies[0].Name == "Authentication") {
-			deHexCookies, err := hex.DecodeString(requestCookies[0].Value)
-			if err != nil {
-				log.Fatal(err)
+			deHexCookies, errDecode := hex.DecodeString(requestCookies[0].Value)
+			if errDecode != nil {
+				log.Fatal(errDecode)
 			}
-			deCryptoCookies, err := shorturlservice.DeCryptoToken(deHexCookies)
-			if err != nil {
-				log.Fatal(err)
+			deCryptoCookies, errDecrypt := shorturlservice.DeCryptoToken(deHexCookies)
+			if errDecrypt != nil {
+				log.Fatal(errDecrypt)
 			}
 			hexCookies := hex.EncodeToString(deCryptoCookies)
 
 			for {
-				readUser, err := consumerUser.ReadUser()
-				if err != nil {
+				readUser, errRead := consumerUser.ReadUser()
+				if errRead != nil {
 					break
 				}
 
@@ -60,8 +60,8 @@ func (s serverShortener) MWAuthentication(next echo.HandlerFunc) echo.HandlerFun
 		userMap := make(map[string]bool, 0)
 
 		for {
-			readUser, err := consumerUser.ReadUser()
-			if err != nil {
+			readUser, errRead := consumerUser.ReadUser()
+			if errRead != nil {
 				break
 			}
 			userMap[readUser.ValueUser] = true

@@ -100,9 +100,9 @@ func (fs *FileStorage) GetURL(_ context.Context, short string) (url string, err 
 func (fs *FileStorage) SetURL(ctx context.Context, url string) (short string, err error) {
 	short = shortURL()
 	for {
-		_, err := fs.GetURL(ctx, short)
-		if err != nil {
-			sErr := err.Error()
+		_, errFor := fs.GetURL(ctx, short)
+		if errFor != nil {
+			sErr := errFor.Error()
 			if !strings.Contains(sErr, "deleted") {
 				break
 			}

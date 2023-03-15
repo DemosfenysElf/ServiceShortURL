@@ -52,7 +52,7 @@ func ExamplePostAPIShortenBatch() {
 		fmt.Println(err)
 	}
 
-	if response.StatusCode == 201 {
+	if response.StatusCode == http.StatusCreated {
 
 		urlBatch := []shortURLApiShortenBatch{}
 		err = json.Unmarshal(resBody, &urlBatch)

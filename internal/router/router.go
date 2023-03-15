@@ -58,7 +58,7 @@ func (s *serverShortener) Router() error {
 	e.POST("/api/shorten/batch", s.PostAPIShortenBatch)
 	e.POST("/api/shorten", s.PostAPIShorten)
 
-	e.DELETE("/api/user/urls", s.DeleteAPIUserURL)
+	e.DELETE("/api/user/urls", s.DeleteAPIUserURLs)
 
 	RegisterPprof(e, "/debug/pprof")
 
@@ -140,9 +140,9 @@ func (s *serverShortener) InitRouter() {
 	}
 	flag.Parse()
 
-	//для быстрого локального тестирования деградации
-	//s.Cfg.Storage = ""
-	//s.Cfg.ConnectDB = ""
+	// для быстрого локального тестирования деградации
+	// s.Cfg.Storage = ""
+	// s.Cfg.ConnectDB = ""
 
 	if err := s.startBD(); err == nil {
 		fmt.Println(">>>>use BD<<<<", s.Cfg.ConnectDB)

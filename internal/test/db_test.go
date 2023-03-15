@@ -94,7 +94,7 @@ package test
 //							recorder2 := httptest.NewRecorder()
 //							ctx2 := e.NewContext(request2, recorder2)
 //
-//							rout.DeleteAPIUserURL(ctx2)
+//							rout.DeleteAPIUserURLs(ctx2)
 //
 //						}
 //

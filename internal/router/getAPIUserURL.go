@@ -34,7 +34,7 @@ func (s *serverShortener) GetAPIUserURL(c echo.Context) error {
 	}
 	defer consumerURL.Close()
 
-	for readURL, err := consumerURL.ReadURLInfo(); err == nil; readURL, err = consumerURL.ReadURLInfo() {
+	for readURL, errRead := consumerURL.ReadURLInfo(); errRead == nil; readURL, errRead = consumerURL.ReadURLInfo() {
 		if readURL.CookiesAuthentication.ValueUser == userCookies {
 			element := userURLstruct{
 				ShortURL:    s.Cfg.BaseURL + "/" + readURL.ShortURL,

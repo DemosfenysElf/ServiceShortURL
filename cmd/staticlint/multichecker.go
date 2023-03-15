@@ -1,11 +1,13 @@
-package staticlint
+package main
 
 import (
 	"strings"
 
-	"github.com/go-critic/go-critic/checkers/analyzer"
+	analyzer1 "github.com/go-critic/go-critic/checkers/analyzer"
+	analyzer2 "github.com/sashamelentyev/usestdlibvars/pkg/analyzer"
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/analysis/multichecker"
+	"golang.org/x/tools/go/analysis/passes/asmdecl"
 	"golang.org/x/tools/go/analysis/passes/printf"
 	"golang.org/x/tools/go/analysis/passes/shadow"
 	"golang.org/x/tools/go/analysis/passes/structtag"
@@ -22,6 +24,7 @@ func main() {
 		if strings.Contains(v.Analyzer.Name, "SA") {
 			mychecks = append(mychecks, v.Analyzer)
 		}
+
 	}
 
 	// проходимся по quickfix.Analyzers
@@ -32,11 +35,14 @@ func main() {
 		}
 	}
 
-	// выборочно добавляем проверки в массив
+	// выборочно добавляем проверки в массив из:
 	// "golang.org/x/tools/go/analysis/"
-	mychecks = append(mychecks, printf.Analyzer, shadow.Analyzer, printf.Analyzer, structtag.Analyzer)
+	mychecks = append(mychecks, printf.Analyzer, shadow.Analyzer, structtag.Analyzer)
 	// "github.com/go-critic/go-critic/"
-	mychecks = append(mychecks, analyzer.Analyzer)
+	mychecks = append(mychecks, analyzer1.Analyzer)
+	// где-то тут я поломался и не понял что дальше творю
+	mychecks = append(mychecks, analyzer2.New())
+	mychecks = append(mychecks, asmdecl.Analyzer)
 
 	multichecker.Main(
 		mychecks...,

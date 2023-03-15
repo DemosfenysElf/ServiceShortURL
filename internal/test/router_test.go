@@ -72,7 +72,7 @@ func Test_router(t *testing.T) {
 			if res.StatusCode != tt.want.codePost {
 				t.Errorf("Expected status code %d, got %d", tt.want.codePost, rec.Code)
 			}
-			if res.StatusCode == 201 {
+			if res.StatusCode == http.StatusCreated {
 				//////////////////////////////////////////////////////////////
 
 				resBodyShort := strings.Replace(string(resBody), rout.Cfg.BaseURL+"/", "", -1)
