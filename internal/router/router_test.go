@@ -1,16 +1,16 @@
-package test
+package router
 
 import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 
 	"github.com/caarlos0/env"
 	"github.com/labstack/echo"
 
-	"ServiceShortURL/internal/router"
 	"ServiceShortURL/internal/shorturlservice"
 )
 
@@ -46,12 +46,14 @@ func Test_router(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			os.Truncate(testStorageURL, 0)
+			os.Truncate(testStorageUsers, 0)
 			e := echo.New()
 			request := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(tt.url))
 			rec := httptest.NewRecorder()
 			c := e.NewContext(request, rec)
 
-			rout := router.InitServer()
+			rout := InitServer()
 			rout.StorageInterface = shorturlservice.InitMem()
 
 			errConfig := env.Parse(&rout.Cfg)

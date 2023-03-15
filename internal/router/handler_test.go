@@ -1,19 +1,21 @@
-package test
+package router
 
 import (
 	"encoding/json"
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 
 	"github.com/caarlos0/env"
 	"github.com/labstack/echo"
 
-	"ServiceShortURL/internal/router"
 	"ServiceShortURL/internal/shorturlservice"
 )
+
+var testStorageURL = "../test/shortsURl.log"
 
 func TestBatchGetDelete(t *testing.T) {
 
@@ -91,8 +93,8 @@ func TestBatchGetDelete(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			rout := router.InitServer()
-			rout.Cfg.Storage = "shortsURl.log"
+			rout := InitServer()
+			rout.Cfg.Storage = testStorageURL
 
 			teststor := func(s shorturlservice.StorageInterface) {
 				e := echo.New()
@@ -195,7 +197,6 @@ func TestPostGet(t *testing.T) {
 	type want struct {
 		codePost int
 		codeGet  int
-		codeDel  int
 		response string
 	}
 	tests := []struct {
@@ -242,8 +243,8 @@ func TestPostGet(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			rout := router.InitServer()
-			rout.Cfg.Storage = "shortsURl.log"
+			rout := InitServer()
+			rout.Cfg.Storage = testStorageURL
 
 			teststor := func(s shorturlservice.StorageInterface) {
 				e := echo.New()
@@ -356,8 +357,10 @@ func TestApiShorten(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			rout := router.InitServer()
-			rout.Cfg.Storage = "shortsURl.log"
+			os.Truncate(testStorageURL, 0)
+			os.Truncate(testStorageUsers, 0)
+			rout := InitServer()
+			rout.Cfg.Storage = testStorageURL
 
 			teststor := func(s shorturlservice.StorageInterface) {
 

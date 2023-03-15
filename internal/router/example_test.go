@@ -1,4 +1,4 @@
-package test
+package router
 
 import (
 	"encoding/json"
@@ -10,11 +10,10 @@ import (
 
 	"github.com/labstack/echo"
 
-	"ServiceShortURL/internal/router"
 	"ServiceShortURL/internal/shorturlservice"
 )
 
-var fileStorage = "shortsURl.log"
+var fileStorage = "../test/shortsURl.log"
 
 func ExamplePostAPIShortenBatch() {
 
@@ -37,7 +36,7 @@ func ExamplePostAPIShortenBatch() {
 	request.AddCookie(cookie)
 	responseRecorder := httptest.NewRecorder()
 	c := e.NewContext(request, responseRecorder)
-	rout := router.InitServer()
+	rout := InitServer()
 	rout.StorageInterface = &shorturlservice.FileStorage{
 		FilePath: fileStorage,
 	}

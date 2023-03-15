@@ -1,4 +1,4 @@
-package test
+package router
 
 import (
 	"encoding/hex"
@@ -8,14 +8,10 @@ import (
 	"ServiceShortURL/internal/shorturlservice"
 )
 
-type shortURLApiShortenBatch struct {
-	ID       string `json:"correlation_id"`
-	ShortURL string `json:"short_url"`
-}
+var testStorageUsers = "../test/storageUsers.log"
 
 func kyki() *http.Cookie {
-
-	consumerUser, err := shorturlservice.NewConsumer("storageUsers.log")
+	consumerUser, err := shorturlservice.NewConsumer(testStorageUsers)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -56,7 +52,7 @@ func kyki() *http.Cookie {
 
 	shorturlservice.SetStructCookies("Authentication", hex.EncodeToString(newToken))
 
-	producerUser, err := shorturlservice.NewProducer("storageUsers.log")
+	producerUser, err := shorturlservice.NewProducer("../test/storageUsers.log")
 	if err != nil {
 		fmt.Println(err)
 	}
