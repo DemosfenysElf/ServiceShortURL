@@ -8,46 +8,37 @@ import (
 	"os"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/labstack/echo"
 
 	"ServiceShortURL/internal/shorturlservice"
 )
 
-func TestGetApiUserURL(t *testing.T) {
+func TestDeleteGetu1u2(t *testing.T) {
 
-	var bodyURLJSON2 = `[{"correlation_id":"baseurl11","original_url":"https://www.00outube.com/watch?v=UK7yzgVpnDA"},
-						{"correlation_id":"baseurl12","original_url":"https://99metanit.com/"},
-						{"correlation_id":"baseurl13","original_url":"https://88otion.site/context-19ec3dbb0cd4ec"},
-						{"correlation_id":"baseurl14","original_url":"https://77stepik.org/lesson/359395"}]`
 	type want struct {
 		codePost int
-		codeGet  int
-		codeDel  int
+		codeGet1 int
+		codeGet2 int
+		codeDel1 int
+		codeDel2 int
 		response string
 	}
 	tests := []struct {
-		name    string
-		want    want
-		wantErr bool
-		baseurl map[int]string
-
+		name        string
+		want        want
 		bodyURLJSON string
-		urlResult   string
 	}{
 		{
-			name: "TestGetApiUserURL1",
+			name: "TestDeleteGetu1u2",
 			want: want{
 				codePost: 201,
-				codeGet:  307,
-				codeDel:  410,
+				codeGet1: 410,
+				codeGet2: 307,
+				codeDel1: 202,
+				codeDel2: 202,
 				response: `{"status":"ok"}`,
-			},
-			baseurl: map[int]string{
-				1: "https://www.youtube.com/watch?v=UK7yzgVpnDA",
-				2: "https://metanit.com/",
-				3: "https://otion.site/context-19ec3dbb0cd4ec",
-				4: "https://stepik.org/lesson/359395",
 			},
 
 			bodyURLJSON: `[{"correlation_id":"baseurl1","original_url":"https://www.youtube.com/watch?v=UK7yzgVpnDA"},
@@ -67,79 +58,85 @@ func TestGetApiUserURL(t *testing.T) {
 
 			teststor := func(s shorturlservice.StorageInterface) {
 				e := echo.New()
+				rout.StorageInterface = s
+				rout.Serv = e
 				// записываем ссылки от user1 через batch
 				var user1 = kyki()
 				request := httptest.NewRequest(http.MethodPost, "/api/shorten/batch", strings.NewReader(tt.bodyURLJSON))
 				request.AddCookie(user1)
 				responseRecorder := httptest.NewRecorder()
 				ctx := e.NewContext(request, responseRecorder)
-				rout.StorageInterface = s
-				rout.Serv = e
 				rout.PostAPIShortenBatch(ctx)
 
-				// записываем ссылки от user2 через batch
+				// обрабатываем результат
+				res := responseRecorder.Result()
+				defer res.Body.Close()
+				resBody, err := io.ReadAll(res.Body)
+				if err != nil {
+					t.Fatal(err)
+				}
+				if res.StatusCode != tt.want.codePost {
+					t.Errorf("Expected status code %d, got %d", tt.want.codePost, http.StatusCreated)
+				}
+				urlBatch := []shortURLApiShortenBatch{}
+				err = json.Unmarshal(resBody, &urlBatch)
+				if err != nil {
+					t.Fatal(err)
+				}
+				str := `` + rout.Cfg.BaseURL + "/"
+				str2 := `}`
+				resBodyShort1 := strings.Replace(urlBatch[1].ShortURL, str, "", -1)
+				resBodyShort1 = strings.Replace(resBodyShort1, str2, "", -1)
+				resBodyShort2 := strings.Replace(urlBatch[2].ShortURL, str, "", -1)
+				resBodyShort2 = strings.Replace(resBodyShort2, str2, "", -1)
+				time.Sleep(1 * time.Second)
+				// get [2] третью ссылку ВТОРЫМ пользователем
 				var user2 = kyki()
-				request2 := httptest.NewRequest(http.MethodPost, "/api/shorten/batch", strings.NewReader(bodyURLJSON2))
-				request2.AddCookie(user2)
-				responseRecorder2 := httptest.NewRecorder()
-				ctx2 := e.NewContext(request2, responseRecorder2)
-				rout.StorageInterface = s
-				rout.Serv = e
-				rout.PostAPIShortenBatch(ctx2)
-
-				// читаем записанные ссылки полученные от пользователя user1
-				request3 := httptest.NewRequest(http.MethodPost, "/api/user/urls", nil)
-				request3.AddCookie(user1)
-				responseRecorder = httptest.NewRecorder()
-				ctx = e.NewContext(request3, responseRecorder)
-				rout.GetAPIUserURL(ctx)
-				response := responseRecorder.Result()
-				defer response.Body.Close()
-				resBody3, err := io.ReadAll(response.Body)
-				if err != nil {
-					t.Fatal(err)
+				requestGetu2 := httptest.NewRequest(http.MethodGet, "/"+resBodyShort2, nil)
+				requestGetu2.AddCookie(user2)
+				responseRecorderGetu2 := httptest.NewRecorder()
+				ctxGetu2 := e.NewContext(requestGetu2, responseRecorderGetu2)
+				rout.GetShortToURL(ctxGetu2)
+				resGetu2 := responseRecorderGetu2.Result()
+				if resGetu2.StatusCode != tt.want.codeGet2 {
+					t.Errorf("Expected status code %d, got %d", tt.want.codeGet2, responseRecorderGetu2.Code)
 				}
 
-				urlBatch := []userURLstruct{}
-				err = json.Unmarshal(resBody3, &urlBatch)
-				if err != nil {
-					t.Fatal(err)
+				// delete [1] вторую ссылку первым пользователем
+				resBodyShortDel1 := `["` + resBodyShort1 + `"]`
+				requestDel := httptest.NewRequest(http.MethodDelete, "/api/user/urls", strings.NewReader(resBodyShortDel1))
+				requestDel.AddCookie(user1)
+				responseRecorderDel := httptest.NewRecorder()
+				ctxDel := e.NewContext(requestDel, responseRecorderDel)
+				rout.DeleteAPIUserURLs(ctxDel)
+				resDel := responseRecorderDel.Result()
+				if resDel.StatusCode != tt.want.codeDel1 {
+					t.Errorf("Expected status code %d, got %d", tt.want.codeDel1, responseRecorderDel.Code)
 				}
-				i := 0
-				for _, i2 := range urlBatch {
-					switch i2.OriginalURL {
-					case tt.baseurl[1]:
-						i += 1
-					case tt.baseurl[2]:
-						i += 10
-					case tt.baseurl[3]:
-						i += 100
-					case tt.baseurl[4]:
-						i += 1000
-					default:
-						t.Errorf("Неподходящяя ссылка %s", i2.OriginalURL)
-					}
-				}
-				if i != 1111 {
-					t.Errorf("Несоответстветствующее количество ссылок")
+				time.Sleep(1 * time.Second)
+				// get [1] вторую ссылку первым пользователем
+				requestGet := httptest.NewRequest(http.MethodGet, "/"+resBodyShort1, nil)
+				requestGet.AddCookie(user1)
+				responseRecorderGet := httptest.NewRecorder()
+				ctxGetu1 := e.NewContext(requestGet, responseRecorderGet)
+				rout.GetShortToURL(ctxGetu1)
+				resGet := responseRecorderGet.Result()
+				if resGet.StatusCode != tt.want.codeGet1 {
+					t.Errorf("Expected status code %d, got %d", tt.want.codeGet1, responseRecorderGet.Code)
 				}
 
-				// получение данных user3 (без данных)
-				var user3 = kyki()
-				request4 := httptest.NewRequest(http.MethodPost, "/api/user/urls", nil)
-				request4.AddCookie(user3)
-				responseRecorder = httptest.NewRecorder()
-				ctx = e.NewContext(request4, responseRecorder)
-				rout.GetAPIUserURL(ctx)
-				response = responseRecorder.Result()
-				defer response.Body.Close()
-				resBody4, err := io.ReadAll(response.Body)
-				if err != nil {
-					t.Fatal(err)
+				// delete [2] третью ссылку ВТОРЫМ пользователем
+				resBodyShortDel2 := `["` + resBodyShort2 + `"]`
+				requestDelu2 := httptest.NewRequest(http.MethodDelete, "/api/user/urls", strings.NewReader(resBodyShortDel2))
+				requestDelu2.AddCookie(user2)
+				responseRecorderDelu2 := httptest.NewRecorder()
+				ctxDelu2 := e.NewContext(requestDelu2, responseRecorderDelu2)
+				rout.DeleteAPIUserURLs(ctxDelu2)
+				resDelu2 := responseRecorderDelu2.Result()
+				if resDelu2.StatusCode != tt.want.codeDel2 {
+					t.Errorf("Expected status code %d, got %d", tt.want.codeDel2, responseRecorderDelu2.Code)
 				}
-				if len(resBody4) != 0 {
-					t.Errorf("Получены данные, их быть недолжно")
-				}
+
 			}
 
 			teststor(&shorturlservice.FileStorage{

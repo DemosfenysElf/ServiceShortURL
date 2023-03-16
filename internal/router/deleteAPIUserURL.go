@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"time"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/labstack/echo"
@@ -19,7 +18,6 @@ import (
 // в случае успешного приёма запроса возвращает http.StatusAccepted.
 func (s *serverShortener) DeleteAPIUserURLs(c echo.Context) error {
 	fmt.Println("==>> DeleteAPIUserURLs")
-	//time.Sleep(time.Duration(time.Millisecond * 100))
 	s.WG.Add(1)
 	defer s.WG.Done()
 	var newlist []string
@@ -44,7 +42,6 @@ func (s *serverShortener) DeleteAPIUserURLs(c echo.Context) error {
 	}
 
 	go s.Delete(c.Request().Context(), user, newlist)
-	time.Sleep(1 * time.Second)
 	c.Response().WriteHeader(http.StatusAccepted)
 	return nil
 }
