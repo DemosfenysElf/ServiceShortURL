@@ -98,6 +98,7 @@ func TestDeleteGetu1u2(t *testing.T) {
 				ctxGetu2 := e.NewContext(requestGetu2, responseRecorderGetu2)
 				rout.GetShortToURL(ctxGetu2)
 				resGetu2 := responseRecorderGetu2.Result()
+				defer resGetu2.Body.Close()
 				if resGetu2.StatusCode != tt.want.codeGet2 {
 					t.Errorf("Expected status code %d, got %d", tt.want.codeGet2, responseRecorderGetu2.Code)
 				}
@@ -110,6 +111,7 @@ func TestDeleteGetu1u2(t *testing.T) {
 				ctxDel := e.NewContext(requestDel, responseRecorderDel)
 				rout.DeleteAPIUserURLs(ctxDel)
 				resDel := responseRecorderDel.Result()
+				defer resDel.Body.Close()
 				if resDel.StatusCode != tt.want.codeDel1 {
 					t.Errorf("Expected status code %d, got %d", tt.want.codeDel1, responseRecorderDel.Code)
 				}
@@ -121,6 +123,7 @@ func TestDeleteGetu1u2(t *testing.T) {
 				ctxGetu1 := e.NewContext(requestGet, responseRecorderGet)
 				rout.GetShortToURL(ctxGetu1)
 				resGet := responseRecorderGet.Result()
+				defer resGet.Body.Close()
 				if resGet.StatusCode != tt.want.codeGet1 {
 					t.Errorf("Expected status code %d, got %d", tt.want.codeGet1, responseRecorderGet.Code)
 				}
@@ -133,6 +136,7 @@ func TestDeleteGetu1u2(t *testing.T) {
 				ctxDelu2 := e.NewContext(requestDelu2, responseRecorderDelu2)
 				rout.DeleteAPIUserURLs(ctxDelu2)
 				resDelu2 := responseRecorderDelu2.Result()
+				defer resDelu2.Body.Close()
 				if resDelu2.StatusCode != tt.want.codeDel2 {
 					t.Errorf("Expected status code %d, got %d", tt.want.codeDel2, responseRecorderDelu2.Code)
 				}
