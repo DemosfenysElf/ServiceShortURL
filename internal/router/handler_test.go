@@ -5,7 +5,6 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"strings"
 	"testing"
 	"time"
@@ -358,8 +357,8 @@ func TestApiShorten(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			os.Truncate(testStorageURL, 0)
-			os.Truncate(testStorageUsers, 0)
+			//os.Truncate(testStorageURL, 0)
+			//os.Truncate(testStorageUsers, 0)
 			rout := InitServer()
 			rout.Cfg.Storage = testStorageURL
 
@@ -478,8 +477,8 @@ func TestGetApiUserURL(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			os.Truncate(testStorageURL, 0)
-			os.Truncate(testStorageUsers, 0)
+			//os.Truncate(testStorageURL, 0)
+			//os.Truncate(testStorageUsers, 0)
 
 			rout := InitServer()
 			rout.Cfg.Storage = testStorageURL

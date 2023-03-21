@@ -15,7 +15,7 @@ import (
 
 var fileStorage = "../test/shortsURl.log"
 
-func ExamplePostAPIShortenBatch() {
+func ExampleServerShortener_PostAPIShortenBatchPostAPIShortenBatch() {
 
 	baseurl := map[string]string{
 		"baseurl1": "https://www.youtube.com/watch?v=UK7yzgVpnDA",
