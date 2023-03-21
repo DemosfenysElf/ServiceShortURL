@@ -1,36 +1,32 @@
-package test
+package router
 
 import (
 	"encoding/hex"
-	"log"
+	"fmt"
 	"net/http"
 
 	"ServiceShortURL/internal/shorturlservice"
 )
 
-type shortURLApiShortenBatch struct {
-	ID       string `json:"correlation_id"`
-	ShortURL string `json:"short_url"`
-}
+var testStorageUsers = "../test/storageUsers.log"
 
 func kyki() *http.Cookie {
-
-	consumerUser, err := shorturlservice.NewConsumer("storageUsers.log")
+	consumerUser, err := shorturlservice.NewConsumer(testStorageUsers)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
 	defer consumerUser.Close()
 
 	newToken, err := shorturlservice.GenerateToken()
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
 
 	userMap := make(map[string]bool, 0)
 
 	for {
-		readUser, err := consumerUser.ReadUser()
-		if err != nil {
+		readUser, errRead := consumerUser.ReadUser()
+		if errRead != nil {
 			break
 		}
 		userMap[readUser.ValueUser] = true
@@ -41,7 +37,7 @@ func kyki() *http.Cookie {
 		if _, ok := userMap[hexNewToken]; ok {
 			newToken, err = shorturlservice.GenerateToken()
 			if err != nil {
-				log.Fatal(err)
+				fmt.Println(err)
 			}
 		} else {
 			break
@@ -50,20 +46,20 @@ func kyki() *http.Cookie {
 
 	CryptoCookie, err := shorturlservice.CryptoToken(newToken)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
 	hexCryptoNewToken := hex.EncodeToString(CryptoCookie)
 
 	shorturlservice.SetStructCookies("Authentication", hex.EncodeToString(newToken))
 
-	producerUser, err := shorturlservice.NewProducer("storageUsers.log")
+	producerUser, err := shorturlservice.NewProducer("../test/storageUsers.log")
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
 	defer producerUser.Close()
 
-	if err := producerUser.WriteUser(shorturlservice.GetStructCookies()); err != nil {
-		log.Fatal(err)
+	if err = producerUser.WriteUser(shorturlservice.GetStructCookies()); err != nil {
+		fmt.Println(err)
 	}
 
 	cookie := new(http.Cookie)

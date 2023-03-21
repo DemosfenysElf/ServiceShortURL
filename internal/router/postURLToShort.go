@@ -33,22 +33,20 @@ func (s *serverShortener) PostURLToShort(c echo.Context) error {
 
 	if c.Request().Header.Get("Accept-Encoding") == "gzip" {
 		write, err = serviceCompress(write)
-
 		if err != nil {
-			fmt.Println("Compress fail")
+			c.Response().WriteHeader(http.StatusInternalServerError)
 		}
-
 		c.Response().Header().Set("Content-Encoding", "gzip")
 	}
 	if setErr != nil {
 		sErr := setErr.Error()
 		if strings.Contains(sErr, pgerrcode.UniqueViolation) {
 			c.Response().WriteHeader(http.StatusConflict)
-			c.Response().Write(write)
-			return nil
+
 		}
+	} else {
+		c.Response().WriteHeader(http.StatusCreated)
 	}
-	c.Response().WriteHeader(http.StatusCreated)
 	c.Response().Write(write)
 	return nil
 }

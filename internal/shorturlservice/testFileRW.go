@@ -26,11 +26,6 @@ func (fs *FileStorage) newRW(filename string) (*nRW, error) {
 	}, nil
 }
 
-// WriteURLInfo сохраняем в файл короткий url, оригинальный, пользователя
-func (p *nRW) WriteURLInfo(short *URLInfo) error {
-	return p.encoder.Encode(&short)
-}
-
 // WriteDelet перезапись метки об удалении
 func (p *nRW) WriteDelet(i int64) error {
 	del := []byte("delet")

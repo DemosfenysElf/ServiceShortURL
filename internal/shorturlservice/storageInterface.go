@@ -11,7 +11,7 @@ import (
 type StorageInterface interface {
 	SetURL(ctx context.Context, url string) (short string, err error)
 	GetURL(ctx context.Context, short string) (url string, err error)
-	Delete(ctx context.Context, user string, listURL []string)
+	Delete(user string, listURL []string)
 }
 
 // Хранение в памяти:
@@ -62,7 +62,7 @@ func (ms *MemoryStorage) SetURL(_ context.Context, url string) (short string, er
 }
 
 // Delete хранение и удаление кук в памяти не реализованно.
-func (ms *MemoryStorage) Delete(_ context.Context, user string, listURL []string) {
+func (ms *MemoryStorage) Delete(_ string, _ []string) {
 	fmt.Println(">>>>хранение и удаление кук в памяти не реализованно")
 }
 
@@ -100,9 +100,9 @@ func (fs *FileStorage) GetURL(_ context.Context, short string) (url string, err 
 func (fs *FileStorage) SetURL(ctx context.Context, url string) (short string, err error) {
 	short = shortURL()
 	for {
-		_, err := fs.GetURL(ctx, short)
-		if err != nil {
-			sErr := err.Error()
+		_, errFor := fs.GetURL(ctx, short)
+		if errFor != nil {
+			sErr := errFor.Error()
 			if !strings.Contains(sErr, "deleted") {
 				break
 			}
@@ -124,7 +124,7 @@ func (fs *FileStorage) SetURL(ctx context.Context, url string) (short string, er
 }
 
 // Delete меняем метку удаления у удаляемых url
-func (fs *FileStorage) Delete(_ context.Context, user string, listURL []string) {
+func (fs *FileStorage) Delete(user string, listURL []string) {
 	fmt.Println(">>>Storage_Delete_list<<<  ", listURL, "User: ", user)
 
 	fileRW, _ := fs.newRW(fs.FilePath)

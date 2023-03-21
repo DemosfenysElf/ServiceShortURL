@@ -39,7 +39,7 @@ func SetStructURL(url string, short string) (info *URLInfo) {
 	urlInfo.URL = url
 	urlInfo.ShortURL = short
 	urlInfo.Deleted = "false"
-	//urlInfo.D = " "
+	// urlInfo.D = " "
 	info = urlInfo
 	return
 }

@@ -37,7 +37,7 @@ func BenchmarkXxx(b *testing.B) {
 			}
 			b.StartTimer()
 			if i%5 == 0 {
-				DB.Delete(ctx, user, userList)
+				DB.Delete(user, userList)
 				b.StopTimer()
 				userList = nil
 				b.StartTimer()

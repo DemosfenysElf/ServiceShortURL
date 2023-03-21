@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"time"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/labstack/echo"
@@ -13,13 +12,12 @@ import (
 	"ServiceShortURL/internal/shorturlservice"
 )
 
-// DeleteAPIUserURL e.DELETE("/api/user/urls")
+// DeleteAPIUserURLs e.DELETE("/api/user/urls")
 // принимает список идентификаторов сокращённых URL для удаления в формате:
 // [ "a", "b", "c", "d", ...]
 // в случае успешного приёма запроса возвращает http.StatusAccepted.
-func (s *serverShortener) DeleteAPIUserURL(c echo.Context) error {
-	fmt.Println("==>> DeleteAPIUserURL")
-	//s.WG.Wait()
+func (s *serverShortener) DeleteAPIUserURLs(c echo.Context) error {
+	fmt.Println("==>> DeleteAPIUserURLs")
 	s.WG.Add(1)
 	defer s.WG.Done()
 	var newlist []string
@@ -43,8 +41,7 @@ func (s *serverShortener) DeleteAPIUserURL(c echo.Context) error {
 		return nil
 	}
 
-	go s.Delete(c.Request().Context(), user, newlist)
-	time.Sleep(1 * time.Second)
+	go s.Delete(user, newlist)
 	c.Response().WriteHeader(http.StatusAccepted)
 	return nil
 }
