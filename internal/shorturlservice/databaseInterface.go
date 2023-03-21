@@ -123,9 +123,10 @@ func (db *Database) GetShortURL(ctx context.Context, url string) (short string, 
 
 // Delete передаём данные о пользователе и список URL
 // удаляем все URL из списка, принадлежащие этому пользователю
-func (db *Database) Delete(ctx context.Context, user string, listURL []string) {
+func (db *Database) Delete(user string, listURL []string) {
 	fmt.Println(">>>BD_Delete_list<<<  ", listURL, "User: ", user)
-	// defer wg.Done()
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
+	defer cancel()
 	for _, u := range listURL {
 		_, err := db.connection.ExecContext(ctx, "UPDATE ShortenerURL SET deleted = true WHERE short=$1 AND valueUser=$2", u, user)
 		if err != nil {
