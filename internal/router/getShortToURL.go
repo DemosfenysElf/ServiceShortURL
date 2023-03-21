@@ -30,6 +30,7 @@ func (s *serverShortener) GetShortToURL(c echo.Context) error {
 		c.Response().WriteHeader(http.StatusBadRequest)
 		return nil
 	}
+	fmt.Println("==>> GetShortToURL", url)
 	c.Response().Header().Add("Location", url)
 	c.Response().WriteHeader(http.StatusTemporaryRedirect)
 	c.Response().Header()

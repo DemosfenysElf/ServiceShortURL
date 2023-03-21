@@ -2,7 +2,6 @@ package router
 
 import (
 	"encoding/hex"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -18,7 +17,6 @@ var storageUsers = "storageUsers.log"
 // если кука соответствует, то далее будет использоваться эта же кука
 // если кука не соответствует или отсутствует, то выдаётся новая
 func (s serverShortener) MWAuthentication(next echo.HandlerFunc) echo.HandlerFunc {
-	fmt.Println("==>> MWAuthentication")
 	return func(c echo.Context) error {
 		requestCookies := c.Request().Cookies()
 
