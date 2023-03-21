@@ -44,6 +44,8 @@ func main() {
 	mychecks = append(mychecks, analyzer2.New())
 	mychecks = append(mychecks, asmdecl.Analyzer)
 
+	mychecks = append(mychecks, osExitAnalyzer)
+
 	multichecker.Main(
 		mychecks...,
 	)
