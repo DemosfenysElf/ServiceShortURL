@@ -12,6 +12,8 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
+//go:generate mockgen -source=databaseInterface.go -destination=mock.go
+
 // DatabaseService
 type DatabaseService interface {
 	Connect(connStr string) error
