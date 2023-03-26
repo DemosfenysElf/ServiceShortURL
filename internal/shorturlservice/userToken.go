@@ -7,8 +7,27 @@ import (
 
 var key = []byte("Increment #9 key")
 
+// GeneratorUser интерфейс генератор короткого URL
+type GeneratorUser interface {
+	GenerateToken() ([]byte, error)
+}
+
+// TestGeneratorUser структура генератора коротких URL для тестирования
+type TestGeneratorUser struct {
+	Result []byte
+}
+
+// GenerateToken замена генератора без случайных последовательностей
+func (g TestGeneratorUser) GenerateToken() ([]byte, error) {
+	return g.Result, nil
+}
+
+// RandomGeneratorUser структура генератора короткий  URL
+type RandomGeneratorUser struct {
+}
+
 // GenerateToken генератор случайной последовательности байт
-func GenerateToken() ([]byte, error) {
+func (RandomGeneratorUser) GenerateToken() ([]byte, error) {
 	b := make([]byte, 16)
 	_, err := rand.Read(b)
 	if err != nil {

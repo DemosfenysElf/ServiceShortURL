@@ -46,7 +46,7 @@ func (g *TestGenerator) shortURL() string {
 	return ret
 }
 
-// RandomGenerator структкура генератора короткий  URL
+// RandomGenerator структура генератора короткий  URL
 type RandomGenerator struct {
 }
 

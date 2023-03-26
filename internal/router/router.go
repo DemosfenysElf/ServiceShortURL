@@ -34,11 +34,17 @@ type serverShortener struct {
 	WG     *sync.WaitGroup
 	DB     shorturlservice.DatabaseService
 	shorturlservice.StorageInterface
+	GeneratorUsers shorturlservice.GeneratorUser
 }
 
 // InitServer инициализация сервера
 func InitServer() *serverShortener {
-	return &serverShortener{WG: new(sync.WaitGroup)}
+	return &serverShortener{WG: new(sync.WaitGroup), GeneratorUsers: shorturlservice.RandomGeneratorUser{}}
+}
+
+// InitTestServer инициализация сервера для тестов (пока только при работе с БД)
+func InitTestServer() *serverShortener {
+	return &serverShortener{WG: new(sync.WaitGroup), GeneratorUsers: shorturlservice.TestGeneratorUser{}}
 }
 
 // Router - роутер
@@ -156,5 +162,4 @@ func (s *serverShortener) InitRouter() {
 		fmt.Println(">>>>use memory<<<<")
 		s.StorageInterface = shorturlservice.InitMem()
 	}
-
 }
