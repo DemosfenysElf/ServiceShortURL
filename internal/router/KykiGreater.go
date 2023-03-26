@@ -15,6 +15,7 @@ var testStorageUsers = "../test/storageUsers.log"
 var GeneratorUsers shorturlservice.GeneratorUser
 
 func kyki() *http.Cookie {
+	GeneratorUsers = shorturlservice.RandomGeneratorUser{}
 	consumerUser, err := shorturlservice.NewConsumer(testStorageUsers)
 	if err != nil {
 		fmt.Println(err)
