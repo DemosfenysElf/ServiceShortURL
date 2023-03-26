@@ -12,6 +12,7 @@ var testStorageURL = "../test/shortsURl.log"
 var testStorageUsers = "../test/storageUsers.log"
 
 // для реализации авторизации пользователей в обход middleware при тестировании
+var GeneratorUsers shorturlservice.GeneratorUser
 
 func kyki() *http.Cookie {
 	consumerUser, err := shorturlservice.NewConsumer(testStorageUsers)
@@ -20,7 +21,7 @@ func kyki() *http.Cookie {
 	}
 	defer consumerUser.Close()
 
-	newToken, err := shorturlservice.GenerateToken()
+	newToken, err := GeneratorUsers.GenerateToken()
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -38,7 +39,7 @@ func kyki() *http.Cookie {
 	for {
 		hexNewToken := hex.EncodeToString(newToken)
 		if _, ok := userMap[hexNewToken]; ok {
-			newToken, err = shorturlservice.GenerateToken()
+			newToken, err = GeneratorUsers.GenerateToken()
 			if err != nil {
 				fmt.Println(err)
 			}
