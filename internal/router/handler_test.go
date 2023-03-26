@@ -197,7 +197,8 @@ func TestBatchGetDelete(t *testing.T) {
 				}
 			}
 			teststor(&shorturlservice.FileStorage{
-				FilePath: rout.Cfg.Storage,
+				FilePath:    rout.Cfg.Storage,
+				RandomShort: &shorturlservice.RandomGenerator{},
 			})
 			teststor(shorturlservice.InitMem())
 		})
@@ -316,7 +317,8 @@ func TestPostGet(t *testing.T) {
 				}
 			}
 			teststor(&shorturlservice.FileStorage{
-				FilePath: rout.Cfg.Storage,
+				FilePath:    rout.Cfg.Storage,
+				RandomShort: &shorturlservice.RandomGenerator{},
 			})
 			teststor(shorturlservice.InitMem())
 		})
@@ -436,7 +438,8 @@ func TestApiShorten(t *testing.T) {
 				}
 			}
 			teststor(&shorturlservice.FileStorage{
-				FilePath: rout.Cfg.Storage,
+				FilePath:    rout.Cfg.Storage,
+				RandomShort: &shorturlservice.RandomGenerator{},
 			})
 			teststor(shorturlservice.InitMem())
 
@@ -573,7 +576,8 @@ func TestGetApiUserURL(t *testing.T) {
 			}
 
 			teststor(&shorturlservice.FileStorage{
-				FilePath: rout.Cfg.Storage,
+				FilePath:    rout.Cfg.Storage,
+				RandomShort: &shorturlservice.RandomGenerator{},
 			})
 
 		})
@@ -803,7 +807,8 @@ func TestDeleteGetu1u2(t *testing.T) {
 			}
 
 			teststor(&shorturlservice.FileStorage{
-				FilePath: rout.Cfg.Storage,
+				FilePath:    rout.Cfg.Storage,
+				RandomShort: &shorturlservice.RandomGenerator{},
 			})
 
 		})
