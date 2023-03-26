@@ -10,12 +10,12 @@ import (
 // Хранение в памяти:
 type MemoryStorage struct {
 	data        []URLInfo
-	randomShort Generator
+	RandomShort Generator
 }
 
 // InitMem инициализация
 func InitMem() *MemoryStorage {
-	return &MemoryStorage{data: make([]URLInfo, 0)}
+	return &MemoryStorage{data: make([]URLInfo, 0), RandomShort: &RandomGenerator{}}
 }
 
 // GetURL передаём короткую ссылку, получаем оригинальную
@@ -36,7 +36,7 @@ func (ms *MemoryStorage) GetURL(_ context.Context, short string) (url string, er
 // перед записью её в память и выдачей проверяет на оригинальность
 // путем поиска её в памяти.
 func (ms *MemoryStorage) SetURL(_ context.Context, url string) (short string, err error) {
-	short = ms.randomShort.shortURL()
+	short = ms.RandomShort.shortURL()
 	if len(ms.data) != 0 {
 		for i, data := range ms.data {
 			if short == data.ShortURL {
@@ -46,7 +46,7 @@ func (ms *MemoryStorage) SetURL(_ context.Context, url string) (short string, er
 				break
 			}
 
-			short = ms.randomShort.shortURL()
+			short = ms.RandomShort.shortURL()
 		}
 	}
 
@@ -64,7 +64,7 @@ func (ms *MemoryStorage) Delete(_ string, _ []string) {
 type FileStorage struct {
 	Writer      io.Writer
 	FilePath    string
-	randomShort Generator
+	RandomShort Generator
 }
 
 // GetURL передаём короткую ссылку, получаем оригинальную
@@ -93,7 +93,7 @@ func (fs *FileStorage) GetURL(_ context.Context, short string) (url string, err 
 // SetURL передаём оригинальную ссылку, получаем короткую
 // сохраняем в файл
 func (fs *FileStorage) SetURL(ctx context.Context, url string) (short string, err error) {
-	short = fs.randomShort.shortURL()
+	short = fs.RandomShort.shortURL()
 	for {
 		_, errFor := fs.GetURL(ctx, short)
 		if errFor != nil {
@@ -102,7 +102,7 @@ func (fs *FileStorage) SetURL(ctx context.Context, url string) (short string, er
 				break
 			}
 		}
-		short = fs.randomShort.shortURL()
+		short = fs.RandomShort.shortURL()
 	}
 
 	urli := SetStructURL(url, short)

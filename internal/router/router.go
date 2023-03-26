@@ -102,7 +102,7 @@ func (s *serverShortener) startBD() error {
 		return fmt.Errorf("error s.Cfg.ConnectDB == nil")
 	}
 
-	DB := &shorturlservice.Database{}
+	DB := &shorturlservice.Database{RandomShort: &shorturlservice.RandomGenerator{}}
 
 	if errConnect := DB.Connect(s.Cfg.ConnectDB); errConnect != nil {
 		return errConnect
@@ -142,14 +142,15 @@ func (s *serverShortener) InitRouter() {
 
 	// для быстрого локального тестирования деградации
 	// s.Cfg.Storage = ""
-	// s.Cfg.ConnectDB = ""
+	s.Cfg.ConnectDB = ""
 
 	if err := s.startBD(); err == nil {
 		fmt.Println(">>>>use BD<<<<", s.Cfg.ConnectDB)
 	} else if s.Cfg.Storage != "" {
 		fmt.Println(">>>>use storage<<<<")
 		s.StorageInterface = &shorturlservice.FileStorage{
-			FilePath: s.Cfg.Storage,
+			FilePath:    s.Cfg.Storage,
+			RandomShort: &shorturlservice.RandomGenerator{},
 		}
 	} else {
 		fmt.Println(">>>>use memory<<<<")
