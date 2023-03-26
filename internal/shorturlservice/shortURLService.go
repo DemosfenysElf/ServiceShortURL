@@ -25,8 +25,30 @@ type URLInfo struct {
 
 var urlInfo = &URLInfo{}
 
+type Generator interface {
+	shortURL() string
+}
+
+type TestGenerator struct {
+	Result []string
+	Index  int
+}
+
+func (g *TestGenerator) shortURL() string {
+	if g.Index >= len(g.Result) {
+		return ""
+	}
+	ret := g.Result[g.Index]
+
+	g.Index += 1
+	return ret
+}
+
+type RandomGenerator struct {
+}
+
 // shortURL Генератор коротких ссылок
-func shortURL() string {
+func (RandomGenerator) shortURL() string {
 	a := make([]byte, 7)
 	for i := range a {
 		a[i] = letters[rand.Intn(len(letters))]

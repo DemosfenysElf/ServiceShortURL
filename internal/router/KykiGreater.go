@@ -8,7 +8,10 @@ import (
 	"ServiceShortURL/internal/shorturlservice"
 )
 
+var testStorageURL = "../test/shortsURl.log"
 var testStorageUsers = "../test/storageUsers.log"
+
+// для реализации авторизации пользователей в обход middleware при тестировании
 
 func kyki() *http.Cookie {
 	consumerUser, err := shorturlservice.NewConsumer(testStorageUsers)

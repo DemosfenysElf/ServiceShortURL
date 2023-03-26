@@ -12,7 +12,14 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
-//go:generate mockgen -source=databaseInterface.go -destination=mock.go
+//go:generate mockgen -source=databaseInterface.go -destination=mocks/mock.go
+
+// StorageInterface
+type StorageInterface interface {
+	SetURL(ctx context.Context, url string) (short string, err error)
+	GetURL(ctx context.Context, short string) (url string, err error)
+	Delete(user string, listURL []string)
+}
 
 // DatabaseService
 type DatabaseService interface {
@@ -31,7 +38,8 @@ deleted			bool
 
 // Database connection *sql.DB
 type Database struct {
-	connection *sql.DB
+	connection  *sql.DB
+	RandomShort Generator
 }
 
 // Подключние к БД по пути
@@ -79,7 +87,7 @@ func (db *Database) Ping(ctx context.Context) error {
 // получаем сгенерированный короткий URL
 // вместе с данными о пользователе сохраняем в БД
 func (db *Database) SetURL(ctx context.Context, url string) (short string, err error) {
-	short = shortURL()
+	short = db.RandomShort.shortURL()
 	// добавить проверку на оригинальность
 
 	user := GetStructCookies()
@@ -136,4 +144,8 @@ func (db *Database) Delete(user string, listURL []string) {
 		}
 	}
 
+}
+
+func (db *Database) SetConnection(conn *sql.DB) {
+	db.connection = conn
 }
