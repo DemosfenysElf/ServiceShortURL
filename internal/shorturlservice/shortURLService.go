@@ -25,10 +25,12 @@ type URLInfo struct {
 
 var urlInfo = &URLInfo{}
 
+// Generator интерфейс генератор короткого URL
 type Generator interface {
 	shortURL() string
 }
 
+// TestGenerator структура генератора коротких URL для тестирования
 type TestGenerator struct {
 	Result []string
 	Index  int
@@ -44,6 +46,7 @@ func (g *TestGenerator) shortURL() string {
 	return ret
 }
 
+// RandomGenerator структкура генератора короткий  URL
 type RandomGenerator struct {
 }
 

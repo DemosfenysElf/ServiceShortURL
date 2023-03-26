@@ -146,6 +146,7 @@ func (db *Database) Delete(user string, listURL []string) {
 
 }
 
+// SetConnection для тестирования с помощью mock
 func (db *Database) SetConnection(conn *sql.DB) {
 	db.connection = conn
 }
