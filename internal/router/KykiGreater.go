@@ -14,6 +14,42 @@ var testStorageUsers = "../test/storageUsers.log"
 // для реализации авторизации пользователей в обход middleware при тестировании
 var GeneratorUsers shorturlservice.GeneratorUser
 
+func (s serverShortener) kykiDB() *http.Cookie {
+	consumerUser, err := shorturlservice.NewConsumer(testStorageUsers)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer consumerUser.Close()
+
+	newToken, err := s.GeneratorUsers.GenerateToken()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	CryptoCookie, err := shorturlservice.CryptoToken(newToken)
+	if err != nil {
+		fmt.Println(err)
+	}
+	hexCryptoNewToken := hex.EncodeToString(CryptoCookie)
+
+	shorturlservice.SetStructCookies("Authentication", hexCryptoNewToken)
+
+	producerUser, err := shorturlservice.NewProducer(testStorageUsers)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer producerUser.Close()
+
+	if err = producerUser.WriteUser(shorturlservice.GetStructCookies()); err != nil {
+		fmt.Println(err)
+	}
+
+	cookie := new(http.Cookie)
+	cookie.Name = "Authentication"
+	cookie.Value = hexCryptoNewToken
+	return cookie
+}
+
 func kyki() *http.Cookie {
 	GeneratorUsers = shorturlservice.RandomGeneratorUser{}
 	consumerUser, err := shorturlservice.NewConsumer(testStorageUsers)
@@ -57,7 +93,7 @@ func kyki() *http.Cookie {
 
 	shorturlservice.SetStructCookies("Authentication", hex.EncodeToString(newToken))
 
-	producerUser, err := shorturlservice.NewProducer("../test/storageUsers.log")
+	producerUser, err := shorturlservice.NewProducer(testStorageUsers)
 	if err != nil {
 		fmt.Println(err)
 	}

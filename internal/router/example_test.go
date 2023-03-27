@@ -15,7 +15,7 @@ import (
 
 var fileStorage = "../test/shortsURl.log"
 
-func ExampleserverShortener_PostAPIShortenBatch() {
+func ExampleServerShortener_PostAPIShortenBatch() {
 
 	baseurl := map[string]string{
 		"baseurl1": "https://www.youtube.com/watch?v=UK7yzgVpnDA",
@@ -38,7 +38,8 @@ func ExampleserverShortener_PostAPIShortenBatch() {
 	c := e.NewContext(request, responseRecorder)
 	rout := InitServer()
 	rout.StorageInterface = &shorturlservice.FileStorage{
-		FilePath: fileStorage,
+		FilePath:    fileStorage,
+		RandomShort: &shorturlservice.RandomGenerator{},
 	}
 
 	rout.Serv = e

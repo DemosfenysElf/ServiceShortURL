@@ -87,7 +87,7 @@ func (db *Database) Ping(ctx context.Context) error {
 // получаем сгенерированный короткий URL
 // вместе с данными о пользователе сохраняем в БД
 func (db *Database) SetURL(ctx context.Context, url string) (short string, err error) {
-	short = db.RandomShort.shortURL()
+	short = db.RandomShort.ShortURL()
 	// добавить проверку на оригинальность
 
 	user := GetStructCookies()
@@ -116,7 +116,7 @@ func (db *Database) GetURL(ctx context.Context, short string) (url string, err e
 	deleted := false
 	row := db.connection.QueryRowContext(ctx, "select url,deleted from ShortenerURL where short = $1", short)
 	err = row.Scan(&url, &deleted)
-	fmt.Println(">>>>>URL: ", url, " ; shortURL: ", short, " ; deleted?: ", deleted)
+	fmt.Println(">>>>>URL: ", url, " ; ShortURL: ", short, " ; deleted?: ", deleted)
 	if deleted {
 		return "", fmt.Errorf("deleted")
 	}
@@ -135,7 +135,7 @@ func (db *Database) GetShortURL(ctx context.Context, url string) (short string, 
 // удаляем все URL из списка, принадлежащие этому пользователю
 func (db *Database) Delete(user string, listURL []string) {
 	fmt.Println(">>>BD_Delete_list<<<  ", listURL, "User: ", user)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*11)
 	defer cancel()
 	for _, u := range listURL {
 		_, err := db.connection.ExecContext(ctx, "UPDATE ShortenerURL SET deleted = true WHERE short=$1 AND valueUser=$2", u, user)

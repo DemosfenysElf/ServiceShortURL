@@ -27,7 +27,7 @@ var urlInfo = &URLInfo{}
 
 // Generator интерфейс генератор короткого URL
 type Generator interface {
-	shortURL() string
+	ShortURL() string
 }
 
 // TestGenerator структура генератора коротких URL для тестирования
@@ -36,7 +36,7 @@ type TestGenerator struct {
 	Index  int
 }
 
-func (g *TestGenerator) shortURL() string {
+func (g *TestGenerator) ShortURL() string {
 	if g.Index >= len(g.Result) {
 		return ""
 	}
@@ -51,7 +51,7 @@ type RandomGenerator struct {
 }
 
 // shortURL Генератор коротких ссылок
-func (RandomGenerator) shortURL() string {
+func (RandomGenerator) ShortURL() string {
 	a := make([]byte, 7)
 	for i := range a {
 		a[i] = letters[rand.Intn(len(letters))]
