@@ -36,6 +36,7 @@ type TestGenerator struct {
 	Index  int
 }
 
+// ShortURL Псевдогенерация коротких ссылок
 func (g *TestGenerator) ShortURL() string {
 	if g.Index >= len(g.Result) {
 		return ""
