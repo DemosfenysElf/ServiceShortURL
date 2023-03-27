@@ -129,7 +129,7 @@ func TestPostDB(t *testing.T) {
 			rout.GeneratorUsers = tt.generatorUser
 			user := rout.kykiDB()
 			//
-			for i, _ := range tt.generatorShort.Result {
+			for i := range tt.generatorShort.Result {
 				mock.ExpectExec("insert into ShortenerURL").
 					WithArgs(tt.urllist[i], tt.generatorShort.ShortURL(), user.Name, user.Value, false).
 					WillReturnResult(sqlmock.NewResult(1, 1))

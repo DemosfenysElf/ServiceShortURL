@@ -57,8 +57,8 @@ func TestDB11111(t *testing.T) {
 			rout.GeneratorUsers = tt.generatorUser
 			user := rout.kykiDB()
 			//
-			for _ = range tt.generatorShort.Result {
-				mock.ExpectExec("UPDATE ShortenerURL SET deleted = true WHERE short=$1 AND valueUser=$2").
+			for range tt.generatorShort.Result {
+				mock.ExpectExec("UPDATE ShortenerURL SET deleted = true WHERE short=? AND valueUser=?").
 					WithArgs(tt.generatorShort.ShortURL(), user.Value).
 					WillReturnResult(sqlmock.NewResult(1, 1))
 			}
@@ -75,6 +75,7 @@ func TestDB11111(t *testing.T) {
 			rout.Serv = e
 			rout.DeleteAPIUserURLs(c)
 			response := responseRecorder.Result()
+			defer response.Body.Close()
 
 			if response.StatusCode != tt.want.codeDel {
 				t.Errorf("Expected status code %d, got %d", tt.want.codeDel, responseRecorder.Code)
