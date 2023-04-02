@@ -57,13 +57,6 @@ func (s *serverShortener) Router() error {
 	e.Use(s.mwGzipHandle)
 	e.Use(s.MWAuthentication)
 
-	e.GET("/", func(c echo.Context) error {
-		return c.HTML(http.StatusOK, `
-			<h1>Welcome to Echo!</h1>
-			<h3>TLS certificates automatically installed from Let's Encrypt :)</h3>
-		`)
-	})
-
 	e.GET("/:id", s.GetShortToURL)
 	e.GET("/api/user/urls", s.GetAPIUserURL)
 	e.GET("/ping", s.GetPingDB)
