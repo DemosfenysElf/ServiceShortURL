@@ -65,7 +65,6 @@ func SetStructURL(url string, short string) (info *URLInfo) {
 	urlInfo.URL = url
 	urlInfo.ShortURL = short
 	urlInfo.Deleted = "false"
-	// urlInfo.D = " "
 	info = urlInfo
 	return
 }
@@ -73,7 +72,6 @@ func SetStructURL(url string, short string) (info *URLInfo) {
 // SetStructCookies запись данных в структуру и получение структуры
 func SetStructCookies(nameUser string, value string) {
 	urlInfo.CookiesAuthentication = CookiesAuthentication{nameUser, value}
-
 }
 
 // GetStructCookies получение данных о пользователе

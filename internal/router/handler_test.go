@@ -149,8 +149,7 @@ func TestBatchGetDelete(t *testing.T) {
 
 						_, memory := rout.StorageInterface.(*shorturlservice.MemoryStorage)
 
-						if (i == 2) && (!memory) {
-
+						if i == 2 {
 							bodydelete := `["` + resBodyShort + `"]`
 							request2 := httptest.NewRequest(http.MethodDelete, "/api/user/urls", strings.NewReader(bodydelete))
 							request2.AddCookie(cookie)

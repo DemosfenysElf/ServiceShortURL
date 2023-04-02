@@ -25,6 +25,7 @@ type ConfigURL struct {
 	BaseURL       string `env:"BASE_URL"`
 	Storage       string `env:"FILE_STORAGE_PATH"`
 	ConnectDB     string `env:"DATABASE_DSN"`
+	EnableHTTPS   bool   `env:"ENABLE_HTTPS"`
 }
 
 type serverShortener struct {
@@ -56,6 +57,13 @@ func (s *serverShortener) Router() error {
 	e.Use(s.mwGzipHandle)
 	e.Use(s.MWAuthentication)
 
+	e.GET("/", func(c echo.Context) error {
+		return c.HTML(http.StatusOK, `
+			<h1>Welcome to Echo!</h1>
+			<h3>TLS certificates automatically installed from Let's Encrypt :)</h3>
+		`)
+	})
+
 	e.GET("/:id", s.GetShortToURL)
 	e.GET("/api/user/urls", s.GetAPIUserURL)
 	e.GET("/ping", s.GetPingDB)
@@ -68,7 +76,12 @@ func (s *serverShortener) Router() error {
 
 	RegisterPprof(e, "/debug/pprof")
 
-	errStart := e.Start(s.Cfg.ServerAddress)
+	var errStart error
+	if s.Cfg.EnableHTTPS {
+		errStart = e.StartAutoTLS(s.Cfg.ServerAddress)
+	} else {
+		errStart = e.Start(s.Cfg.ServerAddress)
+	}
 
 	if errStart != nil {
 		return errStart
@@ -144,6 +157,9 @@ func (s *serverShortener) InitRouter() {
 	if s.Cfg.ConnectDB == "" {
 		flag.StringVar(&s.Cfg.ConnectDB, "d", "postgres://postgres:0000@localhost:5432/postgres", "New DATABASE_DSN")
 	}
+
+	flag.BoolVar(&s.Cfg.EnableHTTPS, "s", s.Cfg.EnableHTTPS, "New ENABLE_HTTPS")
+
 	flag.Parse()
 
 	// для быстрого локального тестирования деградации

@@ -1,89 +1,71 @@
 package router
 
 import (
-	"errors"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"strings"
 	"testing"
 
-	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/labstack/echo"
 
 	"ServiceShortURL/internal/shorturlservice"
 )
 
-func TestDB111(t *testing.T) {
-
+func TestPostGZIPOut(t *testing.T) {
 	type want struct {
+		codePost int
 		codeGet  int
-		url      string
 		response string
 	}
 	tests := []struct {
-		name           string
-		want           want
-		generatorShort *shorturlservice.TestGenerator
-		generatorUser  *shorturlservice.TestGeneratorUser
-		errPing        error
+		name    string
+		want    want
+		wantErr bool
+		bodyURL string
 	}{
 		{
-			name: "TestDBGetPing1",
+			name: "TestPostGetGZ",
 			want: want{
-				codeGet:  http.StatusOK,
+				codePost: 201,
+				codeGet:  307,
 				response: `{"status":"ok"}`,
 			},
-			generatorShort: &shorturlservice.TestGenerator{Result: []string{"Short1"}, Index: 0},
-			generatorUser:  &shorturlservice.TestGeneratorUser{Result: []byte("UserUserUserUser")},
-			errPing:        nil,
-		},
-		{
-			name: "TestDBGetPing2",
-			want: want{
-				codeGet:  http.StatusInternalServerError,
-				response: `{"status":"ok"}`,
-			},
-			generatorShort: &shorturlservice.TestGenerator{Result: []string{"Short1"}, Index: 0},
-			generatorUser:  &shorturlservice.TestGeneratorUser{Result: []byte("UserUserUserUser")},
-			errPing:        errors.New("Ping fail"),
+			bodyURL: "https://www.1234.com/watch?v=UK7yzgVpnDA",
 		},
 	}
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-
-			db, mock, err := sqlmock.New(sqlmock.MonitorPingsOption(true))
-			if err != nil {
-				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
-			}
-			defer db.Close()
-			rout := InitTestServer()
+			os.Truncate(testStorageURL, 0)
+			os.Truncate(testStorageUsers, 0)
+			rout := InitServer()
 			rout.Cfg.Storage = testStorageURL
-			mockDB := &shorturlservice.Database{RandomShort: tt.generatorShort}
 
-			mockDB.SetConnection(db)
-			rout.DB = mockDB
-			rout.StorageInterface = mockDB
-			rout.GeneratorUsers = tt.generatorUser
-			user := rout.kykiDB()
-			//
-			mock.ExpectPing().WillReturnError(tt.errPing)
-			//
-			e := echo.New()
-			request := httptest.NewRequest(http.MethodGet, "/ping", nil)
+			teststor := func(s shorturlservice.StorageInterface) {
+				e := echo.New()
+				request := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(tt.bodyURL))
+				cookie := kyki()
+				request.AddCookie(cookie)
+				request.Header.Add("Accept-Encoding", "gzip")
+				responseRecorder := httptest.NewRecorder()
+				c := e.NewContext(request, responseRecorder)
 
-			request.AddCookie(user)
-			responseRecorder := httptest.NewRecorder()
-			c := e.NewContext(request, responseRecorder)
+				rout.StorageInterface = s
 
-			rout.Serv = e
-			rout.GetPingDB(c)
-			response := responseRecorder.Result()
-			defer response.Body.Close()
+				rout.Serv = e
+				rout.PostURLToShort(c)
+				response := responseRecorder.Result()
+				defer response.Body.Close()
+				if response.StatusCode != tt.want.codePost {
+					t.Errorf("Expected status code %d, got %d", tt.want.codePost, responseRecorder.Code)
+				}
 
-			if response.StatusCode != tt.want.codeGet {
-				t.Errorf("Expected status code %d, got %d", tt.want.codeGet, responseRecorder.Code)
 			}
-
+			teststor(&shorturlservice.FileStorage{
+				FilePath:    rout.Cfg.Storage,
+				RandomShort: &shorturlservice.RandomGenerator{},
+			})
+			teststor(shorturlservice.InitMem())
 		})
 	}
 }

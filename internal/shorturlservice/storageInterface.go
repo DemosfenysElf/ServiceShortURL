@@ -114,7 +114,6 @@ func (fs *FileStorage) SetURL(ctx context.Context, url string) (short string, er
 	if err := producerURL.WriteURL(urli); err != nil {
 		return "", err
 	}
-
 	return short, nil
 }
 

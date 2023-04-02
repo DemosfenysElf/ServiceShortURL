@@ -20,7 +20,6 @@ import (
 )
 
 func TestPostDB(t *testing.T) {
-
 	type want struct {
 		codePost int
 		response string
@@ -186,7 +185,6 @@ func TestPostDB(t *testing.T) {
 }
 
 func TestDBGet(t *testing.T) {
-
 	type want struct {
 		codeGet  int
 		url      string
@@ -288,7 +286,6 @@ func TestDBGet(t *testing.T) {
 }
 
 func TestDBDelete(t *testing.T) {
-
 	type want struct {
 		codeDel  int
 		response string
@@ -360,8 +357,7 @@ func TestDBDelete(t *testing.T) {
 	}
 }
 
-func TestDBUniqueViolation(t *testing.T) {
-
+func TestDBPostUniqueViolation(t *testing.T) {
 	type want struct {
 		codePost int
 		response string
@@ -456,7 +452,6 @@ func TestDBUniqueViolation(t *testing.T) {
 }
 
 func TestDBPing(t *testing.T) {
-
 	type want struct {
 		codeGet  int
 		url      string
@@ -487,7 +482,7 @@ func TestDBPing(t *testing.T) {
 			},
 			generatorShort: &shorturlservice.TestGenerator{Result: []string{"Short1"}, Index: 0},
 			generatorUser:  &shorturlservice.TestGeneratorUser{Result: []byte("UserUserUserUser")},
-			errPing:        errors.New("Ping fail"),
+			errPing:        errors.New("ping fail"),
 		},
 	}
 
