@@ -1,12 +1,14 @@
 package router
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"net/http/pprof"
+	"os"
 	"sync"
 
 	"ServiceShortURL/internal/shorturlservice"
@@ -21,11 +23,12 @@ import (
 // FILE_STORAGE_PATH путь до файла должен.
 // DATABASE_DSN адрес подключения к БД.
 type ConfigURL struct {
-	ServerAddress string `env:"SERVER_ADDRESS"`
-	BaseURL       string `env:"BASE_URL"`
-	Storage       string `env:"FILE_STORAGE_PATH"`
-	ConnectDB     string `env:"DATABASE_DSN"`
-	EnableHTTPS   bool   `env:"ENABLE_HTTPS"`
+	ServerAddress string `env:"SERVER_ADDRESS" json:"server_address,omitempty"`
+	BaseURL       string `env:"BASE_URL" json:"base_url,omitempty"`
+	Storage       string `env:"FILE_STORAGE_PATH" json:"file_storage_path,omitempty"`
+	ConnectDB     string `env:"DATABASE_DSN" json:"database_dsn,omitempty"`
+	EnableHTTPS   bool   `env:"ENABLE_HTTPS" json:"enable_https,omitempty"`
+	Config        string `env:"CONFIG"`
 }
 
 type serverShortener struct {
@@ -139,27 +142,78 @@ func (s *serverShortener) InitRouter() {
 	if errConfig != nil {
 		log.Fatal(errConfig)
 	}
+
+	if s.Cfg.Config == "" {
+		flag.StringVar(&s.Cfg.Config, "-config", "", "New CONFIG")
+		flag.StringVar(&s.Cfg.Config, "-c", "", "New CONFIG")
+	}
 	if s.Cfg.ServerAddress == "" {
-		flag.StringVar(&s.Cfg.ServerAddress, "a", ":8080", "New SERVER_ADDRESS")
+		flag.StringVar(&s.Cfg.ServerAddress, "a", "", "New SERVER_ADDRESS")
 	}
 	if s.Cfg.BaseURL == "" {
-		flag.StringVar(&s.Cfg.BaseURL, "b", "http://localhost:8080", "New BASE_URL")
+		flag.StringVar(&s.Cfg.BaseURL, "b", "", "New BASE_URL")
 	}
 	if s.Cfg.Storage == "" {
-		flag.StringVar(&s.Cfg.Storage, "f", "shortsURl.log", "New FILE_STORAGE_PATH")
+		flag.StringVar(&s.Cfg.Storage, "f", "", "New FILE_STORAGE_PATH")
 	}
 	if s.Cfg.ConnectDB == "" {
-		flag.StringVar(&s.Cfg.ConnectDB, "d", "postgres://postgres:0000@localhost:5432/postgres", "New DATABASE_DSN")
+		flag.StringVar(&s.Cfg.ConnectDB, "d", "", "New DATABASE_DSN")
 	}
-
-	flag.BoolVar(&s.Cfg.EnableHTTPS, "s", s.Cfg.EnableHTTPS, "New ENABLE_HTTPS")
-
+	if !s.Cfg.EnableHTTPS {
+		flag.BoolVar(&s.Cfg.EnableHTTPS, "s", false, "New ENABLE_HTTPS")
+	}
 	flag.Parse()
 
-	// для быстрого локального тестирования деградации
-	// s.Cfg.Storage = ""
+	// чтение файла настроек
+	var cfgFile ConfigURL
+	if s.Cfg.Config != "" {
+		file, err := os.ReadFile(s.Cfg.Config)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if err = json.Unmarshal(file, &cfgFile); err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	//проверяем данные и заполняем не заполненые
+	if (s.Cfg.ServerAddress == "") && (cfgFile.ServerAddress != "") {
+		s.Cfg.ServerAddress = cfgFile.ServerAddress
+	} else {
+		if s.Cfg.ServerAddress == "" {
+			s.Cfg.ServerAddress = ":8080"
+		}
+	}
+	if (s.Cfg.BaseURL == "") && (cfgFile.BaseURL != "") {
+		s.Cfg.BaseURL = cfgFile.BaseURL
+	} else {
+		if s.Cfg.BaseURL == "" {
+			s.Cfg.BaseURL = "http://localhost:8080"
+		}
+	}
+	if (s.Cfg.Storage == "") && (cfgFile.Storage != "") {
+		s.Cfg.Storage = cfgFile.Storage
+	} else {
+		if s.Cfg.Storage == "" {
+			s.Cfg.Storage = "shortsURl.log"
+		}
+	}
+	if (s.Cfg.ConnectDB == "") && (cfgFile.ConnectDB != "") {
+		s.Cfg.ConnectDB = cfgFile.ConnectDB
+	} else {
+		if s.Cfg.ConnectDB == "" {
+			s.Cfg.ConnectDB = "postgres://postgres:0000@localhost:5432/postgres"
+		}
+	}
+	if !s.Cfg.EnableHTTPS && cfgFile.EnableHTTPS {
+		s.Cfg.EnableHTTPS = cfgFile.EnableHTTPS
+	}
+
+	//для быстрого локального тестирования деградации
+	//s.Cfg.Storage = ""
 	//s.Cfg.ConnectDB = ""
 
+	//выбор и инициализация хранилища
 	if err := s.startBD(); err == nil {
 		fmt.Println(">>>>use BD<<<<", s.Cfg.ConnectDB)
 	} else if s.Cfg.Storage != "" {

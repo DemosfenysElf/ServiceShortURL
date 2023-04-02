@@ -454,7 +454,6 @@ func TestDBPostUniqueViolation(t *testing.T) {
 func TestDBPing(t *testing.T) {
 	type want struct {
 		codeGet  int
-		url      string
 		response string
 	}
 	tests := []struct {
