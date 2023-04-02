@@ -144,8 +144,8 @@ func (s *serverShortener) InitRouter() {
 	}
 
 	if s.Cfg.Config == "" {
-		flag.StringVar(&s.Cfg.Config, "-config", "", "New CONFIG")
-		flag.StringVar(&s.Cfg.Config, "-c", "", "New CONFIG")
+		flag.StringVar(&s.Cfg.Config, "config", "", "New CONFIG")
+		flag.StringVar(&s.Cfg.Config, "c", "", "New CONFIG")
 	}
 	if s.Cfg.ServerAddress == "" {
 		flag.StringVar(&s.Cfg.ServerAddress, "a", "", "New SERVER_ADDRESS")
