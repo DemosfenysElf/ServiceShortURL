@@ -86,6 +86,7 @@ func (s *serverShortener) Router() error {
 	if errStart != nil {
 		return errStart
 	}
+
 	return nil
 }
 
