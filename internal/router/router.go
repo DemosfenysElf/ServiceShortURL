@@ -188,7 +188,7 @@ func (s *serverShortener) InitRouter() {
 		s.Cfg.BaseURL = cfgFile.BaseURL
 	} else {
 		if s.Cfg.BaseURL == "" {
-			s.Cfg.BaseURL = "http://localhost:8080"
+			s.Cfg.BaseURL = "127.0.0.1:8080"
 		}
 	}
 	if (s.Cfg.Storage == "") && (cfgFile.Storage != "") {
