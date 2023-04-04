@@ -96,7 +96,7 @@ func (s *serverShortener) Router() error {
 		errStart = e.Start(s.Cfg.ServerAddress)
 	}
 
-	if errStart != nil {
+	if (errStart != nil) && (errStart != http.ErrServerClosed) {
 		return errStart
 	}
 	<-idleConnsClosed
