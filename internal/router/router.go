@@ -81,7 +81,7 @@ func (s *serverShortener) Router() error {
 	signal.Notify(signalShutdown, syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT)
 	go func() {
 		<-signalShutdown
-		ctx, cancel := context.WithTimeout(context.Background(), time.Second*11)
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
 		defer cancel()
 		if err := e.Shutdown(ctx); err != nil {
 			log.Fatal(err)
@@ -99,7 +99,7 @@ func (s *serverShortener) Router() error {
 	if errStart != nil {
 		return errStart
 	}
-
+	<-idleConnsClosed
 	return nil
 }
 
