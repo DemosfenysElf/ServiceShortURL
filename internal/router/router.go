@@ -1,6 +1,7 @@
 package router
 
 import (
+	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -9,7 +10,10 @@ import (
 	"net/http"
 	"net/http/pprof"
 	"os"
+	"os/signal"
 	"sync"
+	"syscall"
+	"time"
 
 	"ServiceShortURL/internal/shorturlservice"
 
@@ -72,6 +76,19 @@ func (s *serverShortener) Router() error {
 
 	RegisterPprof(e, "/debug/pprof")
 
+	idleConnsClosed := make(chan struct{})
+	signalShutdown := make(chan os.Signal, 1)
+	signal.Notify(signalShutdown, syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT)
+	go func() {
+		<-signalShutdown
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second*11)
+		defer cancel()
+		if err := e.Shutdown(ctx); err != nil {
+			log.Fatal(err)
+		}
+		close(idleConnsClosed)
+	}()
+
 	var errStart error
 	if s.Cfg.EnableHTTPS {
 		errStart = e.StartAutoTLS(s.Cfg.ServerAddress)
@@ -82,7 +99,7 @@ func (s *serverShortener) Router() error {
 	if errStart != nil {
 		return errStart
 	}
-
+	<-idleConnsClosed
 	return nil
 }
 
