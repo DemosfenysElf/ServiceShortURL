@@ -1,13 +1,19 @@
 package router
 
 import (
+	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"net/http/pprof"
+	"os"
+	"os/signal"
 	"sync"
+	"syscall"
+	"time"
 
 	"ServiceShortURL/internal/shorturlservice"
 
@@ -21,10 +27,12 @@ import (
 // FILE_STORAGE_PATH путь до файла должен.
 // DATABASE_DSN адрес подключения к БД.
 type ConfigURL struct {
-	ServerAddress string `env:"SERVER_ADDRESS"`
-	BaseURL       string `env:"BASE_URL"`
-	Storage       string `env:"FILE_STORAGE_PATH"`
-	ConnectDB     string `env:"DATABASE_DSN"`
+	ServerAddress string `env:"SERVER_ADDRESS" json:"server_address,omitempty"`
+	BaseURL       string `env:"BASE_URL" json:"base_url,omitempty"`
+	Storage       string `env:"FILE_STORAGE_PATH" json:"file_storage_path,omitempty"`
+	ConnectDB     string `env:"DATABASE_DSN" json:"database_dsn,omitempty"`
+	EnableHTTPS   bool   `env:"ENABLE_HTTPS" json:"enable_https,omitempty"`
+	Config        string `env:"CONFIG"`
 }
 
 type serverShortener struct {
@@ -34,11 +42,17 @@ type serverShortener struct {
 	WG     *sync.WaitGroup
 	DB     shorturlservice.DatabaseService
 	shorturlservice.StorageInterface
+	GeneratorUsers shorturlservice.GeneratorUser
 }
 
 // InitServer инициализация сервера
 func InitServer() *serverShortener {
-	return &serverShortener{WG: new(sync.WaitGroup)}
+	return &serverShortener{WG: new(sync.WaitGroup), GeneratorUsers: shorturlservice.RandomGeneratorUser{}}
+}
+
+// InitTestServer инициализация сервера для тестов (пока только при работе с БД)
+func InitTestServer() *serverShortener {
+	return &serverShortener{WG: new(sync.WaitGroup), GeneratorUsers: shorturlservice.TestGeneratorUser{}}
 }
 
 // Router - роутер
@@ -62,11 +76,30 @@ func (s *serverShortener) Router() error {
 
 	RegisterPprof(e, "/debug/pprof")
 
-	errStart := e.Start(s.Cfg.ServerAddress)
+	idleConnsClosed := make(chan struct{})
+	signalShutdown := make(chan os.Signal, 1)
+	signal.Notify(signalShutdown, syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT)
+	go func() {
+		<-signalShutdown
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
+		defer cancel()
+		if err := e.Shutdown(ctx); err != nil {
+			log.Fatal(err)
+		}
+		close(idleConnsClosed)
+	}()
 
-	if errStart != nil {
+	var errStart error
+	if s.Cfg.EnableHTTPS {
+		errStart = e.StartAutoTLS(s.Cfg.ServerAddress)
+	} else {
+		errStart = e.Start(s.Cfg.ServerAddress)
+	}
+
+	if (errStart != nil) && (errStart != http.ErrServerClosed) {
 		return errStart
 	}
+	<-idleConnsClosed
 	return nil
 }
 
@@ -102,7 +135,7 @@ func (s *serverShortener) startBD() error {
 		return fmt.Errorf("error s.Cfg.ConnectDB == nil")
 	}
 
-	DB := &shorturlservice.Database{}
+	DB := &shorturlservice.Database{RandomShort: &shorturlservice.RandomGenerator{}}
 
 	if errConnect := DB.Connect(s.Cfg.ConnectDB); errConnect != nil {
 		return errConnect
@@ -126,34 +159,88 @@ func (s *serverShortener) InitRouter() {
 	if errConfig != nil {
 		log.Fatal(errConfig)
 	}
+
+	if s.Cfg.Config == "" {
+		flag.StringVar(&s.Cfg.Config, "config", "", "New CONFIG")
+		flag.StringVar(&s.Cfg.Config, "c", "", "New CONFIG")
+	}
 	if s.Cfg.ServerAddress == "" {
-		flag.StringVar(&s.Cfg.ServerAddress, "a", ":8080", "New SERVER_ADDRESS")
+		flag.StringVar(&s.Cfg.ServerAddress, "a", "", "New SERVER_ADDRESS")
 	}
 	if s.Cfg.BaseURL == "" {
-		flag.StringVar(&s.Cfg.BaseURL, "b", "http://localhost:8080", "New BASE_URL")
+		flag.StringVar(&s.Cfg.BaseURL, "b", "", "New BASE_URL")
 	}
 	if s.Cfg.Storage == "" {
-		flag.StringVar(&s.Cfg.Storage, "f", "shortsURl.log", "New FILE_STORAGE_PATH")
+		flag.StringVar(&s.Cfg.Storage, "f", "", "New FILE_STORAGE_PATH")
 	}
 	if s.Cfg.ConnectDB == "" {
-		flag.StringVar(&s.Cfg.ConnectDB, "d", "postgres://postgres:0000@localhost:5432/postgres", "New DATABASE_DSN")
+		flag.StringVar(&s.Cfg.ConnectDB, "d", "", "New DATABASE_DSN")
+	}
+	if !s.Cfg.EnableHTTPS {
+		flag.BoolVar(&s.Cfg.EnableHTTPS, "s", false, "New ENABLE_HTTPS")
 	}
 	flag.Parse()
 
-	// для быстрого локального тестирования деградации
-	// s.Cfg.Storage = ""
-	// s.Cfg.ConnectDB = ""
+	// чтение файла настроек
+	var cfgFile ConfigURL
+	if s.Cfg.Config != "" {
+		file, err := os.ReadFile(s.Cfg.Config)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if err = json.Unmarshal(file, &cfgFile); err != nil {
+			log.Fatal(err)
+		}
+	}
 
+	//проверяем данные и заполняем не заполненые
+	if (s.Cfg.ServerAddress == "") && (cfgFile.ServerAddress != "") {
+		s.Cfg.ServerAddress = cfgFile.ServerAddress
+	} else {
+		if s.Cfg.ServerAddress == "" {
+			s.Cfg.ServerAddress = ":8080"
+		}
+	}
+	if (s.Cfg.BaseURL == "") && (cfgFile.BaseURL != "") {
+		s.Cfg.BaseURL = cfgFile.BaseURL
+	} else {
+		if s.Cfg.BaseURL == "" {
+			s.Cfg.BaseURL = "http://localhost:8080"
+		}
+	}
+	if (s.Cfg.Storage == "") && (cfgFile.Storage != "") {
+		s.Cfg.Storage = cfgFile.Storage
+	} else {
+		if s.Cfg.Storage == "" {
+			s.Cfg.Storage = "shortsURl.log"
+		}
+	}
+	if (s.Cfg.ConnectDB == "") && (cfgFile.ConnectDB != "") {
+		s.Cfg.ConnectDB = cfgFile.ConnectDB
+	} else {
+		if s.Cfg.ConnectDB == "" {
+			s.Cfg.ConnectDB = "postgres://postgres:0000@localhost:5432/postgres"
+		}
+	}
+	if !s.Cfg.EnableHTTPS && cfgFile.EnableHTTPS {
+		s.Cfg.EnableHTTPS = cfgFile.EnableHTTPS
+	}
+
+	//для быстрого локального тестирования деградации
+	//s.Cfg.Storage = ""
+	//s.Cfg.ConnectDB = ""
+
+	//выбор и инициализация хранилища
 	if err := s.startBD(); err == nil {
 		fmt.Println(">>>>use BD<<<<", s.Cfg.ConnectDB)
 	} else if s.Cfg.Storage != "" {
 		fmt.Println(">>>>use storage<<<<")
 		s.StorageInterface = &shorturlservice.FileStorage{
-			FilePath: s.Cfg.Storage,
+			FilePath:    s.Cfg.Storage,
+			RandomShort: &shorturlservice.RandomGenerator{},
 		}
 	} else {
 		fmt.Println(">>>>use memory<<<<")
 		s.StorageInterface = shorturlservice.InitMem()
 	}
-
 }

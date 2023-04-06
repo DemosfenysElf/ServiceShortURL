@@ -50,7 +50,8 @@ func (s serverShortener) MWAuthentication(next echo.HandlerFunc) echo.HandlerFun
 			}
 		}
 
-		newToken, err := shorturlservice.GenerateToken()
+		newToken, err := s.GeneratorUsers.GenerateToken()
+
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -69,7 +70,7 @@ func (s serverShortener) MWAuthentication(next echo.HandlerFunc) echo.HandlerFun
 			hexNewToken := hex.EncodeToString(newToken)
 
 			if _, ok := userMap[hexNewToken]; ok {
-				newToken, err = shorturlservice.GenerateToken()
+				newToken, err = s.GeneratorUsers.GenerateToken()
 				if err != nil {
 					log.Fatal(err)
 				}

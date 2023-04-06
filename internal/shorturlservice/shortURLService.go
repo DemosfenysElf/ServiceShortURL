@@ -25,8 +25,34 @@ type URLInfo struct {
 
 var urlInfo = &URLInfo{}
 
+// Generator интерфейс генератор короткого URL
+type Generator interface {
+	ShortURL() string
+}
+
+// TestGenerator структура генератора коротких URL для тестирования
+type TestGenerator struct {
+	Result []string
+	Index  int
+}
+
+// ShortURL Псевдогенерация коротких ссылок
+func (g *TestGenerator) ShortURL() string {
+	if g.Index >= len(g.Result) {
+		return ""
+	}
+	ret := g.Result[g.Index]
+
+	g.Index += 1
+	return ret
+}
+
+// RandomGenerator структура генератора короткий  URL
+type RandomGenerator struct {
+}
+
 // shortURL Генератор коротких ссылок
-func shortURL() string {
+func (RandomGenerator) ShortURL() string {
 	a := make([]byte, 7)
 	for i := range a {
 		a[i] = letters[rand.Intn(len(letters))]
@@ -47,7 +73,6 @@ func SetStructURL(url string, short string) (info *URLInfo) {
 // SetStructCookies запись данных в структуру и получение структуры
 func SetStructCookies(nameUser string, value string) {
 	urlInfo.CookiesAuthentication = CookiesAuthentication{nameUser, value}
-
 }
 
 // GetStructCookies получение данных о пользователе
