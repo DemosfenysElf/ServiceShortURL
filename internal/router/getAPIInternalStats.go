@@ -30,9 +30,9 @@ func (s *serverShortener) GetAPIInternalStats(c echo.Context) error {
 	defer consumerURL.Close()
 
 	//считаем пользователей из файла
-	for readUsers, errRead := consumerURL.ReadURLInfo(); errRead == nil; readUsers, errRead = consumerURL.ReadURLInfo() {
+	for readUsers, errRead := consumerURL.ReadUser(); errRead == nil; readUsers, errRead = consumerURL.ReadUser() {
 		mapUsers := make(map[string]bool)
-		user := readUsers.CookiesAuthentication.ValueUser
+		user := readUsers.ValueUser
 		//если такого пользователя нет в мапе, то добавляем в мапу пользователя и увеличиваем счётчик пользователей
 		if !mapUsers[user] {
 			mapUsers[user] = true
