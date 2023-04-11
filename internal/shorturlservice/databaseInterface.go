@@ -26,6 +26,7 @@ type DatabaseService interface {
 	Connect(connStr string) error
 	Close() error
 	Ping(ctx context.Context) error
+	GetCount(ctx context.Context) (n int, err error)
 }
 
 var stringShortenerURL = `CREATE TABLE ShortenerURL(
@@ -141,10 +142,15 @@ func (db *Database) Delete(user string, listURL []string) {
 			fmt.Println(">>>>>>>>>>>>>>>>>>>>>", err)
 		}
 	}
-
 }
 
 // SetConnection для тестирования с помощью mock
 func (db *Database) SetConnection(conn *sql.DB) {
 	db.connection = conn
+}
+
+func (db *Database) GetCount(ctx context.Context) (n int, err error) {
+	row := db.connection.QueryRowContext(ctx, "select count(*) from ShortenerURL ")
+	err = row.Scan(&n)
+	return
 }
