@@ -32,6 +32,7 @@ type ConfigURL struct {
 	Storage       string `env:"FILE_STORAGE_PATH" json:"file_storage_path,omitempty"`
 	ConnectDB     string `env:"DATABASE_DSN" json:"database_dsn,omitempty"`
 	EnableHTTPS   bool   `env:"ENABLE_HTTPS" json:"enable_https,omitempty"`
+	TrustedSubnet string `env:"TRUSTED_SUBNET" json:"trusted_subnet,omitempty"`
 	Config        string `env:"CONFIG"`
 }
 
@@ -73,6 +74,8 @@ func (s *serverShortener) Router() error {
 	e.POST("/api/shorten", s.PostAPIShorten)
 
 	e.DELETE("/api/user/urls", s.DeleteAPIUserURLs)
+
+	e.GET("/api/internal/stats", s.GetAPIInternalStats, s.MWCheakerIP)
 
 	RegisterPprof(e, "/debug/pprof")
 
@@ -176,6 +179,9 @@ func (s *serverShortener) InitRouter() {
 	if s.Cfg.ConnectDB == "" {
 		flag.StringVar(&s.Cfg.ConnectDB, "d", "", "New DATABASE_DSN")
 	}
+	if s.Cfg.TrustedSubnet == "" {
+		flag.StringVar(&s.Cfg.TrustedSubnet, "t", "", "New TRUSTED_SUBNET")
+	}
 	if !s.Cfg.EnableHTTPS {
 		flag.BoolVar(&s.Cfg.EnableHTTPS, "s", false, "New ENABLE_HTTPS")
 	}
@@ -221,6 +227,9 @@ func (s *serverShortener) InitRouter() {
 		if s.Cfg.ConnectDB == "" {
 			s.Cfg.ConnectDB = "postgres://postgres:0000@localhost:5432/postgres"
 		}
+	}
+	if (s.Cfg.TrustedSubnet == "") && (cfgFile.TrustedSubnet != "") {
+		s.Cfg.TrustedSubnet = cfgFile.TrustedSubnet
 	}
 	if !s.Cfg.EnableHTTPS && cfgFile.EnableHTTPS {
 		s.Cfg.EnableHTTPS = cfgFile.EnableHTTPS
