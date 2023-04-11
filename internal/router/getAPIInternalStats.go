@@ -16,9 +16,11 @@ type statsServer struct {
 	Users int `json:"users"`
 }
 
+// GetAPIInternalStats e.GET("/api/internal/stats")
+// возвращает пользователю количество пользователей и сокращенных ссылок
+// {"urls": <int>, "users": <int>}
 func (s *serverShortener) GetAPIInternalStats(c echo.Context) error {
 	s.WG.Wait()
-
 	stats := statsServer{}
 
 	consumerURL, err := shorturlservice.NewConsumer("storageUsers.log")
