@@ -9,6 +9,8 @@ import (
 
 	"github.com/jackc/pgerrcode"
 	"github.com/labstack/echo"
+
+	"ServiceShortURL/internal/shorturlservice"
 )
 
 type urlAPIShortenBatch struct {
@@ -65,7 +67,7 @@ func (s *serverShortener) PostAPIShortenBatch(c echo.Context) error {
 	}
 
 	if c.Request().Header.Get("Accept-Encoding") == "gzip" {
-		shortU, err = serviceCompress(shortU)
+		shortU, err = shorturlservice.ServiceCompress(shortU)
 		if err != nil {
 			fmt.Println("Compress fail")
 		}

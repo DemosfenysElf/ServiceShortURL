@@ -8,6 +8,8 @@ import (
 
 	"github.com/jackc/pgerrcode"
 	"github.com/labstack/echo"
+
+	"ServiceShortURL/internal/shorturlservice"
 )
 
 // PostURLToShort e.POST("/")
@@ -32,7 +34,7 @@ func (s *serverShortener) PostURLToShort(c echo.Context) error {
 	write := []byte(s.Cfg.BaseURL + "/" + short)
 
 	if c.Request().Header.Get("Accept-Encoding") == "gzip" {
-		write, err = serviceCompress(write)
+		write, err = shorturlservice.ServiceCompress(write)
 		if err != nil {
 			c.Response().WriteHeader(http.StatusInternalServerError)
 		}

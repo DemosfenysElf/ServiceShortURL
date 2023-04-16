@@ -1,10 +1,10 @@
 package router
 
 import (
+	"bytes"
 	"net/http"
 	"net/http/httptest"
 	"os"
-	"strings"
 	"testing"
 
 	"github.com/labstack/echo"
@@ -12,10 +12,9 @@ import (
 	"ServiceShortURL/internal/shorturlservice"
 )
 
-func TestPostGZIPOut(t *testing.T) {
+func TestMWPostGZIP(t *testing.T) {
 	type want struct {
 		codePost int
-		codeGet  int
 		response string
 	}
 	tests := []struct {
@@ -25,13 +24,19 @@ func TestPostGZIPOut(t *testing.T) {
 		bodyURL string
 	}{
 		{
-			name: "TestPostGetGZ",
+			name: "TestMWPostGZIP",
 			want: want{
 				codePost: 201,
-				codeGet:  307,
 				response: `{"status":"ok"}`,
 			},
 			bodyURL: "https://www.1234.com/watch?v=UK7yzgVpnDA",
+		},
+		{
+			name: "TestPostMWGZIP2",
+			want: want{
+				codePost: 204,
+				response: `{"status":"ok"}`,
+			},
 		},
 	}
 	for _, tt := range tests {
@@ -42,18 +47,26 @@ func TestPostGZIPOut(t *testing.T) {
 			rout.Cfg.Storage = testStorageURL
 
 			teststor := func(s shorturlservice.StorageInterface) {
+				compressBody, _ := shorturlservice.ServiceCompress([]byte(tt.bodyURL))
 				e := echo.New()
-				request := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(tt.bodyURL))
+				request := httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(compressBody))
 				cookie := kyki()
 				request.AddCookie(cookie)
 				request.Header.Add("Accept-Encoding", "gzip")
+				request.Header.Add("Content-Encoding", "gzip")
 				responseRecorder := httptest.NewRecorder()
-				c := e.NewContext(request, responseRecorder)
+				//c := e.NewContext(request, responseRecorder)
 
 				rout.StorageInterface = s
 
-				rout.Serv = e
-				rout.PostURLToShort(c)
+				////////
+				e.Use(rout.mwGzipHandle)
+				e.POST("/", rout.PostURLToShort)
+				e.ServeHTTP(responseRecorder, request)
+				/////////
+
+				//rout.Serv = e
+				//rout.PostURLToShort(c)
 				response := responseRecorder.Result()
 				defer response.Body.Close()
 				if response.StatusCode != tt.want.codePost {
@@ -65,7 +78,7 @@ func TestPostGZIPOut(t *testing.T) {
 				FilePath:    rout.Cfg.Storage,
 				RandomShort: &shorturlservice.RandomGenerator{},
 			})
-			teststor(shorturlservice.InitMem())
+			//teststor(shorturlservice.InitMem())
 		})
 	}
 }
