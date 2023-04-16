@@ -5,6 +5,7 @@ import (
 	"compress/gzip"
 )
 
+// ServiceCompress gzip
 func ServiceCompress(b []byte) ([]byte, error) {
 	var buf bytes.Buffer
 	zw := gzip.NewWriter(&buf)
