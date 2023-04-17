@@ -58,21 +58,24 @@ func InitTestServer() *serverShortener {
 
 // Router - роутер
 func (s *serverShortener) Router() error {
-	s.InitRouter()
+	s.FlagParse()
+	s.InitStorage()
+	s.router2()
 
+	return nil
+}
+
+func (s *serverShortener) router2() error {
 	e := echo.New()
-
 	e.Use(s.mwGzipHandle)
 	e.Use(s.MWAuthentication)
 
 	e.GET("/:id", s.GetShortToURL)
 	e.GET("/api/user/urls", s.GetAPIUserURL)
 	e.GET("/ping", s.GetPingDB)
-
 	e.POST("/", s.PostURLToShort)
 	e.POST("/api/shorten/batch", s.PostAPIShortenBatch)
 	e.POST("/api/shorten", s.PostAPIShorten)
-
 	e.DELETE("/api/user/urls", s.DeleteAPIUserURLs)
 
 	e.GET("/api/internal/stats", s.GetAPIInternalStats, s.MWCheakerIP)
@@ -149,15 +152,12 @@ func (s *serverShortener) startBD() error {
 	return nil
 }
 
-// InitRouter парсим флаги
+// FlagParse парсим флаги
 // флаг -a, отвечающий за адрес запуска HTTP-сервера (переменная SERVER_ADDRESS);
 // флаг -b, отвечающий за базовый адрес результирующего сокращённого URL (переменная BASE_URL);
 // флаг -f, отвечающий за путь до файла с сокращёнными URL (переменная FILE_STORAGE_PATH);
 // флаг -d, отвечающий за путь до DB (переменная DATABASE_DSN).
-//
-// Подключаемся к БД, если не получается проверяем к файлу с данными,
-// если не получается, то храним данные в памяти.
-func (s *serverShortener) InitRouter() {
+func (s *serverShortener) FlagParse() {
 	errConfig := env.Parse(&s.Cfg)
 	if errConfig != nil {
 		log.Fatal(errConfig)
@@ -234,7 +234,11 @@ func (s *serverShortener) InitRouter() {
 	if !s.Cfg.EnableHTTPS && cfgFile.EnableHTTPS {
 		s.Cfg.EnableHTTPS = cfgFile.EnableHTTPS
 	}
+}
 
+// InitRouter Подключаемся к БД, если не получается проверяем к файлу с данными,
+// если не получается, то храним данные в памяти.
+func (s *serverShortener) InitStorage() {
 	//для быстрого локального тестирования деградации
 	//s.Cfg.Storage = ""
 	//s.Cfg.ConnectDB = ""

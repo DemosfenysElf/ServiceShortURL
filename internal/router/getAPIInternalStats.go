@@ -23,7 +23,11 @@ func (s *serverShortener) GetAPIInternalStats(c echo.Context) error {
 	s.WG.Wait()
 	stats := statsServer{}
 
-	consumerURL, err := shorturlservice.NewConsumer("storageUsers.log")
+	if s.Cfg.Storage == testStorageURL {
+		storageUsers = testStorageUsers
+	}
+
+	consumerURL, err := shorturlservice.NewConsumer(storageUsers)
 	if err != nil {
 		log.Fatal(err)
 	}

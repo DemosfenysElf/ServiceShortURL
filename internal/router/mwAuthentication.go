@@ -20,6 +20,10 @@ func (s serverShortener) MWAuthentication(next echo.HandlerFunc) echo.HandlerFun
 	return func(c echo.Context) error {
 		requestCookies := c.Request().Cookies()
 
+		if s.Cfg.Storage == testStorageURL {
+			storageUsers = testStorageUsers
+		}
+
 		consumerUser, err := shorturlservice.NewConsumer(storageUsers)
 		if err != nil {
 			log.Fatal(err)
@@ -77,7 +81,6 @@ func (s serverShortener) MWAuthentication(next echo.HandlerFunc) echo.HandlerFun
 			} else {
 				break
 			}
-
 		}
 
 		CryptoCookie, err := shorturlservice.CryptoToken(newToken)

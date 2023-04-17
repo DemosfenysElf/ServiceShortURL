@@ -151,7 +151,7 @@ func (db *Database) SetConnection(conn *sql.DB) {
 
 // GetCount возвращаем количество строк в таблице
 func (db *Database) GetCount(ctx context.Context) (n int, err error) {
-	row := db.connection.QueryRowContext(ctx, "select count(*) from ShortenerURL ")
+	row := db.connection.QueryRowContext(ctx, "select count(url) from ShortenerURL")
 	err = row.Scan(&n)
 	return
 }
