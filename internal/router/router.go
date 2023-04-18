@@ -58,13 +58,14 @@ func InitTestServer() *serverShortener {
 
 // Router - роутер
 func (s *serverShortener) Router() error {
-	s.FlagParse()
+	s.ConfigParse()
 	s.InitStorage()
 	s.router2()
 
 	return nil
 }
 
+// gRPC 8081
 func (s *serverShortener) router2() error {
 	e := echo.New()
 	e.Use(s.mwGzipHandle)
@@ -152,12 +153,12 @@ func (s *serverShortener) startBD() error {
 	return nil
 }
 
-// FlagParse парсим флаги
+// ConfigParse парсим флаги
 // флаг -a, отвечающий за адрес запуска HTTP-сервера (переменная SERVER_ADDRESS);
 // флаг -b, отвечающий за базовый адрес результирующего сокращённого URL (переменная BASE_URL);
 // флаг -f, отвечающий за путь до файла с сокращёнными URL (переменная FILE_STORAGE_PATH);
 // флаг -d, отвечающий за путь до DB (переменная DATABASE_DSN).
-func (s *serverShortener) FlagParse() {
+func (s *serverShortener) ConfigParse() {
 	errConfig := env.Parse(&s.Cfg)
 	if errConfig != nil {
 		log.Fatal(errConfig)

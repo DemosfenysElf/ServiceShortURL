@@ -24,6 +24,7 @@ type StorageInterface interface {
 // DatabaseService
 type DatabaseService interface {
 	Connect(connStr string) error
+	CreateTable() error
 	Close() error
 	Ping(ctx context.Context) error
 	GetCount(ctx context.Context) (n int, err error)

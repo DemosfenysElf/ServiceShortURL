@@ -1,6 +1,16 @@
 package router
 
-import "testing"
+import (
+	"context"
+	"database/sql/driver"
+	"regexp"
+	"testing"
+	"time"
+
+	"github.com/DATA-DOG/go-sqlmock"
+
+	"ServiceShortURL/internal/shorturlservice"
+)
 
 func TestFlagParse(t *testing.T) {
 	type wantFlags struct {
@@ -32,7 +42,7 @@ func TestFlagParse(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			rout := InitServer()
-			rout.FlagParse()
+			rout.ConfigParse()
 
 			if rout.Cfg.ServerAddress != tt.ServerAddress {
 				t.Errorf("Expected flag %s, got %s", tt.ServerAddress, rout.Cfg.ServerAddress)
@@ -56,6 +66,54 @@ func TestFlagParse(t *testing.T) {
 
 			if rout.Cfg.EnableHTTPS != tt.EnableHTTPS {
 				t.Errorf("Expected flag %t, got %t", tt.EnableHTTPS, rout.Cfg.EnableHTTPS)
+			}
+		})
+	}
+}
+
+func TestDBOpen(t *testing.T) {
+	tests := []struct {
+		name   string
+		result driver.Result
+	}{
+		{
+			name:   "TestBDApiShortenBatch1",
+			result: sqlmock.NewResult(1, 1),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			db, mock, err := sqlmock.New(sqlmock.MonitorPingsOption(true))
+
+			if err != nil {
+				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+			}
+			defer db.Close()
+			rout := InitTestServer()
+			rout.Cfg.Storage = testStorageURL
+			mockDB := &shorturlservice.Database{}
+
+			mockDB.SetConnection(db)
+			rout.DB = mockDB
+			rout.StorageInterface = mockDB
+
+			mock.ExpectExec(regexp.QuoteMeta(`CREATE TABLE ShortenerURL`)).
+				WillReturnResult(tt.result).WillReturnError(nil)
+			mock.ExpectExec(regexp.QuoteMeta("CREATE UNIQUE INDEX URL_index ON ShortenerURL (url)")).
+				WillReturnResult(tt.result).WillReturnError(nil)
+			mock.ExpectPing()
+
+			err = rout.DB.CreateTable()
+			if err != nil {
+				t.Errorf("DB connect error 1")
+			}
+
+			ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+			defer cancel()
+			err = rout.DB.Ping(ctx)
+
+			if err != nil {
+				t.Errorf("DB connect error 2")
 			}
 		})
 	}

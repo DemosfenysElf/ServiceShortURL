@@ -145,7 +145,6 @@ func TestAutPost(t *testing.T) {
 				if response.StatusCode != tt.want.codePost {
 					t.Errorf("Expected status code %d, got %d", tt.want.codePost, responseRecorder.Code)
 				}
-
 			}
 			teststor(&shorturlservice.FileStorage{
 				FilePath:    rout.Cfg.Storage,
