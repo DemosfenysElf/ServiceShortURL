@@ -19,7 +19,7 @@ type statsServer struct {
 // GetAPIInternalStats e.GET("/api/internal/stats")
 // возвращает пользователю количество пользователей и сокращенных ссылок
 // {"urls": <int>, "users": <int>}
-func (s *serverShortener) GetAPIInternalStats(c echo.Context) error {
+func (s *ServerShortener) GetAPIInternalStats(c echo.Context) error {
 	s.WG.Wait()
 	stats := statsServer{}
 

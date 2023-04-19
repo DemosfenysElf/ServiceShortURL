@@ -16,7 +16,7 @@ import (
 // принимает список идентификаторов сокращённых URL для удаления в формате:
 // [ "a", "b", "c", "d", ...]
 // в случае успешного приёма запроса возвращает http.StatusAccepted.
-func (s *serverShortener) DeleteAPIUserURLs(c echo.Context) error {
+func (s *ServerShortener) DeleteAPIUserURLs(c echo.Context) error {
 	fmt.Println("==>> DeleteAPIUserURLs")
 	s.WG.Add(1)
 	defer s.WG.Done()

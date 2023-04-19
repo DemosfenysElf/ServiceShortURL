@@ -14,7 +14,7 @@ var testStorageUsers = "../test/storageUsers.log"
 // для реализации авторизации пользователей в обход middleware при тестировании
 var GeneratorUsers shorturlservice.GeneratorUser
 
-func (s serverShortener) kykiDB() *http.Cookie {
+func (s ServerShortener) kykiDB() *http.Cookie {
 	consumerUser, err := shorturlservice.NewConsumer(testStorageUsers)
 	if err != nil {
 		fmt.Println(err)

@@ -36,7 +36,7 @@ type ConfigURL struct {
 	Config        string `env:"CONFIG"`
 }
 
-type serverShortener struct {
+type ServerShortener struct {
 	Cfg    ConfigURL
 	Serv   *echo.Echo
 	Writer io.Writer
@@ -47,26 +47,26 @@ type serverShortener struct {
 }
 
 // InitServer инициализация сервера
-func InitServer() *serverShortener {
-	return &serverShortener{WG: new(sync.WaitGroup), GeneratorUsers: shorturlservice.RandomGeneratorUser{}}
+func InitServer() *ServerShortener {
+	return &ServerShortener{WG: new(sync.WaitGroup), GeneratorUsers: shorturlservice.RandomGeneratorUser{}}
 }
 
 // InitTestServer инициализация сервера для тестов (пока только при работе с БД)
-func InitTestServer() *serverShortener {
-	return &serverShortener{WG: new(sync.WaitGroup), GeneratorUsers: shorturlservice.TestGeneratorUser{}}
+func InitTestServer() *ServerShortener {
+	return &ServerShortener{WG: new(sync.WaitGroup), GeneratorUsers: shorturlservice.TestGeneratorUser{}}
 }
 
 // Router - роутер
-func (s *serverShortener) Router() error {
+func (s *ServerShortener) Router() error {
 	s.ConfigParse()
 	s.InitStorage()
-	s.router2()
+	go startServerGRPC()
+	s.echoServer()
 
 	return nil
 }
 
-// gRPC 8081
-func (s *serverShortener) router2() error {
+func (s *ServerShortener) echoServer() error {
 	e := echo.New()
 	e.Use(s.mwGzipHandle)
 	e.Use(s.MWAuthentication)
@@ -137,7 +137,7 @@ func handler(h http.HandlerFunc) echo.HandlerFunc {
 }
 
 // startBD подключение к БД
-func (s *serverShortener) startBD() error {
+func (s *ServerShortener) startBD() error {
 	if s.Cfg.ConnectDB == "" {
 		return fmt.Errorf("error s.Cfg.ConnectDB == nil")
 	}
@@ -158,7 +158,7 @@ func (s *serverShortener) startBD() error {
 // флаг -b, отвечающий за базовый адрес результирующего сокращённого URL (переменная BASE_URL);
 // флаг -f, отвечающий за путь до файла с сокращёнными URL (переменная FILE_STORAGE_PATH);
 // флаг -d, отвечающий за путь до DB (переменная DATABASE_DSN).
-func (s *serverShortener) ConfigParse() {
+func (s *ServerShortener) ConfigParse() {
 	errConfig := env.Parse(&s.Cfg)
 	if errConfig != nil {
 		log.Fatal(errConfig)
@@ -239,7 +239,7 @@ func (s *serverShortener) ConfigParse() {
 
 // InitRouter Подключаемся к БД, если не получается проверяем к файлу с данными,
 // если не получается, то храним данные в памяти.
-func (s *serverShortener) InitStorage() {
+func (s *ServerShortener) InitStorage() {
 	//для быстрого локального тестирования деградации
 	//s.Cfg.Storage = ""
 	//s.Cfg.ConnectDB = ""

@@ -16,7 +16,7 @@ import (
 // принимает в теле запроса строку URL для сокращения
 // и возвращает ответ с кодом 201 и сокращённым URL в
 // виде текстовой строки в теле.
-func (s *serverShortener) PostURLToShort(c echo.Context) error {
+func (s *ServerShortener) PostURLToShort(c echo.Context) error {
 	s.WG.Wait()
 	fmt.Println("==>> PostURLToShort")
 	defer c.Request().Body.Close()
@@ -29,7 +29,7 @@ func (s *serverShortener) PostURLToShort(c echo.Context) error {
 		c.Response().WriteHeader(http.StatusNoContent)
 		return nil
 	}
-	short, setErr := s.SetURL(c.Request().Context(), string(body))
+	short, setErr := s.SetShortURL(c.Request().Context(), string(body))
 
 	write := []byte(s.Cfg.BaseURL + "/" + short)
 

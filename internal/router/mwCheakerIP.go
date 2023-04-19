@@ -9,7 +9,7 @@ import (
 
 // MWCheakerIP проверяет что переданный в заголовке запроса X-Real-IP IP-адрес клиента входит в доверенную подсеть
 // при пустом значении переменной trusted_subnet доступ к эндпоинту должен быть запрещён для любого входящего запроса
-func (s serverShortener) MWCheakerIP(next echo.HandlerFunc) echo.HandlerFunc {
+func (s ServerShortener) MWCheakerIP(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		if s.Cfg.TrustedSubnet == "" {
 			c.Response().WriteHeader(http.StatusForbidden)

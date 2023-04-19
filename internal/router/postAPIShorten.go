@@ -24,7 +24,7 @@ type shortURLJSON struct {
 // PostAPIShorten POST("/api/shorten")
 // принимает в теле запроса JSON-объект {"url":"<some_url>"}
 // возвращает в ответ объект {"result":"<shorten_url>"}.
-func (s *serverShortener) PostAPIShorten(c echo.Context) error {
+func (s *ServerShortener) PostAPIShorten(c echo.Context) error {
 	s.WG.Wait()
 	fmt.Println("==>> APIShorten")
 	urlJ := urlJSON{}
@@ -46,7 +46,7 @@ func (s *serverShortener) PostAPIShorten(c echo.Context) error {
 		c.Response().WriteHeader(http.StatusBadRequest)
 		return fmt.Errorf("URL is nil")
 	}
-	short, setErr := s.SetURL(c.Request().Context(), urlJ.URL)
+	short, setErr := s.SetShortURL(c.Request().Context(), urlJ.URL)
 	shortURL.ShortURL = s.Cfg.BaseURL + "/" + short
 
 	shortU, err := json.Marshal(shortURL)
