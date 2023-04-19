@@ -2,7 +2,6 @@ package router
 
 import (
 	"context"
-	"log"
 	"net"
 
 	"google.golang.org/grpc"
@@ -23,12 +22,7 @@ func startServerGRPC() error {
 	if err != nil {
 		return err
 	}
-	go func() {
-		if err = sGRPC.Serve(l); err != nil {
-			log.Fatal(err)
-		}
-	}()
-
+	go sGRPC.Serve(l)
 	return nil
 }
 
