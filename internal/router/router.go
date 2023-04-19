@@ -15,6 +15,7 @@ import (
 	"syscall"
 	"time"
 
+	//"ServiceShortURL/internal/router/gRPC"
 	"ServiceShortURL/internal/shorturlservice"
 
 	"github.com/caarlos0/env"
@@ -60,9 +61,8 @@ func InitTestServer() *ServerShortener {
 func (s *ServerShortener) Router() error {
 	s.ConfigParse()
 	s.InitStorage()
-	go startServerGRPC()
+	startServerGRPC()
 	s.echoServer()
-
 	return nil
 }
 

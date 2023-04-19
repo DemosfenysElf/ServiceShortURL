@@ -2,56 +2,67 @@ package router
 
 import (
 	"context"
+	"log"
 	"net"
 
 	"google.golang.org/grpc"
-
-	"ServiceShortURL/internal/router/gRPC"
 )
 
-//GetShortURL(context.Context, *Long) (*Short, error)
-//GetLongURL(context.Context, *Short) (*Long, error)
-//GetBatchShort(context.Context, *Batch) (*Batch, error)
-
+// ServerGRPC я не мастер писать
 type ServerGRPC struct {
 	*ServerShortener
 }
 
+// startServerGRPC() итак понятно
 func startServerGRPC() error {
 	sGRPC := grpc.NewServer()
 	srv := NewServerGRPC()
-	gRPC.RegisterServiceShortUrlServer(sGRPC, srv)
+	RegisterServiceShortUrlServer(sGRPC, srv)
 
 	l, err := net.Listen("tcp", ":8081")
 	if err != nil {
 		return err
 	}
+	go func() {
+		if err = sGRPC.Serve(l); err != nil {
+			log.Fatal(err)
+		}
+	}()
 
-	if err = sGRPC.Serve(l); err != nil {
-		return err
-	}
 	return nil
 }
 
+// NewServerGRPC создаём экземпляр сервера
 func NewServerGRPC() (s *ServerGRPC) {
 	return
 }
 
-func (s *ServerGRPC) GetShortURL(ctx context.Context, long *gRPC.Long) (*gRPC.Short, error) {
+// Не делал больше, так как не вывожу уже,
+// и совсем не уверен правильное ли это всё
+
+// как просто проверить работу пока не знаю,
+// но зная себя мне потребуется дня 3 на осознание
+
+// GetShortURL даём ссылку, получаем короткую
+func (s *ServerGRPC) GetShortURL(ctx context.Context, long *Long) (*Short, error) {
 	short, err := s.StorageInterface.SetShortURL(ctx, long.Url)
 	if err != nil {
 		return nil, err
 	}
-	return &gRPC.Short{Url: short}, nil
+	return &Short{Url: short}, nil
 }
-func (s *ServerGRPC) GetLongURL(ctx context.Context, short *gRPC.Short) (*gRPC.Long, error) {
+
+// GetShortURL даём короткую, получаем оригинальную
+func (s *ServerGRPC) GetLongURL(ctx context.Context, short *Short) (*Long, error) {
 	long, err := s.StorageInterface.GetLongURL(ctx, short.Url)
 	if err != nil {
 		return nil, err
 	}
-	return &gRPC.Long{Url: long}, nil
+	return &Long{Url: long}, nil
 }
-func (s *ServerGRPC) GetBatchShort(ctx context.Context, b *gRPC.Batch) (*gRPC.Batch, error) {
+
+// GetBatchShort даём пачку ссылок, получаем пачку коротких ссылок
+func (s *ServerGRPC) GetBatchShort(ctx context.Context, b *Batch) (*Batch, error) {
 	shortURLOne := shortURLApiShortenBatch{}
 	longURLBatch := make([]urlAPIShortenBatch, 0, len(b.Result))
 	shortURLBatch := make([]shortURLApiShortenBatch, 0, len(longURLBatch))
@@ -73,11 +84,11 @@ func (s *ServerGRPC) GetBatchShort(ctx context.Context, b *gRPC.Batch) (*gRPC.Ba
 		shortURLBatch = append(shortURLBatch, shortURLOne)
 	}
 
-	result := &gRPC.Batch{}
-	result.Result = make([]*gRPC.Pack, 0, len(b.Result))
+	result := &Batch{}
+	result.Result = make([]*Pack, 0, len(b.Result))
 
 	for _, oneBatch := range shortURLBatch {
-		result.Result = append(result.Result, &gRPC.Pack{
+		result.Result = append(result.Result, &Pack{
 			CorrelationId: oneBatch.ID,
 			Url:           oneBatch.ShortURL,
 		})
