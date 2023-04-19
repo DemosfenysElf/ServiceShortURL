@@ -37,6 +37,7 @@ type ConfigURL struct {
 	Config        string `env:"CONFIG"`
 }
 
+// ServerEcho
 type ServerShortener struct {
 	Cfg    ConfigURL
 	Serv   *echo.Echo
@@ -66,6 +67,7 @@ func (s *ServerShortener) Router() error {
 	return nil
 }
 
+// echoServer endпоинты и запуск сервера
 func (s *ServerShortener) echoServer() error {
 	e := echo.New()
 	e.Use(s.mwGzipHandle)
