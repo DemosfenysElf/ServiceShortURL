@@ -12,7 +12,7 @@ type ServerGRPC struct {
 	*ServerShortener
 }
 
-// startServerGRPC() итак понятно
+// startServerGRPC()
 func startServerGRPC() error {
 	sGRPC := grpc.NewServer()
 	srv := NewServerGRPC()
