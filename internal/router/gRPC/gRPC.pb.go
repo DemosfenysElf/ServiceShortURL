@@ -4,14 +4,13 @@
 // 	protoc        v4.22.3
 // source: gRPC.proto
 
-package router
+package gRPC
 
 import (
-	"reflect"
-	"sync"
-
-	"google.golang.org/protobuf/reflect/protoreflect"
-	"google.golang.org/protobuf/runtime/protoimpl"
+	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
+	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (

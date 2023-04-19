@@ -61,7 +61,7 @@ func InitTestServer() *ServerShortener {
 func (s *ServerShortener) Router() error {
 	s.ConfigParse()
 	s.InitStorage()
-	startServerGRPC()
+	StartServerGRPC()
 	s.echoServer()
 	return nil
 }

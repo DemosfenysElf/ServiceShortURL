@@ -4,14 +4,13 @@
 // - protoc             v4.22.3
 // source: gRPC.proto
 
-package router
+package gRPC
 
 import (
-	"context"
-
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
+	context "context"
+	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -95,7 +94,7 @@ type UnsafeServiceShortUrlServer interface {
 	mustEmbedUnimplementedServiceShortUrlServer()
 }
 
-func RegisterServiceShortUrlServer(s grpc.ServiceRegistrar, srv *ServerGRPC) {
+func RegisterServiceShortUrlServer(s grpc.ServiceRegistrar, srv ServiceShortUrlServer) {
 	s.RegisterService(&ServiceShortUrl_ServiceDesc, srv)
 }
 
