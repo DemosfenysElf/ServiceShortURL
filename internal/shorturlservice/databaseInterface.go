@@ -16,16 +16,18 @@ import (
 
 // StorageInterface
 type StorageInterface interface {
-	SetURL(ctx context.Context, url string) (short string, err error)
-	GetURL(ctx context.Context, short string) (url string, err error)
+	SetShortURL(ctx context.Context, url string) (short string, err error)
+	GetLongURL(ctx context.Context, short string) (url string, err error)
 	Delete(user string, listURL []string)
 }
 
 // DatabaseService
 type DatabaseService interface {
 	Connect(connStr string) error
+	CreateTable() error
 	Close() error
 	Ping(ctx context.Context) error
+	GetCount(ctx context.Context) (n int, err error)
 }
 
 var stringShortenerURL = `CREATE TABLE ShortenerURL(
@@ -81,10 +83,10 @@ func (db *Database) Ping(ctx context.Context) error {
 	return nil
 }
 
-// SetURL передаём оригинальный URL
+// SetShortURL передаём оригинальный URL
 // получаем сгенерированный короткий URL
 // вместе с данными о пользователе сохраняем в БД
-func (db *Database) SetURL(ctx context.Context, url string) (short string, err error) {
+func (db *Database) SetShortURL(ctx context.Context, url string) (short string, err error) {
 	short = db.RandomShort.ShortURL()
 	// добавить проверку на оригинальность
 
@@ -107,10 +109,10 @@ func (db *Database) SetURL(ctx context.Context, url string) (short string, err e
 	return short, err
 }
 
-// GetURL передаём короткий URL
+// GetLongURL передаём короткий URL
 // вместе с данными о пользователе сохраняем в БД
 // получаем сгенерированный оригинальный URL
-func (db *Database) GetURL(ctx context.Context, short string) (url string, err error) {
+func (db *Database) GetLongURL(ctx context.Context, short string) (url string, err error) {
 	deleted := false
 	row := db.connection.QueryRowContext(ctx, "select url,deleted from ShortenerURL where short = $1", short)
 	err = row.Scan(&url, &deleted)
@@ -141,10 +143,16 @@ func (db *Database) Delete(user string, listURL []string) {
 			fmt.Println(">>>>>>>>>>>>>>>>>>>>>", err)
 		}
 	}
-
 }
 
 // SetConnection для тестирования с помощью mock
 func (db *Database) SetConnection(conn *sql.DB) {
 	db.connection = conn
+}
+
+// GetCount возвращаем количество строк в таблице
+func (db *Database) GetCount(ctx context.Context) (n int, err error) {
+	row := db.connection.QueryRowContext(ctx, "select count(url) from ShortenerURL")
+	err = row.Scan(&n)
+	return
 }

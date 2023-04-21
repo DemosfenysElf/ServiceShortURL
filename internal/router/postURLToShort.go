@@ -8,13 +8,15 @@ import (
 
 	"github.com/jackc/pgerrcode"
 	"github.com/labstack/echo"
+
+	"ServiceShortURL/internal/shorturlservice"
 )
 
 // PostURLToShort e.POST("/")
 // принимает в теле запроса строку URL для сокращения
 // и возвращает ответ с кодом 201 и сокращённым URL в
 // виде текстовой строки в теле.
-func (s *serverShortener) PostURLToShort(c echo.Context) error {
+func (s *ServerShortener) PostURLToShort(c echo.Context) error {
 	s.WG.Wait()
 	fmt.Println("==>> PostURLToShort")
 	defer c.Request().Body.Close()
@@ -27,12 +29,12 @@ func (s *serverShortener) PostURLToShort(c echo.Context) error {
 		c.Response().WriteHeader(http.StatusNoContent)
 		return nil
 	}
-	short, setErr := s.SetURL(c.Request().Context(), string(body))
+	short, setErr := s.SetShortURL(c.Request().Context(), string(body))
 
 	write := []byte(s.Cfg.BaseURL + "/" + short)
 
 	if c.Request().Header.Get("Accept-Encoding") == "gzip" {
-		write, err = serviceCompress(write)
+		write, err = shorturlservice.ServiceCompress(write)
 		if err != nil {
 			c.Response().WriteHeader(http.StatusInternalServerError)
 		}

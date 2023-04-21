@@ -26,9 +26,9 @@ func BenchmarkXxx(b *testing.B) {
 			b.StartTimer()
 			ctx, cancel := context.WithTimeout(context.Background(), time.Duration(1000))
 			defer cancel()
-			short, _ := DB.SetURL(ctx, url)
+			short, _ := DB.SetShortURL(ctx, url)
 			if short != "" {
-				DB.GetURL(ctx, short)
+				DB.GetLongURL(ctx, short)
 			}
 			b.StopTimer()
 			if i%2 == 0 {

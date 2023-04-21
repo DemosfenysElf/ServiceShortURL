@@ -20,7 +20,7 @@ type userURLstruct struct {
 // возвращает пользователю все когда-либо сокращённые им URL в формате
 // [{"short_url":"http://...","original_url":"http://..."},...]
 // при отсутствии сокращённых пользователем URL: http.StatusNoContent
-func (s *serverShortener) GetAPIUserURL(c echo.Context) error {
+func (s *ServerShortener) GetAPIUserURL(c echo.Context) error {
 	s.WG.Wait()
 	fmt.Println("==>> GetAPIUserURL")
 

@@ -9,6 +9,8 @@ import (
 
 	"github.com/jackc/pgerrcode"
 	"github.com/labstack/echo"
+
+	"ServiceShortURL/internal/shorturlservice"
 )
 
 type urlAPIShortenBatch struct {
@@ -26,7 +28,7 @@ type shortURLApiShortenBatch struct {
 // [{"correlation_id": "<строковый идентификатор>","original_url": "<URL для сокращения>"},...]
 // возвращает данные в формате:
 // [{"correlation_id": "<строковый идентификатор из объекта запроса>","short_url": "<результирующий сокращённый URL>"},...]
-func (s *serverShortener) PostAPIShortenBatch(c echo.Context) error {
+func (s *ServerShortener) PostAPIShortenBatch(c echo.Context) error {
 	s.WG.Wait()
 	fmt.Println("==>> APIShortenBatch")
 	urlBatch := []urlAPIShortenBatch{}
@@ -49,7 +51,7 @@ func (s *serverShortener) PostAPIShortenBatch(c echo.Context) error {
 	var setErr, cheakErr error
 	var short string
 	for i := range urlBatch {
-		short, setErr = s.SetURL(c.Request().Context(), urlBatch[i].OriginalURL)
+		short, setErr = s.SetShortURL(c.Request().Context(), urlBatch[i].OriginalURL)
 		if setErr != nil {
 			cheakErr = setErr
 		}
@@ -65,7 +67,7 @@ func (s *serverShortener) PostAPIShortenBatch(c echo.Context) error {
 	}
 
 	if c.Request().Header.Get("Accept-Encoding") == "gzip" {
-		shortU, err = serviceCompress(shortU)
+		shortU, err = shorturlservice.ServiceCompress(shortU)
 		if err != nil {
 			fmt.Println("Compress fail")
 		}

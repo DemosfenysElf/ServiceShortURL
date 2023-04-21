@@ -16,9 +16,13 @@ var storageUsers = "storageUsers.log"
 // MWAuthentication проверяем наличие ранее выданной куки
 // если кука соответствует, то далее будет использоваться эта же кука
 // если кука не соответствует или отсутствует, то выдаётся новая
-func (s serverShortener) MWAuthentication(next echo.HandlerFunc) echo.HandlerFunc {
+func (s ServerShortener) MWAuthentication(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		requestCookies := c.Request().Cookies()
+
+		if s.Cfg.Storage == testStorageURL {
+			storageUsers = testStorageUsers
+		}
 
 		consumerUser, err := shorturlservice.NewConsumer(storageUsers)
 		if err != nil {
@@ -77,7 +81,6 @@ func (s serverShortener) MWAuthentication(next echo.HandlerFunc) echo.HandlerFun
 			} else {
 				break
 			}
-
 		}
 
 		CryptoCookie, err := shorturlservice.CryptoToken(newToken)

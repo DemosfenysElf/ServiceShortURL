@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package ServiceShortUrl;
+
+option go_package = "./gRPC";
+
+message Long {
+  string url = 1;
+}
+
+message Short {
+  string url = 1;
+}
+
+message Batch {
+  repeated Pack result = 1;
+}
+
+message Pack {
+  string correlation_id = 1;
+  string url = 2;
+}
+
+service ServiceShortUrl {
+  rpc GetShortURL (Long) returns (Short);
+  rpc GetLongURL (Short) returns (Long);
+  rpc GetBatchShort (Batch) returns (Batch);
+}
+

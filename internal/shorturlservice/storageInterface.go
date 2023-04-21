@@ -18,8 +18,8 @@ func InitMem() *MemoryStorage {
 	return &MemoryStorage{data: make([]URLInfo, 0), RandomShort: &RandomGenerator{}}
 }
 
-// GetURL передаём короткую ссылку, получаем оригинальную
-func (ms *MemoryStorage) GetURL(_ context.Context, short string) (url string, err error) {
+// GetLongURL передаём короткую ссылку, получаем оригинальную
+func (ms *MemoryStorage) GetLongURL(_ context.Context, short string) (url string, err error) {
 	for i, data := range ms.data {
 		if short == data.ShortURL {
 			url = data.URL
@@ -35,7 +35,7 @@ func (ms *MemoryStorage) GetURL(_ context.Context, short string) (url string, er
 // SetURL передаём оригинальную ссылку, получаем короткую
 // перед записью её в память и выдачей проверяет на оригинальность
 // путем поиска её в памяти.
-func (ms *MemoryStorage) SetURL(_ context.Context, url string) (short string, err error) {
+func (ms *MemoryStorage) SetShortURL(_ context.Context, url string) (short string, err error) {
 	short = ms.RandomShort.ShortURL()
 	if len(ms.data) != 0 {
 		for i, data := range ms.data {
@@ -68,7 +68,7 @@ type FileStorage struct {
 }
 
 // GetURL передаём короткую ссылку, получаем оригинальную
-func (fs *FileStorage) GetURL(_ context.Context, short string) (url string, err error) {
+func (fs *FileStorage) GetLongURL(_ context.Context, short string) (url string, err error) {
 	consumerURL, err := NewConsumer(fs.FilePath)
 	if err != nil {
 		return "", err
@@ -90,12 +90,12 @@ func (fs *FileStorage) GetURL(_ context.Context, short string) (url string, err 
 	return "", fmt.Errorf("no found url")
 }
 
-// SetURL передаём оригинальную ссылку, получаем короткую
+// SetShortURL передаём оригинальную ссылку, получаем короткую
 // сохраняем в файл
-func (fs *FileStorage) SetURL(ctx context.Context, url string) (short string, err error) {
+func (fs *FileStorage) SetShortURL(ctx context.Context, url string) (short string, err error) {
 	short = fs.RandomShort.ShortURL()
 	for {
-		_, errFor := fs.GetURL(ctx, short)
+		_, errFor := fs.GetLongURL(ctx, short)
 		if errFor != nil {
 			sErr := errFor.Error()
 			if !strings.Contains(sErr, "deleted") {

@@ -11,14 +11,14 @@ import (
 // GetShortToURL GET("/:id")
 // принимает в качестве URL-параметра идентификатор сокращённого URL
 // и возвращает ответ с кодом 307 и оригинальным URL в HTTP-заголовке Location
-func (s *serverShortener) GetShortToURL(c echo.Context) error {
+func (s *ServerShortener) GetShortToURL(c echo.Context) error {
 	s.WG.Wait()
 
 	fmt.Println("==>> GetShortToURL")
 	short := c.Request().URL.String()
 	short = short[1:]
 
-	url, err := s.GetURL(c.Request().Context(), short)
+	url, err := s.GetLongURL(c.Request().Context(), short)
 
 	if err != nil {
 		sErr := err.Error()
